@@ -10,6 +10,7 @@ RM := rm -rf
 -include sources.mk
 -include tests/subdir.mk
 -include source/Utilities/subdir.mk
+-include source/FiniteDifference/subdir.mk
 -include source/Data/subdir.mk
 -include source/BlackScholes/subdir.mk
 -include source/subdir.mk

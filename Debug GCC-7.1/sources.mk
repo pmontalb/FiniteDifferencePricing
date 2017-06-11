@@ -25,6 +25,7 @@ CPP_DEPS :=
 SUBDIRS := \
 source/BlackScholes \
 source/Data \
+source/FiniteDifference \
 source \
 source/Utilities \
 tests \
