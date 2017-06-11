@@ -1,0 +1,9 @@
+.cproject
+.project
+.settings/
+gmon.out
+*.d
+*.o
+*.gcda
+*.gcno
+FiniteDifferencePricing
