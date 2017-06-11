@@ -12,6 +12,9 @@
 #include <array>
 #include <stddef.h>
 
+#include <FiniteDifference/CGrid.h>
+#include <Data/CInputData.h>
+
 namespace details
 {
 
@@ -27,13 +30,14 @@ class Triple
 public:
 	Triple(const double sub, const double diag, const double super) : data({sub, diag, super}) {};
 	Triple() noexcept: Triple(0.0, 0.0, 0.0){};
+	Triple(const Triple& rhs) : data(rhs.data) {}
 
 	const double& Get(const ETridiagIndex idx) const noexcept
 	{
 		return data[idx];
 	}
 
-	void Set(const double val, const ETridiagIndex idx) noexcept
+	void Set(const ETridiagIndex idx, const double val) noexcept
 	{
 		data[idx] = val;
 	}
@@ -51,14 +55,19 @@ class CTridiagonalOperator
 {
 public:
 	CTridiagonalOperator(const size_t N);
+	CTridiagonalOperator(const CInputData& __restrict__ input, const CGrid& __restrict__ grid);
+	CTridiagonalOperator(const CTridiagonalOperator& __restrict rhs);
 
 	virtual ~CTridiagonalOperator() = default;
-	CTridiagonalOperator(const CTridiagonalOperator& rhs) = delete;
-	CTridiagonalOperator(const CTridiagonalOperator&& rhs) = delete;
 	CTridiagonalOperator& operator=(const CTridiagonalOperator& rhs) = delete;
 	CTridiagonalOperator& operator=(const CTridiagonalOperator&& rhs) = delete;
 
-	void Dot(std::vector<double>& __restrict__ out, const std::vector<double>& __restrict__ in) const noexcept;
+	/**
+	 * Compute LHS = diag(alpha) + beta * RHS
+	 */
+	void Add(const double alpha, const double beta) noexcept;
+
+	void Dot(std::vector<double>& __restrict__ x) const noexcept;
 
 	/**
 	 * Thomas Algorithm: https://en.wikibooks.org/wiki/Algorithm_Implementation/Linear_Algebra/Tridiagonal_matrix_algorithm
@@ -71,6 +80,13 @@ private:
 	const size_t N;
 	std::vector<details::Triple> matrix;
 	std::vector<double> solve_cache;
+
+	/**
+	 * Set the operator according to the second order uneven mesh finite difference
+	 */
+	void Make(const CInputData& __restrict__ input, const CGrid& __restrict__ grid) noexcept;
+
+	void Dot(std::vector<double>& __restrict__ out, const std::vector<double>& __restrict__ in) const noexcept;
 };
 
 } /* namespace fdpricing */

@@ -5,6 +5,7 @@
  *      Author: raiden
  */
 
+#include <cstdio>
 #include <FiniteDifference/CGrid.h>
 
 namespace fdpricing
@@ -71,7 +72,7 @@ CGrid::CGrid(const double x0, const double lb, const double ub, const EGridType 
 	if (x0 >= ub || x0 <= lb)
 	{
 		printf("WRONG BOUNDARIES");
-		throw;
+		return;
 	}
 #endif
 	switch (gridType)

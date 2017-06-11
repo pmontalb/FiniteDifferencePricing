@@ -4,14 +4,17 @@
 
 # Add inputs and outputs from these tool invocations to the build variables 
 CPP_SRCS += \
+../source/FiniteDifference/CEvolutionOperator.cpp \
 ../source/FiniteDifference/CGrid.cpp \
 ../source/FiniteDifference/CTridiagonalOperator.cpp 
 
 OBJS += \
+./source/FiniteDifference/CEvolutionOperator.o \
 ./source/FiniteDifference/CGrid.o \
 ./source/FiniteDifference/CTridiagonalOperator.o 
 
 CPP_DEPS += \
+./source/FiniteDifference/CEvolutionOperator.d \
 ./source/FiniteDifference/CGrid.d \
 ./source/FiniteDifference/CTridiagonalOperator.d 
 

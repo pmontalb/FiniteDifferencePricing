@@ -12,6 +12,8 @@
 #include <cmath>
 #include <stddef.h>
 
+#define DEBUG
+
 namespace fdpricing
 {
 
@@ -42,13 +44,18 @@ public:
 	const double& Get(const size_t i) const noexcept
 	{
 #ifdef DEBUG
-		if (i > N)
+		if (i > data.size())
 		{
 			printf("Out of bounds");
-			throw;
+			return data[i];
 		}
 #endif
 		return data[i];
+	}
+
+	size_t size() const noexcept
+	{
+		return N + 1;
 	}
 
 	const size_t N;

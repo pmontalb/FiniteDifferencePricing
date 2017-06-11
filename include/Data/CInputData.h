@@ -40,7 +40,8 @@ public:
 	double T;
 	double sigma;
 	std::vector<CDividend> dividends;
-	size_t N;
+	size_t N; // number of space grid points
+	size_t M; // number of time  grid points
 
 	bool smoothing;
 	bool acceleration;

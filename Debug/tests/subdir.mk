@@ -5,14 +5,17 @@
 # Add inputs and outputs from these tool invocations to the build variables 
 CPP_SRCS += \
 ../tests/TestBlackScholes.cpp \
+../tests/TestEvolutionOperator.cpp \
 ../tests/TestGrid.cpp 
 
 OBJS += \
 ./tests/TestBlackScholes.o \
+./tests/TestEvolutionOperator.o \
 ./tests/TestGrid.o 
 
 CPP_DEPS += \
 ./tests/TestBlackScholes.d \
+./tests/TestEvolutionOperator.d \
 ./tests/TestGrid.d 
 
 
