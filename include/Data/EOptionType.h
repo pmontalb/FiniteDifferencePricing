@@ -10,11 +10,13 @@
 
 namespace fdpricing
 {
+
 enum EOptionType
 {
 	Call = 1,
 	Put = -1
 };
+
 }
 
 #endif /* DATA_EOPTIONTYPE_H_ */

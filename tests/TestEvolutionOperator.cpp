@@ -21,7 +21,9 @@ TEST (TridiagonalOperator, ExplicitEuler)
 	inputData.N = 128;
 	inputData.T = 1.0;
 	inputData.M = 100;
-	CEvolutionOperator<ESolverType::ExplicitEuler> u(inputData);
+
+	CFiniteDifferenceSettings settings;
+	CEvolutionOperator<ESolverType::ExplicitEuler> u(inputData, settings);
 
 	std::vector<double> x(inputData.N + 1, 0.0);
 	x[64] = 1.0;

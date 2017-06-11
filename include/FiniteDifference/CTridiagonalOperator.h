@@ -14,6 +14,8 @@
 
 #include <FiniteDifference/CGrid.h>
 #include <Data/CInputData.h>
+#include <Data/CPayoffData.h>
+#include <Data/EAdjointDifferentiation.h>
 
 namespace details
 {
@@ -45,12 +47,15 @@ private:
 	std::array<double, 3> data;
 };
 
+typedef std::vector<Triple> Matrix;
+
 }
 
 
 namespace fdpricing
 {
 
+template<EAdjointDifferentiation adjointDifferentiation>
 class CTridiagonalOperator
 {
 public:
@@ -67,18 +72,21 @@ public:
 	 */
 	void Add(const double alpha, const double beta) noexcept;
 
-	void Dot(std::vector<double>& __restrict__ x) const noexcept;
+	void Dot(CPayoffData& __restrict__ payoffData) const noexcept;
 
 	/**
 	 * Thomas Algorithm: https://en.wikibooks.org/wiki/Algorithm_Implementation/Linear_Algebra/Tridiagonal_matrix_algorithm
 	 *
 	 * x: containts input/output
 	 */
-	void Solve(std::vector<double>& __restrict__ x) noexcept;
+	void Solve(CPayoffData& __restrict__ payoffData) noexcept;
 
 private:
 	const size_t N;
-	std::vector<details::Triple> matrix;
+	details::Matrix matrix;
+	details::Matrix matrixVega;
+	details::Matrix matrixRhoBorrow;
+
 	std::vector<double> solve_cache;
 
 	/**
@@ -86,8 +94,13 @@ private:
 	 */
 	void Make(const CInputData& __restrict__ input, const CGrid& __restrict__ grid) noexcept;
 
-	void Dot(std::vector<double>& __restrict__ out, const std::vector<double>& __restrict__ in) const noexcept;
+	void Dot(CPayoffData& __restrict__ out, const CPayoffData& __restrict__ in) const noexcept;
+	void Dot(std::vector<double>& __restrict__ out, const std::vector<double>& __restrict__ in, const details::Matrix& __restrict__ m) const noexcept;
+
+	void Solve(std::vector<double>& __restrict__ x, const details::Matrix& __restrict__ m) noexcept;
 };
+
+#include <FiniteDifference/CTridiagonalOperator.tpp>
 
 } /* namespace fdpricing */
 

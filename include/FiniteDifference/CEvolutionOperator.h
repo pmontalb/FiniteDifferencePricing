@@ -13,31 +13,31 @@
 #include <FiniteDifference/CTridiagonalOperator.h>
 #include <FiniteDifference/CGrid.h>
 #include <Data/CInputData.h>
+#include <Data/ESolverType.h>
 
 namespace fdpricing
 {
 
-enum class ESolverType
+struct CFiniteDifferenceSettings
 {
-	Null,
-	ExplicitEuler,
-	ImplicitEuler,
-	CrankNicolson
+	double lowerFactor = 1e-3;
+	double upperFactor = 10.0;
+	EGridType gridType = EGridType::Adaptive;
 };
 
-template<ESolverType T>
+template<ESolverType solverType, EAdjointDifferentiation adjointDifferentiation>
 class CEvolutionOperator
 {
 public:
-	CEvolutionOperator(const CInputData& __restrict__ input,
-			const double lowerFactor = 1e-3, const double upperFactor = 10.0, const EGridType gridType = EGridType::Adaptive) noexcept
+	CEvolutionOperator(const CInputData& __restrict__ input, const CFiniteDifferenceSettings& __restrict__ settings) noexcept
 		: input(input),
-		  grid(input.S, lowerFactor * input.S, upperFactor * input.S, gridType, input.N),
+		  settings(settings),
+		  grid(input.S, settings.lowerFactor * input.S, settings.upperFactor * input.S, settings.gridType, input.N),
 		  L(input, grid),
 		  dt(input.T / input.M),
 		  A(L)
 	{
-		switch (T)
+		switch (solverType)
 		{
 			case ESolverType::ExplicitEuler:
 				A.Add(1.0, dt);
@@ -66,7 +66,7 @@ public:
 
 	void Apply(std::vector<double>& __restrict__ x) noexcept
 	{
-		switch (T)
+		switch (solverType)
 		{
 			case ESolverType::ExplicitEuler:
 				A.Dot(x);
@@ -76,8 +76,8 @@ public:
 				break;
 			case ESolverType::CrankNicolson:
 			{
-				A.Solve(x);
 				B->Dot(x);
+				A.Solve(x);
 				break;
 			}
 			default:
@@ -87,6 +87,7 @@ public:
 
 private:
 	const CInputData& __restrict__ input;
+	const CFiniteDifferenceSettings& __restrict__ settings;
 	const CGrid grid;
 
 	// Space Discretization
