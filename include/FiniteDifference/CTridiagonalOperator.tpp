@@ -1,11 +1,9 @@
 /*
- * CTridiagonalOperator.cpp
+ * CTridiagonalOperator.tpp
  *
  *  Created on: 11 Jun 2017
  *      Author: raiden
  */
-
-#include <FiniteDifference/CTridiagonalOperator.h>
 
 #define DEBUG
 
@@ -13,7 +11,7 @@ namespace fdpricing
 {
 
 template<EAdjointDifferentiation adjointDifferentiation>
-CTridiagonalOperator<adjointDifferentiation>::CTridiagonalOperator(const size_t N)
+CTridiagonalOperator<adjointDifferentiation>::CTridiagonalOperator(const size_t N) noexcept
 	: N(N), matrix(N + 1)
 {
 	switch (adjointDifferentiation)
@@ -34,15 +32,15 @@ CTridiagonalOperator<adjointDifferentiation>::CTridiagonalOperator(const size_t 
 }
 
 template<EAdjointDifferentiation T>
-CTridiagonalOperator<T>::CTridiagonalOperator(const CInputData& __restrict__ input, const CGrid& __restrict__ grid)
+CTridiagonalOperator<T>::CTridiagonalOperator(const CInputData& __restrict__ input, const CGrid& __restrict__ grid) noexcept
 	: CTridiagonalOperator(input.N)
 {
 	Make(input, grid);
 }
 
 template<EAdjointDifferentiation T>
-CTridiagonalOperator<T>::CTridiagonalOperator(const CTridiagonalOperator& __restrict__ rhs)
-	: N(rhs.N), matrix(rhs.matrix)
+CTridiagonalOperator<T>::CTridiagonalOperator(const CTridiagonalOperator& __restrict__ rhs) noexcept
+	: N(rhs.N), matrix(rhs.matrix), matrixVega(rhs.matrixVega), matrixRhoBorrow(rhs.matrixRhoBorrow)
 {
 
 }
@@ -83,53 +81,69 @@ void CTridiagonalOperator<adjointDifferentiation>::Add(const double alpha, const
 	}
 }
 
-template<EAdjointDifferentiation T>
-void CTridiagonalOperator<T>::Dot(CPayoffData& __restrict__ payoffData) const noexcept
-{
-	CPayoffData payoffDataCopy;
-	payoffDataCopy.Copy<T>(payoffData);
-	Dot(payoffData, payoffDataCopy);
-}
-
 template<EAdjointDifferentiation adjointDifferentiation>
-void CTridiagonalOperator<adjointDifferentiation>::Dot(CPayoffData& __restrict__ out, const CPayoffData& __restrict__ in) const noexcept
+void CTridiagonalOperator<adjointDifferentiation>::Dot(CPayoffData& __restrict__ out) const noexcept
 {
 #ifdef DEBUG
-	if (out.payoff_i.size() != (N + 1) || in.payoff_i.size() != (N + 1))
+	if (out.payoff_i.size() != (N + 1))
 	{
 		printf("WRONG SIZE");
 		return;
 	}
 #endif
 
-	Dot(out.payoff_i, in.payoff_i, matrix);
-
-/*	switch (adjointDifferentiation)
+	// x_{n} = A \cdot x_{n + 1}
+	// Therefore:
+	// v_{n} = J \cdot x_{n + 1} + A \cdot v_{n + 1}
+	switch (adjointDifferentiation)
 	{
 		case EAdjointDifferentiation::Vega:
-			Dot(out.vega_i, in.vega_i, matrixVega);
+			Dot(matrix, out.vega_i);  // A \cdot v_{n + 1}
+			Add(out.vega_i, matrixVega, out.payoff_i);  // J \cdot x_{n + 1}
 			break;
 		case EAdjointDifferentiation::Rho:
-			Dot(out.rhoBorrow_i, in.rhoBorrow_i, matrixRhoBorrow);
+			Dot(matrix, out.rhoBorrow_i);
+			Add(out.rhoBorrow_i, matrixRhoBorrow, out.payoff_i);
 			break;
 		case EAdjointDifferentiation::All:
-			Dot(out.vega_i, in.vega_i, matrixVega);
-			Dot(out.rhoBorrow_i, in.rhoBorrow_i, matrixRhoBorrow);
+			Dot(matrix, out.vega_i);
+			Add(out.vega_i, matrixVega, out.payoff_i);
+
+			Dot(matrix, out.rhoBorrow_i);
+			Add(out.rhoBorrow_i, matrixRhoBorrow, out.payoff_i);
 			break;
 		default:
 			break;
-	}*/
+	}
+
+	// Only now we can update the payoff
+	Dot(matrix, out.payoff_i);
 }
 
 template<EAdjointDifferentiation T>
-void CTridiagonalOperator<T>::Dot(std::vector<double>& __restrict__ out, const std::vector<double>& __restrict__ in, const details::Matrix& __restrict__ m) const noexcept
+void CTridiagonalOperator<T>::Add(std::vector<double>& __restrict__ out, const details::Matrix& __restrict__ A, const std::vector<double>& __restrict__ x) const noexcept
 {
-	out[0] = m[0].Get(details::Zero) * in[0] + m[0].Get(details::Plus) * in[1];
+	out[0] += A[0].Get(details::Zero) * x[0] + A[0].Get(details::Plus) * x[1];
 
 	for(size_t i = 1; i < N; ++i)
-		out[i] = m[i].Get(details::Minus) * in[i - 1] + m[i].Get(details::Zero) * in[i] + m[i].Get(details::Plus) * in[i + 1];
+		out[i] += A[i].Get(details::Minus) * x[i - 1] + A[i].Get(details::Zero) * x[i] + A[i].Get(details::Plus) * x[i + 1];
 
-	out[N] = m[N].Get(details::Minus) * in[N - 1] + m[N].Get(details::Zero) * in[N];
+	out[N] += A[N].Get(details::Minus) * x[N - 1] + A[N].Get(details::Zero) * x[N];
+}
+
+template<EAdjointDifferentiation T>
+void CTridiagonalOperator<T>::Dot(const details::Matrix& __restrict__ A, std::vector<double>& __restrict__ x) const noexcept
+{
+	std::array<double, 2> cache = { x[0], 0.0 };
+	x[0] = A[0].Get(details::Zero) * x[0] + A[0].Get(details::Plus) * x[1];
+
+	for(size_t i = 1; i < N; ++i)
+	{
+		cache[i & 1] = x[i];
+		x[i] = A[i].Get(details::Minus) * cache[(i - 1) & 1] + A[i].Get(details::Zero) * x[i] + A[i].Get(details::Plus) * x[i + 1];
+	}
+
+	x[N] = A[N].Get(details::Minus) * cache[(N - 1) & 1] + A[N].Get(details::Zero) * x[N];
 }
 
 template<EAdjointDifferentiation adjointDifferentiation>
@@ -244,20 +258,24 @@ void CTridiagonalOperator<adjointDifferentiation>::Make(const CInputData& __rest
 					const double dVolDSigma = 2.0 * input.sigma * grid.Get(i) * grid.Get(i);
 					matrixVega[i].Set(details::Minus, dVolDSigma / (dxMinus * dx));
 					matrixVega[i].Set(details::Plus,  dVolDSigma / (dxPlus * dx));
+					matrixVega[i].Set(details::Zero, -matrixVega[i].Get(details::Minus) - matrixVega[i].Get(details::Plus));
 				}
 				break;
 			case EAdjointDifferentiation::Rho:
 					matrixRhoBorrow[i].Set(details::Minus, -dxPlus  * grid.Get(i) / (dxMinus * dx));
 					matrixRhoBorrow[i].Set(details::Plus,   dxMinus * grid.Get(i) / (dxPlus * dx));
+					matrixRhoBorrow[i].Set(details::Zero, -matrixRhoBorrow[i].Get(details::Minus) - matrixRhoBorrow[i].Get(details::Plus));
 				break;
 			case EAdjointDifferentiation::All:
 				{
 					const double dVolDSigma = 2.0 * input.sigma * grid.Get(i) * grid.Get(i);
 					matrixVega[i].Set(details::Minus, dVolDSigma / (dxMinus * dx));
 					matrixVega[i].Set(details::Plus,  dVolDSigma / (dxPlus * dx));
+					matrixVega[i].Set(details::Zero, -matrixVega[i].Get(details::Minus) - matrixVega[i].Get(details::Plus));
 
 					matrixRhoBorrow[i].Set(details::Minus, -dxPlus  * grid.Get(i) / (dxMinus * dx));
 					matrixRhoBorrow[i].Set(details::Plus,   dxMinus * grid.Get(i) / (dxPlus * dx));
+					matrixRhoBorrow[i].Set(details::Zero, -matrixRhoBorrow[i].Get(details::Minus) - matrixRhoBorrow[i].Get(details::Plus));
 				}
 				break;
 			default:

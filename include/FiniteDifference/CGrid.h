@@ -46,7 +46,7 @@ public:
 #ifdef DEBUG
 		if (i > data.size())
 		{
-			printf("Out of bounds");
+			printf("******** Out of bounds ********: %zu(%zu)\n", i, data.size());
 			return data[i];
 		}
 #endif

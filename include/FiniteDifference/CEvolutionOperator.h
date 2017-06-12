@@ -50,7 +50,7 @@ public:
 				const double halfDt = .5 * dt;
 				A.Add(1.0, -halfDt);
 
-				B = std::make_shared<CTridiagonalOperator>(L);
+				B = std::make_shared<CTridiagonalOperator<adjointDifferentiation>>(L);
 				B->Add(1.0, halfDt);
 				break;
 			}
@@ -64,7 +64,7 @@ public:
 	CEvolutionOperator(const CEvolutionOperator& rhs) = delete;
 	CEvolutionOperator(const CEvolutionOperator&& rhs) = delete;
 
-	void Apply(std::vector<double>& __restrict__ x) noexcept
+	void Apply(CPayoffData& __restrict__ x) noexcept
 	{
 		switch (solverType)
 		{
@@ -91,12 +91,12 @@ private:
 	const CGrid grid;
 
 	// Space Discretization
-	const CTridiagonalOperator L;
+	const CTridiagonalOperator<adjointDifferentiation> L;
 
 	// Space-Time Discretization
 	const double dt;
-	CTridiagonalOperator A; // right operator
-	std::shared_ptr<CTridiagonalOperator> B; // left operator
+	CTridiagonalOperator<adjointDifferentiation> A; // right operator
+	std::shared_ptr<CTridiagonalOperator<adjointDifferentiation>> B; // left operator
 };
 
 } /* namespace fdpricing */

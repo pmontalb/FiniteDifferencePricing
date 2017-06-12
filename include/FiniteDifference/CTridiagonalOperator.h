@@ -59,9 +59,9 @@ template<EAdjointDifferentiation adjointDifferentiation>
 class CTridiagonalOperator
 {
 public:
-	CTridiagonalOperator(const size_t N);
-	CTridiagonalOperator(const CInputData& __restrict__ input, const CGrid& __restrict__ grid);
-	CTridiagonalOperator(const CTridiagonalOperator& __restrict rhs);
+	CTridiagonalOperator(const size_t N) noexcept;
+	CTridiagonalOperator(const CInputData& __restrict__ input, const CGrid& __restrict__ grid) noexcept;
+	CTridiagonalOperator(const CTridiagonalOperator& __restrict rhs) noexcept;
 
 	virtual ~CTridiagonalOperator() = default;
 	CTridiagonalOperator& operator=(const CTridiagonalOperator& rhs) = delete;
@@ -94,14 +94,18 @@ private:
 	 */
 	void Make(const CInputData& __restrict__ input, const CGrid& __restrict__ grid) noexcept;
 
-	void Dot(CPayoffData& __restrict__ out, const CPayoffData& __restrict__ in) const noexcept;
-	void Dot(std::vector<double>& __restrict__ out, const std::vector<double>& __restrict__ in, const details::Matrix& __restrict__ m) const noexcept;
+	 /**
+	  * Compute LHS = diag(alpha) + beta * RHS
+	  * */
+	void Add(std::vector<double>& __restrict__ out, const details::Matrix& __restrict__ A, const std::vector<double>& __restrict__ x) const noexcept;
+
+	void Dot(const details::Matrix& __restrict__ A, std::vector<double>& __restrict__ x) const noexcept;
 
 	void Solve(std::vector<double>& __restrict__ x, const details::Matrix& __restrict__ m) noexcept;
 };
 
-#include <FiniteDifference/CTridiagonalOperator.tpp>
-
 } /* namespace fdpricing */
 
 #endif /* FINITEDIFFERENCE_CTRIDIAGONALOPERATOR_H_ */
+
+#include <FiniteDifference/CTridiagonalOperator.tpp>

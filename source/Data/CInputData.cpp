@@ -30,6 +30,7 @@ CInputData& CInputData::operator=(const CInputData& __restrict__ rhs) noexcept
 		T = rhs.T;
 		sigma = rhs.sigma;
 		N = rhs.N;
+		M = rhs.M;
 		smoothing = rhs.smoothing;
 		acceleration = rhs.acceleration;
 		dividends = rhs.dividends;
