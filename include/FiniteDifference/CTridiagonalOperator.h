@@ -95,9 +95,9 @@ private:
 	void Make(const CInputData& __restrict__ input, const CGrid& __restrict__ grid) noexcept;
 
 	 /**
-	  * Compute LHS = diag(alpha) + beta * RHS
+	  * Compute out += alpha * A * x
 	  * */
-	void Add(std::vector<double>& __restrict__ out, const details::Matrix& __restrict__ A, const std::vector<double>& __restrict__ x) const noexcept;
+	void Add(std::vector<double>& __restrict__ out, const double alpha, const details::Matrix& __restrict__ A, const std::vector<double>& __restrict__ x) const noexcept;
 
 	void Dot(const details::Matrix& __restrict__ A, std::vector<double>& __restrict__ x) const noexcept;
 

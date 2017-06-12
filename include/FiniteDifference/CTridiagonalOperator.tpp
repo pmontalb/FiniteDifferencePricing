@@ -99,18 +99,18 @@ void CTridiagonalOperator<adjointDifferentiation>::Dot(CPayoffData& __restrict__
 	{
 		case EAdjointDifferentiation::Vega:
 			Dot(matrix, out.vega_i);  // A \cdot v_{n + 1}
-			Add(out.vega_i, matrixVega, out.payoff_i);  // J \cdot x_{n + 1}
+			Add(out.vega_i, 1.0, matrixVega, out.payoff_i);  // J \cdot x_{n + 1}
 			break;
 		case EAdjointDifferentiation::Rho:
 			Dot(matrix, out.rhoBorrow_i);
-			Add(out.rhoBorrow_i, matrixRhoBorrow, out.payoff_i);
+			Add(out.rhoBorrow_i, 1.0, matrixRhoBorrow, out.payoff_i);
 			break;
 		case EAdjointDifferentiation::All:
 			Dot(matrix, out.vega_i);
-			Add(out.vega_i, matrixVega, out.payoff_i);
+			Add(out.vega_i, 1.0, matrixVega, out.payoff_i);
 
 			Dot(matrix, out.rhoBorrow_i);
-			Add(out.rhoBorrow_i, matrixRhoBorrow, out.payoff_i);
+			Add(out.rhoBorrow_i, 1.0, matrixRhoBorrow, out.payoff_i);
 			break;
 		default:
 			break;
@@ -121,14 +121,14 @@ void CTridiagonalOperator<adjointDifferentiation>::Dot(CPayoffData& __restrict__
 }
 
 template<EAdjointDifferentiation T>
-void CTridiagonalOperator<T>::Add(std::vector<double>& __restrict__ out, const details::Matrix& __restrict__ A, const std::vector<double>& __restrict__ x) const noexcept
+void CTridiagonalOperator<T>::Add(std::vector<double>& __restrict__ out, const double factor, const details::Matrix& __restrict__ A, const std::vector<double>& __restrict__ x) const noexcept
 {
-	out[0] += A[0].Get(details::Zero) * x[0] + A[0].Get(details::Plus) * x[1];
+	out[0] += factor * (A[0].Get(details::Zero) * x[0] + A[0].Get(details::Plus) * x[1]);
 
 	for(size_t i = 1; i < N; ++i)
-		out[i] += A[i].Get(details::Minus) * x[i - 1] + A[i].Get(details::Zero) * x[i] + A[i].Get(details::Plus) * x[i + 1];
+		out[i] += factor * (A[i].Get(details::Minus) * x[i - 1] + A[i].Get(details::Zero) * x[i] + A[i].Get(details::Plus) * x[i + 1]);
 
-	out[N] += A[N].Get(details::Minus) * x[N - 1] + A[N].Get(details::Zero) * x[N];
+	out[N] += factor * (A[N].Get(details::Minus) * x[N - 1] + A[N].Get(details::Zero) * x[N]);
 }
 
 template<EAdjointDifferentiation T>
@@ -149,23 +149,40 @@ void CTridiagonalOperator<T>::Dot(const details::Matrix& __restrict__ A, std::ve
 template<EAdjointDifferentiation adjointDifferentiation>
 void CTridiagonalOperator<adjointDifferentiation>::Solve(CPayoffData& __restrict__ out) noexcept
 {
+#ifdef DEBUG
+	if (out.payoff_i.size() != (N + 1))
+	{
+		printf("WRONG SIZE");
+		return;
+	}
+#endif
+
+	// First we update the payoff
 	Solve(out.payoff_i, matrix);
 
-/*	switch (adjointDifferentiation)
+	// A \cdot x_{n} = x_{n + 1}
+	// Therefore:
+	// A \cdot v_{n} = v_{n + 1} - J \cdot x_{n}
+	switch (adjointDifferentiation)
 	{
 		case EAdjointDifferentiation::Vega:
-			Solve(out.vega_i, matrixVega);
+			Add(out.vega_i, -1.0, matrixVega, out.payoff_i);
+			Solve(out.vega_i, matrix);
 			break;
 		case EAdjointDifferentiation::Rho:
-			Solve(out.rhoBorrow_i, matrixRhoBorrow);
+			Add(out.rhoBorrow_i, -1.0, matrixRhoBorrow, out.payoff_i);
+			Solve(out.rhoBorrow_i, matrix);
 			break;
 		case EAdjointDifferentiation::All:
-			Solve(out.vega_i, matrixVega);
-			Solve(out.rhoBorrow_i, matrixRhoBorrow);
+			Add(out.vega_i, -1.0, matrixVega, out.payoff_i);
+			Solve(out.vega_i, matrix);
+
+			Add(out.rhoBorrow_i, -1.0, matrixRhoBorrow, out.payoff_i);
+			Solve(out.rhoBorrow_i, matrix);
 			break;
 		default:
 			break;
-	}*/
+	}
 }
 
 template<EAdjointDifferentiation T>
@@ -180,11 +197,10 @@ void CTridiagonalOperator<T>::Solve(std::vector<double>& __restrict__ x, const d
 #endif
 
     if (!solve_cache.size())
-    {
-    	solve_cache.resize(N - 1);
-    	for (size_t i = 0; i <= N - 1; ++i)
-    		solve_cache[i] = mat[i].Get(details::Plus);
-    }
+    	solve_cache.resize(N + 1);
+
+    for (size_t i = 0; i <= N - 1; ++i)
+    	solve_cache[i] = mat[i].Get(details::Plus);
 
     solve_cache[0] = mat[0].Get(details::Plus) / mat[0].Get(details::Zero);
     x[0] = x[0] / mat[0].Get(details::Zero);
@@ -196,7 +212,7 @@ void CTridiagonalOperator<T>::Solve(std::vector<double>& __restrict__ x, const d
         x[i] = (x[i] - mat[i].Get(details::Minus) * x[i - 1]) * m;
     }
 
-    for (size_t i = N - 1; ; --i)
+    for (size_t i = N; (i--) > 0 ; )
         x[i] -= solve_cache[i] * x[i + 1];
 }
 
