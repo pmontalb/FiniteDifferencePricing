@@ -12,19 +12,19 @@ namespace fdpricing
 
 template<EAdjointDifferentiation adjointDifferentiation>
 CTridiagonalOperator<adjointDifferentiation>::CTridiagonalOperator(const size_t N) noexcept
-	: N(N), matrix(N + 1)
+	: N(N), matrix(N)
 {
 	switch (adjointDifferentiation)
 	{
 		case EAdjointDifferentiation::Vega:
-			matrixVega.resize(N + 1);
+			matrixVega.resize(N);
 			break;
 		case EAdjointDifferentiation::Rho:
-			matrixRhoBorrow.resize(N + 1);
+			matrixRhoBorrow.resize(N);
 			break;
 		case EAdjointDifferentiation::All:
-			matrixVega.resize(N + 1);
-			matrixRhoBorrow.resize(N + 1);
+			matrixVega.resize(N);
+			matrixRhoBorrow.resize(N);
 			break;
 		default:
 			break;
@@ -48,7 +48,7 @@ CTridiagonalOperator<T>::CTridiagonalOperator(const CTridiagonalOperator& __rest
 template<EAdjointDifferentiation adjointDifferentiation>
 void CTridiagonalOperator<adjointDifferentiation>::Add(const double alpha, const double beta) noexcept
 {
-	for (size_t i = 0; i <= N; ++i)
+	for (size_t i = 0; i < N; ++i)
 	{
 		matrix[i].Set(details::Zero, alpha + beta * matrix[i].Get(details::Zero));
 		matrix[i].Set(details::Plus,         beta * matrix[i].Get(details::Plus));
@@ -85,7 +85,7 @@ template<EAdjointDifferentiation adjointDifferentiation>
 void CTridiagonalOperator<adjointDifferentiation>::Dot(CPayoffData& __restrict__ out) const noexcept
 {
 #ifdef DEBUG
-	if (out.payoff_i.size() != (N + 1))
+	if (out.payoff_i.size() != N)
 	{
 		printf("WRONG SIZE");
 		return;
@@ -125,10 +125,10 @@ void CTridiagonalOperator<T>::Add(std::vector<double>& __restrict__ out, const d
 {
 	out[0] += factor * (A[0].Get(details::Zero) * x[0] + A[0].Get(details::Plus) * x[1]);
 
-	for(size_t i = 1; i < N; ++i)
+	for(size_t i = 1; i < N - 1; ++i)
 		out[i] += factor * (A[i].Get(details::Minus) * x[i - 1] + A[i].Get(details::Zero) * x[i] + A[i].Get(details::Plus) * x[i + 1]);
 
-	out[N] += factor * (A[N].Get(details::Minus) * x[N - 1] + A[N].Get(details::Zero) * x[N]);
+	out[N - 1] += factor * (A[N - 1].Get(details::Minus) * x[N - 2] + A[N - 1].Get(details::Zero) * x[N - 1]);
 }
 
 template<EAdjointDifferentiation T>
@@ -137,22 +137,22 @@ void CTridiagonalOperator<T>::Dot(const details::Matrix& __restrict__ A, std::ve
 	std::array<double, 2> cache = { x[0], 0.0 };
 	x[0] = A[0].Get(details::Zero) * x[0] + A[0].Get(details::Plus) * x[1];
 
-	for(size_t i = 1; i < N; ++i)
+	for(size_t i = 1; i < N - 1; ++i)
 	{
 		cache[i & 1] = x[i];
 		x[i] = A[i].Get(details::Minus) * cache[(i - 1) & 1] + A[i].Get(details::Zero) * x[i] + A[i].Get(details::Plus) * x[i + 1];
 	}
 
-	x[N] = A[N].Get(details::Minus) * cache[(N - 1) & 1] + A[N].Get(details::Zero) * x[N];
+	x[N - 1] = A[N - 1].Get(details::Minus) * cache[(N - 2) & 1] + A[N - 1].Get(details::Zero) * x[N - 1];
 }
 
 template<EAdjointDifferentiation adjointDifferentiation>
 void CTridiagonalOperator<adjointDifferentiation>::Solve(CPayoffData& __restrict__ out) noexcept
 {
 #ifdef DEBUG
-	if (out.payoff_i.size() != (N + 1))
+	if (out.payoff_i.size() != N)
 	{
-		printf("WRONG SIZE");
+		printf("WRONG SIZE\n");
 		return;
 	}
 #endif
@@ -189,7 +189,7 @@ template<EAdjointDifferentiation T>
 void CTridiagonalOperator<T>::Solve(std::vector<double>& __restrict__ x, const details::Matrix& __restrict__ mat) noexcept
 {
 #ifdef DEBUG
-	if (x.size() != N + 1)
+	if (x.size() != N)
 	{
 		printf("WRONG SIZE");
 		return;
@@ -197,22 +197,22 @@ void CTridiagonalOperator<T>::Solve(std::vector<double>& __restrict__ x, const d
 #endif
 
     if (!solve_cache.size())
-    	solve_cache.resize(N + 1);
+    	solve_cache.resize(N);
 
-    for (size_t i = 0; i <= N - 1; ++i)
+    for (size_t i = 0; i < N - 1; ++i)
     	solve_cache[i] = mat[i].Get(details::Plus);
 
     solve_cache[0] = mat[0].Get(details::Plus) / mat[0].Get(details::Zero);
     x[0] = x[0] / mat[0].Get(details::Zero);
 
-    for (size_t i = 1; i <= N; ++i)
+    for (size_t i = 1; i < N; ++i)
     {
         const double m = 1.0 / (mat[i].Get(details::Zero) - mat[i].Get(details::Minus) * solve_cache[i - 1]);
         solve_cache[i] = mat[i].Get(details::Plus) * m;
         x[i] = (x[i] - mat[i].Get(details::Minus) * x[i - 1]) * m;
     }
 
-    for (size_t i = N; (i--) > 0 ; )
+    for (size_t i = N - 1; i--> 0 ;)
         x[i] -= solve_cache[i] * x[i + 1];
 }
 
@@ -220,14 +220,14 @@ template<EAdjointDifferentiation adjointDifferentiation>
 void CTridiagonalOperator<adjointDifferentiation>::Make(const CInputData& __restrict__ input, const CGrid& __restrict__ grid) noexcept
 {
 #ifdef DEBUG
-	if (matrix.size() != N + 1)
+	if (matrix.size() != N)
 	{
 		printf("WRONG MATRIX SIZE");
 		return;
 	}
-	if (grid.size() != N + 1)
+	if (grid.size() != N)
 	{
-		printf("WRONG GRID SIZE");
+		printf("WRONG GRID SIZE: N=%zu, gN=%zu", N, grid.size());
 		return;
 	}
 #endif
@@ -253,7 +253,7 @@ void CTridiagonalOperator<adjointDifferentiation>::Make(const CInputData& __rest
 			break;
 	}
 
-	for (size_t i = 1; i < N; ++i)
+	for (size_t i = 1; i < N - 1; ++i)
 	{
 		const double dxPlus  = grid.Get(i + 1) - grid.Get(i);
 		const double dxMinus = grid.Get(i)     - grid.Get(i - 1);
@@ -300,19 +300,19 @@ void CTridiagonalOperator<adjointDifferentiation>::Make(const CInputData& __rest
 	}
 
 	// Right BC: zero drift
-	dx = grid.Get(N) - grid.Get(N - 1);
-	volatility = sigma2 * grid.Get(N) * grid.Get(N);
-	matrix[N].Set(details::Zero, -volatility / (dx * dx));
-	matrix[N].Set(details::Minus, -matrix[N].Get(details::Zero));
+	dx = grid.Get(N - 1) - grid.Get(N - 2);
+	volatility = sigma2 * grid.Get(N - 1) * grid.Get(N - 1);
+	matrix[N - 1].Set(details::Zero, -volatility / (dx * dx));
+	matrix[N - 1].Set(details::Minus, -matrix[N - 1].Get(details::Zero));
 
 	switch (adjointDifferentiation)
 	{
 		case EAdjointDifferentiation::Vega:
 		case EAdjointDifferentiation::All:
 			{
-				const double dVolDSigma = 2.0 * input.sigma * grid.Get(N) * grid.Get(N);
-				matrixVega[N].Set(details::Zero, -dVolDSigma / (dx * dx));
-				matrixVega[N].Set(details::Plus, -matrixVega[N].Get(details::Zero));
+				const double dVolDSigma = 2.0 * input.sigma * grid.Get(N - 1) * grid.Get(N - 1);
+				matrixVega[N - 1].Set(details::Zero, -dVolDSigma / (dx * dx));
+				matrixVega[N - 1].Set(details::Plus, -matrixVega[N - 1].Get(details::Zero));
 			}
 			break;
 		default:

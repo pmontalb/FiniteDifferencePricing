@@ -29,61 +29,14 @@ template<ESolverType solverType, EAdjointDifferentiation adjointDifferentiation>
 class CEvolutionOperator
 {
 public:
-	CEvolutionOperator(const CInputData& __restrict__ input, const CFiniteDifferenceSettings& __restrict__ settings) noexcept
-		: input(input),
-		  settings(settings),
-		  grid(input.S, settings.lowerFactor * input.S, settings.upperFactor * input.S, settings.gridType, input.N),
-		  L(input, grid),
-		  dt(input.T / input.M),
-		  A(L)
-	{
-		switch (solverType)
-		{
-			case ESolverType::ExplicitEuler:
-				A.Add(1.0, dt);
-				break;
-			case ESolverType::ImplicitEuler:
-				A.Add(1.0, -dt);
-				break;
-			case ESolverType::CrankNicolson:
-			{
-				const double halfDt = .5 * dt;
-				A.Add(1.0, -halfDt);
-
-				B = std::make_shared<CTridiagonalOperator<adjointDifferentiation>>(L);
-				B->Add(1.0, halfDt);
-				break;
-			}
-			default:
-				break;
-		}
-	}
+	CEvolutionOperator(const CInputData& __restrict__ input, const CFiniteDifferenceSettings& __restrict__ settings) noexcept;
 
 	virtual ~CEvolutionOperator() = default;
 
 	CEvolutionOperator(const CEvolutionOperator& rhs) = delete;
 	CEvolutionOperator(const CEvolutionOperator&& rhs) = delete;
 
-	void Apply(CPayoffData& __restrict__ x) noexcept
-	{
-		switch (solverType)
-		{
-			case ESolverType::ExplicitEuler:
-				A.Dot(x);
-				break;
-			case ESolverType::ImplicitEuler:
-				A.Solve(x);
-				break;
-			case ESolverType::CrankNicolson:
-			{
-				B->Dot(x);
-				A.Solve(x);
-				break;
-			}
-			default:
-				break;
-		}
-	}
+	void Apply(CPayoffData& __restrict__ x) noexcept;
 
 private:
 	const CInputData& __restrict__ input;
@@ -100,5 +53,7 @@ private:
 };
 
 } /* namespace fdpricing */
+
+#include <FiniteDifference/CEvolutionOperator.tpp>
 
 #endif /* FINITEDIFFERENCE_CEVOLUTIONOPERATOR_H_ */

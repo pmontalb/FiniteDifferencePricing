@@ -40,7 +40,7 @@ CInputData& CInputData::operator=(const CInputData& __restrict__ rhs) noexcept
 }
 
 CInputData::CInputData(const double S, const double K, const double r, const double b, const double T, const double sigma, int N) noexcept
-		: S(S), K(K), r(r), b(b), T(T), sigma(sigma), N(N), smoothing(false), acceleration(false)
+		: S(S), K(K), r(r), b(b), T(T), sigma(sigma), N(N & 1 ? N : (N + 1)), M(N), smoothing(false), acceleration(false)
 {
 }
 
@@ -55,7 +55,7 @@ CInputData::CInputData(const double S, const double K, const double r, const dou
 }
 
 CInputData::CInputData(const double S, const double K, const double r, const double b, const double T, const double sigma, int N, const std::vector<CDividend>& __restrict__ dividends) noexcept
-		: S(S), K(K), r(r), b(b), T(T), sigma(sigma), dividends(dividends), N(N), smoothing(false), acceleration(false)
+		: S(S), K(K), r(r), b(b), T(T), sigma(sigma), dividends(dividends), N(N & 1 ? N : (N + 1)), M(N), smoothing(false), acceleration(false)
 {
 }
 }

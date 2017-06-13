@@ -44,7 +44,7 @@ public:
 	const double& Get(const size_t i) const noexcept
 	{
 #ifdef DEBUG
-		if (i > data.size())
+		if (i >= data.size())
 		{
 			printf("******** Out of bounds ********: %zu(%zu)\n", i, data.size());
 			return data[i];
@@ -55,7 +55,7 @@ public:
 
 	size_t size() const noexcept
 	{
-		return N + 1;
+		return N;
 	}
 
 	const size_t N;
