@@ -54,6 +54,7 @@ void CGrid::Make<EGridType::Adaptive>() noexcept
 {
 	data.resize(N, x0);
 
+	// First work out the grid
 	const double alpha = .2 * (ub - lb);
 	const double oneOverAlpha = 1.0 / alpha;
 	const double c1 = asinh((lb - x0) * oneOverAlpha);
@@ -66,7 +67,10 @@ void CGrid::Make<EGridType::Adaptive>() noexcept
 		data[i] += alpha * sinh(c2 * uniformDistribution + c1 * (1.0 - uniformDistribution));
 	}
 
-	data[(N - 1) >> 1] = x0;
+	// Then rescale it in order to center it (boundaries stay)
+	const double scalingFactor = x0 / data[N >> 1];
+	for(size_t i = 1; i < N - 1; ++i)
+		data[i] *= scalingFactor;
 }
 
 CGrid::CGrid(const double x0, const double lb, const double ub, const EGridType gridType, const size_t N) noexcept
@@ -100,12 +104,12 @@ CGrid::CGrid(const double x0, const double lb, const double ub, const EGridType 
 	}
 }
 
-CGrid::CGrid(const CGrid& __restrict__ rhs) noexcept
+CGrid::CGrid(const CGrid& unaliased rhs) noexcept
 	: N(rhs.N), x0(rhs.x0), lb(rhs.lb), ub(rhs.ub), gridType(rhs.gridType), data(rhs.data)
 {
 }
 
-CGrid::CGrid(const CGrid&& __restrict__ rhs) noexcept
+CGrid::CGrid(const CGrid&& unaliased rhs) noexcept
 	: N(rhs.N), x0(rhs.x0), lb(rhs.lb), ub(rhs.ub), gridType(rhs.gridType), data(rhs.data)
 {
 }

@@ -8,6 +8,8 @@
 #ifndef DATA_CDIVIDEND_H_
 #define DATA_CDIVIDEND_H_
 
+#include <Flags.h>
+
 namespace fdpricing
 {
 class CDividend
@@ -15,10 +17,10 @@ class CDividend
 public:
 	CDividend(const double t = 0, const double d = 0) noexcept;
 
-	CDividend(const CDividend& __restrict__ rhs) noexcept;
-	CDividend(const CDividend&& __restrict__ rhs) noexcept;
-	CDividend& operator=(const CDividend& __restrict__ rhs) noexcept;
-	CDividend& operator=(const CDividend&& __restrict__ rhs) noexcept;
+	CDividend(const CDividend& unaliased rhs) noexcept;
+	CDividend(const CDividend&& unaliased rhs) noexcept;
+	CDividend& operator=(const CDividend& unaliased rhs) noexcept;
+	CDividend& operator=(const CDividend&& unaliased rhs) noexcept;
 
 	virtual ~CDividend() = default;
 

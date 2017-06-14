@@ -14,6 +14,7 @@
 #include <FiniteDifference/CGrid.h>
 #include <Data/CInputData.h>
 #include <Data/ESolverType.h>
+#include <Flags.h>
 
 namespace fdpricing
 {
@@ -29,18 +30,30 @@ template<ESolverType solverType, EAdjointDifferentiation adjointDifferentiation>
 class CEvolutionOperator
 {
 public:
-	CEvolutionOperator(const CInputData& __restrict__ input, const CFiniteDifferenceSettings& __restrict__ settings) noexcept;
+	CEvolutionOperator(const CInputData& unaliased input, const CFiniteDifferenceSettings& unaliased settings) noexcept;
 
 	virtual ~CEvolutionOperator() = default;
 
 	CEvolutionOperator(const CEvolutionOperator& rhs) = delete;
 	CEvolutionOperator(const CEvolutionOperator&& rhs) = delete;
+	CEvolutionOperator& operator=(const CEvolutionOperator& rhs) = delete;
+	CEvolutionOperator& operator=(const CEvolutionOperator&& rhs) = delete;
 
-	void Apply(CPayoffData& __restrict__ x) noexcept;
+	void Apply(CPayoffData& unaliased x) noexcept;
+
+	const CGrid& GetGrid() const noexcept
+	{
+		return grid;
+	}
+
+	double GetDt() const noexcept
+	{
+		return dt;
+	}
 
 private:
-	const CInputData& __restrict__ input;
-	const CFiniteDifferenceSettings& __restrict__ settings;
+	const CInputData& unaliased input;
+	const CFiniteDifferenceSettings& unaliased settings;
 	const CGrid grid;
 
 	// Space Discretization
@@ -49,7 +62,7 @@ private:
 	// Space-Time Discretization
 	const double dt;
 	CTridiagonalOperator<adjointDifferentiation> A; // right operator
-	std::shared_ptr<CTridiagonalOperator<adjointDifferentiation>> B; // left operator
+	std::unique_ptr<CTridiagonalOperator<adjointDifferentiation>> B; // left operator
 };
 
 } /* namespace fdpricing */

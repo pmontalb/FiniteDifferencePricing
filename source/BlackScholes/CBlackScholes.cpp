@@ -8,42 +8,48 @@
 #include <Utilities/CStats.h>
 #include <BlackScholes/CBlackScholes.h>
 
+#include <Flags.h>
+
 namespace fdpricing
 {
-CBlackScholes::CBlackScholes(const CInputData & __restrict__ input) noexcept
-		: input(input)
+CBlackScholes::CBlackScholes(const CInputData & unaliased input) noexcept
+		: input(input), currentS(input.S)
 {
-	const double sqrtT = sqrt(input.T);
+	cacheData.T = input.T;
+
+	const double sqrtT = sqrt(cacheData.T);
 
 	cacheData.sigmaSqrtDt = input.sigma * sqrtT;
 	oneOverSigmaSqrtT = 1.0 / cacheData.sigmaSqrtDt;
 
-	cacheData.discountFactor = exp(-input.r * input.T);
-	cacheData.growthFactor   = exp( input.b * input.T);
+	cacheData.discountFactor = exp(-input.r * cacheData.T);
+	cacheData.growthFactor   = exp( input.b * cacheData.T);
 
 	cacheData.growthFactorTimesDiscountFactor = cacheData.growthFactor * cacheData.discountFactor;
 	oneOverSigmaSqrtTtimesGrowthFactorTimesDiscountFactor = oneOverSigmaSqrtT * cacheData.growthFactorTimesDiscountFactor;
 	sqrtTtimesGrowthFactorTimesDiscountFactor = cacheData.growthFactorTimesDiscountFactor * sqrtT;
-	TtimesGrowthFactorTimesDiscountFactor = input.T * cacheData.growthFactorTimesDiscountFactor;
+	TtimesGrowthFactorTimesDiscountFactor = cacheData.T * cacheData.growthFactorTimesDiscountFactor;
 
 	Make();
-	Update(input.S);
+	Update(currentS);
 }
 
-CBlackScholes::CBlackScholes(const CInputData & __restrict__ input, const details::CCacheData& __restrict__ cacheData) noexcept
+CBlackScholes::CBlackScholes(const CInputData & unaliased input, const details::CCacheData& unaliased cacheData) noexcept
 		: input(input), cacheData(cacheData)
 {
 	oneOverSigmaSqrtT = 1.0 / cacheData.sigmaSqrtDt;
 	oneOverSigmaSqrtTtimesGrowthFactorTimesDiscountFactor = oneOverSigmaSqrtT * cacheData.growthFactorTimesDiscountFactor;
 	sqrtTtimesGrowthFactorTimesDiscountFactor = cacheData.growthFactorTimesDiscountFactor * cacheData.sqrtDt;
-	TtimesGrowthFactorTimesDiscountFactor = input.T * cacheData.growthFactorTimesDiscountFactor;
+	TtimesGrowthFactorTimesDiscountFactor = cacheData.T * cacheData.growthFactorTimesDiscountFactor;
 
 	Make();
 }
 
 void CBlackScholes::Update(double S) noexcept
 {
-	d1 = oneOverSigmaSqrtT * log(S) + d1Addend;
+	currentS = S;
+
+	d1 = oneOverSigmaSqrtT * log(currentS) + d1Addend;
 	d2 = d1 - cacheData.sigmaSqrtDt;
 
 	Nd1 = CStats::normCdf(d1);
@@ -59,19 +65,19 @@ void CBlackScholes::Make()
 {
 	halfSigma2 = .5 * input.sigma * input.sigma;
 
-	d1Addend = ((input.b + halfSigma2) * input.T - log(input.K)) * oneOverSigmaSqrtT;
+	d1Addend = ((input.b + halfSigma2) * cacheData.T - log(input.K)) * oneOverSigmaSqrtT;
 }
 
 template<>
 double CBlackScholes::Value<EOptionType::Call>() const noexcept
 {
-	return cacheData.discountFactor * (input.S * cacheData.growthFactor * Nd1 - input.K * Nd2);
+	return cacheData.discountFactor * (currentS * cacheData.growthFactor * Nd1 - input.K * Nd2);
 }
 
 template<>
 double CBlackScholes::Value<EOptionType::Put>() const noexcept
 {
-	return cacheData.discountFactor * (-input.S * cacheData.growthFactor * NminusD1 + input.K * NminusD2);
+	return cacheData.discountFactor * (-currentS * cacheData.growthFactor * NminusD1 + input.K * NminusD2);
 }
 
 template<>
@@ -88,39 +94,39 @@ double CBlackScholes::Delta<EOptionType::Put>() const noexcept
 
 double CBlackScholes::Gamma() const noexcept
 {
-	return 1.0 / input.S * Pd1 * oneOverSigmaSqrtTtimesGrowthFactorTimesDiscountFactor;
+	return 1.0 / currentS * Pd1 * oneOverSigmaSqrtTtimesGrowthFactorTimesDiscountFactor;
 }
 
 double CBlackScholes::Vega() const noexcept
 {
-	return input.S * sqrtTtimesGrowthFactorTimesDiscountFactor * Pd1;
+	return currentS * sqrtTtimesGrowthFactorTimesDiscountFactor * Pd1;
 }
 
 template<>
 double CBlackScholes::Rho<EOptionType::Call>() const noexcept
 {
-	return -input.T * Value<EOptionType::Call>();
+	return -cacheData.T * Value<EOptionType::Call>();
 }
 
 template<>
 double CBlackScholes::Rho<EOptionType::Put>() const noexcept
 {
-	return -input.T * Value<EOptionType::Put>();
+	return -cacheData.T * Value<EOptionType::Put>();
 }
 
 template<>
 double CBlackScholes::RhoBorrow<EOptionType::Call>() const noexcept
 {
-	return TtimesGrowthFactorTimesDiscountFactor * input.S * Nd1;
+	return TtimesGrowthFactorTimesDiscountFactor * currentS * Nd1;
 }
 
 template<>
 double CBlackScholes::RhoBorrow<EOptionType::Put>() const noexcept
 {
-	return -TtimesGrowthFactorTimesDiscountFactor * input.S * NminusD1;
+	return -TtimesGrowthFactorTimesDiscountFactor * currentS * NminusD1;
 }
 
-void CBlackScholes::Price(COutputData& __restrict__ callOutput, COutputData& __restrict__ putOutput) const noexcept
+void CBlackScholes::Price(COutputData& unaliased callOutput, COutputData& unaliased putOutput) const noexcept
 {
 	callOutput.price = Value<EOptionType::Call>();
 	callOutput.delta = Delta<EOptionType::Call>();

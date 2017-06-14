@@ -6,16 +6,19 @@
 CPP_SRCS += \
 ../tests/TestBlackScholes.cpp \
 ../tests/TestEvolutionOperator.cpp \
+../tests/TestFDPricer.cpp \
 ../tests/TestGrid.cpp 
 
 OBJS += \
 ./tests/TestBlackScholes.o \
 ./tests/TestEvolutionOperator.o \
+./tests/TestFDPricer.o \
 ./tests/TestGrid.o 
 
 CPP_DEPS += \
 ./tests/TestBlackScholes.d \
 ./tests/TestEvolutionOperator.d \
+./tests/TestFDPricer.d \
 ./tests/TestGrid.d 
 
 

@@ -11,8 +11,7 @@
 #include <vector>
 #include <cmath>
 #include <stddef.h>
-
-#define DEBUG
+#include <Flags.h>
 
 namespace fdpricing
 {
@@ -36,8 +35,8 @@ public:
 	 */
 	CGrid(const double x0, const double lb, const double ub, const EGridType gridType, const size_t N) noexcept;
 
-	CGrid(const CGrid& __restrict__ rhs) noexcept;
-	CGrid(const CGrid&& __restrict__ rhs) noexcept;
+	CGrid(const CGrid& unaliased rhs) noexcept;
+	CGrid(const CGrid&& unaliased rhs) noexcept;
 
 	virtual ~CGrid() = default;
 

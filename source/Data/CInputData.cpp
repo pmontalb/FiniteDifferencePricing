@@ -14,12 +14,12 @@ CInputData::CInputData() noexcept
 {
 }
 
-CInputData::CInputData(const CInputData& __restrict__ rhs) noexcept
+CInputData::CInputData(const CInputData& unaliased rhs) noexcept
 {
 	*this = rhs;
 }
 
-CInputData& CInputData::operator=(const CInputData& __restrict__ rhs) noexcept
+CInputData& CInputData::operator=(const CInputData& unaliased rhs) noexcept
 {
 	if (this != &rhs)
 	{
@@ -49,12 +49,12 @@ CInputData::CInputData(const double S, const double K, const double r, const dou
 {
 }
 
-CInputData::CInputData(const double S, const double K, const double r, const double T, const double sigma, int N, const std::vector<CDividend>& __restrict__ dividends) noexcept
+CInputData::CInputData(const double S, const double K, const double r, const double T, const double sigma, int N, const std::vector<CDividend>& unaliased dividends) noexcept
 		: CInputData(S, K, r, r, T, sigma, N, dividends)
 {
 }
 
-CInputData::CInputData(const double S, const double K, const double r, const double b, const double T, const double sigma, int N, const std::vector<CDividend>& __restrict__ dividends) noexcept
+CInputData::CInputData(const double S, const double K, const double r, const double b, const double T, const double sigma, int N, const std::vector<CDividend>& unaliased dividends) noexcept
 		: S(S), K(K), r(r), b(b), T(T), sigma(sigma), dividends(dividends), N(N & 1 ? N : (N + 1)), M(N), smoothing(false), acceleration(false)
 {
 }

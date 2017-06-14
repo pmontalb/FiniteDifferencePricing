@@ -14,17 +14,17 @@ CDividend::CDividend(const double t, const double d) noexcept
 {
 }
 
-CDividend::CDividend(const CDividend& __restrict__ rhs) noexcept
+CDividend::CDividend(const CDividend& unaliased rhs) noexcept
 {
 	*this = rhs;
 }
 
-CDividend::CDividend(const CDividend&& __restrict__ rhs) noexcept
+CDividend::CDividend(const CDividend&& unaliased rhs) noexcept
 {
 	*this = rhs;
 }
 
-CDividend& CDividend::operator =(const CDividend& __restrict__ rhs) noexcept
+CDividend& CDividend::operator =(const CDividend& unaliased rhs) noexcept
 {
 	if (this != &rhs)
 	{
@@ -35,7 +35,7 @@ CDividend& CDividend::operator =(const CDividend& __restrict__ rhs) noexcept
 	return *this;
 }
 
-CDividend& CDividend::operator =(const CDividend&& __restrict__ rhs) noexcept
+CDividend& CDividend::operator =(const CDividend&& unaliased rhs) noexcept
 {
 	time = rhs.time;
 	dividend = rhs.dividend;

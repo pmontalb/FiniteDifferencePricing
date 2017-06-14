@@ -5,7 +5,7 @@
  *      Author: raiden
  */
 
-#define DEBUG
+#include <Flags.h>
 
 namespace fdpricing
 {
@@ -32,14 +32,14 @@ CTridiagonalOperator<adjointDifferentiation>::CTridiagonalOperator(const size_t 
 }
 
 template<EAdjointDifferentiation T>
-CTridiagonalOperator<T>::CTridiagonalOperator(const CInputData& __restrict__ input, const CGrid& __restrict__ grid) noexcept
+CTridiagonalOperator<T>::CTridiagonalOperator(const CInputData& unaliased input, const CGrid& unaliased grid) noexcept
 	: CTridiagonalOperator(input.N)
 {
 	Make(input, grid);
 }
 
 template<EAdjointDifferentiation T>
-CTridiagonalOperator<T>::CTridiagonalOperator(const CTridiagonalOperator& __restrict__ rhs) noexcept
+CTridiagonalOperator<T>::CTridiagonalOperator(const CTridiagonalOperator& unaliased rhs) noexcept
 	: N(rhs.N), matrix(rhs.matrix), matrixVega(rhs.matrixVega), matrixRhoBorrow(rhs.matrixRhoBorrow)
 {
 
@@ -82,7 +82,7 @@ void CTridiagonalOperator<adjointDifferentiation>::Add(const double alpha, const
 }
 
 template<EAdjointDifferentiation adjointDifferentiation>
-void CTridiagonalOperator<adjointDifferentiation>::Dot(CPayoffData& __restrict__ out) const noexcept
+void CTridiagonalOperator<adjointDifferentiation>::Dot(CPayoffData& unaliased out) const noexcept
 {
 #ifdef DEBUG
 	if (out.payoff_i.size() != N)
@@ -121,7 +121,7 @@ void CTridiagonalOperator<adjointDifferentiation>::Dot(CPayoffData& __restrict__
 }
 
 template<EAdjointDifferentiation T>
-void CTridiagonalOperator<T>::Add(std::vector<double>& __restrict__ out, const double factor, const details::Matrix& __restrict__ A, const std::vector<double>& __restrict__ x) const noexcept
+void CTridiagonalOperator<T>::Add(std::vector<double>& unaliased out, const double factor, const details::Matrix& unaliased A, const std::vector<double>& unaliased x) const noexcept
 {
 	out[0] += factor * (A[0].Get(details::Zero) * x[0] + A[0].Get(details::Plus) * x[1]);
 
@@ -132,7 +132,7 @@ void CTridiagonalOperator<T>::Add(std::vector<double>& __restrict__ out, const d
 }
 
 template<EAdjointDifferentiation T>
-void CTridiagonalOperator<T>::Dot(const details::Matrix& __restrict__ A, std::vector<double>& __restrict__ x) const noexcept
+void CTridiagonalOperator<T>::Dot(const details::Matrix& unaliased A, std::vector<double>& unaliased x) const noexcept
 {
 	std::array<double, 2> cache = { x[0], 0.0 };
 	x[0] = A[0].Get(details::Zero) * x[0] + A[0].Get(details::Plus) * x[1];
@@ -147,7 +147,7 @@ void CTridiagonalOperator<T>::Dot(const details::Matrix& __restrict__ A, std::ve
 }
 
 template<EAdjointDifferentiation adjointDifferentiation>
-void CTridiagonalOperator<adjointDifferentiation>::Solve(CPayoffData& __restrict__ out) noexcept
+void CTridiagonalOperator<adjointDifferentiation>::Solve(CPayoffData& unaliased out) noexcept
 {
 #ifdef DEBUG
 	if (out.payoff_i.size() != N)
@@ -186,7 +186,7 @@ void CTridiagonalOperator<adjointDifferentiation>::Solve(CPayoffData& __restrict
 }
 
 template<EAdjointDifferentiation T>
-void CTridiagonalOperator<T>::Solve(std::vector<double>& __restrict__ x, const details::Matrix& __restrict__ mat) noexcept
+void CTridiagonalOperator<T>::Solve(std::vector<double>& unaliased x, const details::Matrix& unaliased mat) noexcept
 {
 #ifdef DEBUG
 	if (x.size() != N)
@@ -217,7 +217,7 @@ void CTridiagonalOperator<T>::Solve(std::vector<double>& __restrict__ x, const d
 }
 
 template<EAdjointDifferentiation adjointDifferentiation>
-void CTridiagonalOperator<adjointDifferentiation>::Make(const CInputData& __restrict__ input, const CGrid& __restrict__ grid) noexcept
+void CTridiagonalOperator<adjointDifferentiation>::Make(const CInputData& unaliased input, const CGrid& unaliased grid) noexcept
 {
 #ifdef DEBUG
 	if (matrix.size() != N)
@@ -264,6 +264,21 @@ void CTridiagonalOperator<adjointDifferentiation>::Make(const CInputData& __rest
 
 		matrix[i].Set(details::Minus, (-dxPlus * drift + volatility) / (dxMinus * dx));
 		matrix[i].Set(details::Plus,  (dxMinus * drift + volatility) / (dxPlus  * dx));
+
+		#ifdef DEBUG
+
+		if (matrix[i].Get(details::Minus) <= 0.0)
+		{
+			printf("******* Up factor too big(%g): increase grid size, mu=%g sigma^2=%g *******\n", matrix[i].Get(details::Minus), drift, volatility);
+			return;
+		}
+		if (matrix[i].Get(details::Plus) <= 0.0)
+		{
+			printf("******* Down factor too big(%g): increase grid size, mu=%g sigma^2=%g *******\n", matrix[i].Get(details::Plus), drift, volatility);
+			return;
+		}
+
+		#endif
 
 		matrix[i].Set(details::Zero, -matrix[i].Get(details::Minus) - matrix[i].Get(details::Plus));
 

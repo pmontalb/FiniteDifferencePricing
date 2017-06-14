@@ -12,19 +12,20 @@
 #include <Data/COutputData.h>
 #include <Data/CCacheData.h>
 #include <Data/EOptionType.h>
+#include <Flags.h>
 
 namespace fdpricing
 {
 class CBlackScholes
 {
 public:
-	CBlackScholes(const CInputData& __restrict__ input) noexcept;
-	CBlackScholes(const CInputData& __restrict__ input, const details::CCacheData& __restrict__ cachedData) noexcept;
+	CBlackScholes(const CInputData& unaliased input) noexcept;
+	CBlackScholes(const CInputData& unaliased input, const details::CCacheData& unaliased cachedData) noexcept;
 	~CBlackScholes() = default;
 
 	void Update(const double S) noexcept;
 
-	void Price(COutputData& __restrict__ callOutput, COutputData& __restrict__ putOutput) const noexcept;
+	void Price(COutputData& unaliased callOutput, COutputData& unaliased putOutput) const noexcept;
 
 	template<EOptionType>
 	double Value() const noexcept;
@@ -43,7 +44,7 @@ public:
 	double RhoBorrow() const noexcept;
 
 protected:
-	const CInputData& __restrict__ input;
+	const CInputData& unaliased input;
 	double d1;
 	double d2;
 	double Nd1;
@@ -52,6 +53,7 @@ protected:
 	double NminusD2;
 	double Pd1;
 	double d1Addend;
+	double currentS;
 
 	details::CCacheData cacheData;
 

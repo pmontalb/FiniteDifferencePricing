@@ -12,6 +12,7 @@
 #include <stdlib.h>
 
 #include <Data/CDividend.h>
+#include <Flags.h>
 
 namespace fdpricing
 {
@@ -20,17 +21,17 @@ class CInputData
 public:
 	CInputData() noexcept;
 
-	CInputData(const CInputData& __restrict__ rhs) noexcept;
-	CInputData(const CInputData&& __restrict__ rhs) noexcept;
+	CInputData(const CInputData& unaliased rhs) noexcept;
+	CInputData(const CInputData&& unaliased rhs) noexcept;
 
-	CInputData& operator=(const CInputData& __restrict__ rhs) noexcept;
-	CInputData& operator=(const CInputData&& __restrict__ rhs) noexcept;
+	CInputData& operator=(const CInputData& unaliased rhs) noexcept;
+	CInputData& operator=(const CInputData&& unaliased rhs) noexcept;
 
 	CInputData(const double S, const double K, const double r, const double b, const double T, const double sigma, const int N) noexcept;
 	CInputData(const double S, const double K, const double r, const double T, const double sigma, int N) noexcept;
 
-	CInputData(const double S, const double K, const double r, const double T, const double sigma, int N, const std::vector<CDividend>& __restrict__ dividends) noexcept;
-	CInputData(const double S, const double K, const double r, const double b, const double T, const double sigma, int N, const std::vector<CDividend>& __restrict__ dividends) noexcept;
+	CInputData(const double S, const double K, const double r, const double T, const double sigma, int N, const std::vector<CDividend>& unaliased dividends) noexcept;
+	CInputData(const double S, const double K, const double r, const double b, const double T, const double sigma, int N, const std::vector<CDividend>& unaliased dividends) noexcept;
 	~CInputData() = default;
 
 	double S;

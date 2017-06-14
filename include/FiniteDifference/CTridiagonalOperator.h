@@ -16,6 +16,7 @@
 #include <Data/CInputData.h>
 #include <Data/CPayoffData.h>
 #include <Data/EAdjointDifferentiation.h>
+#include <Flags.h>
 
 namespace details
 {
@@ -60,7 +61,7 @@ class CTridiagonalOperator
 {
 public:
 	CTridiagonalOperator(const size_t N) noexcept;
-	CTridiagonalOperator(const CInputData& __restrict__ input, const CGrid& __restrict__ grid) noexcept;
+	CTridiagonalOperator(const CInputData& unaliased input, const CGrid& unaliased grid) noexcept;
 	CTridiagonalOperator(const CTridiagonalOperator& __restrict rhs) noexcept;
 
 	virtual ~CTridiagonalOperator() = default;
@@ -72,14 +73,14 @@ public:
 	 */
 	void Add(const double alpha, const double beta) noexcept;
 
-	void Dot(CPayoffData& __restrict__ payoffData) const noexcept;
+	void Dot(CPayoffData& unaliased payoffData) const noexcept;
 
 	/**
 	 * Thomas Algorithm: https://en.wikibooks.org/wiki/Algorithm_Implementation/Linear_Algebra/Tridiagonal_matrix_algorithm
 	 *
 	 * x: containts input/output
 	 */
-	void Solve(CPayoffData& __restrict__ payoffData) noexcept;
+	void Solve(CPayoffData& unaliased payoffData) noexcept;
 
 private:
 	const size_t N;
@@ -92,16 +93,16 @@ private:
 	/**
 	 * Set the operator according to the second order uneven mesh finite difference
 	 */
-	void Make(const CInputData& __restrict__ input, const CGrid& __restrict__ grid) noexcept;
+	void Make(const CInputData& unaliased input, const CGrid& unaliased grid) noexcept;
 
 	 /**
 	  * Compute out += alpha * A * x
 	  * */
-	void Add(std::vector<double>& __restrict__ out, const double alpha, const details::Matrix& __restrict__ A, const std::vector<double>& __restrict__ x) const noexcept;
+	void Add(std::vector<double>& unaliased out, const double alpha, const details::Matrix& unaliased A, const std::vector<double>& unaliased x) const noexcept;
 
-	void Dot(const details::Matrix& __restrict__ A, std::vector<double>& __restrict__ x) const noexcept;
+	void Dot(const details::Matrix& unaliased A, std::vector<double>& unaliased x) const noexcept;
 
-	void Solve(std::vector<double>& __restrict__ x, const details::Matrix& __restrict__ m) noexcept;
+	void Solve(std::vector<double>& unaliased x, const details::Matrix& unaliased m) noexcept;
 };
 
 } /* namespace fdpricing */
