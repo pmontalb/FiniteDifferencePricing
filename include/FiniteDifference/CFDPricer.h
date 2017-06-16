@@ -13,6 +13,7 @@
 #include <Data/EAdjointDifferentiation.h>
 #include <Data/EExerciseType.h>
 #include <Data/CCacheData.h>
+#include <Data/COutputData.h>
 #include <Flags.h>
 
 namespace fdpricing

@@ -4,12 +4,15 @@
 
 # Add inputs and outputs from these tool invocations to the build variables 
 CPP_SRCS += \
+../source/Utilities/CPlotter.cpp \
 ../source/Utilities/CStats.cpp 
 
 OBJS += \
+./source/Utilities/CPlotter.o \
 ./source/Utilities/CStats.o 
 
 CPP_DEPS += \
+./source/Utilities/CPlotter.d \
 ./source/Utilities/CStats.d 
 
 
