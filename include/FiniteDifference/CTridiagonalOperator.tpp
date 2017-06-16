@@ -102,12 +102,16 @@ void CTridiagonalOperator<adjointDifferentiation>::Dot(CPayoffData& unaliased ou
 			Add(out.vega_i, 1.0, matrixVega, out.payoff_i);  // J \cdot x_{n + 1}
 			break;
 		case EAdjointDifferentiation::Rho:
+			Dot(matrix, out.rho_i);
+
 			Dot(matrix, out.rhoBorrow_i);
 			Add(out.rhoBorrow_i, 1.0, matrixRhoBorrow, out.payoff_i);
 			break;
 		case EAdjointDifferentiation::All:
 			Dot(matrix, out.vega_i);
 			Add(out.vega_i, 1.0, matrixVega, out.payoff_i);
+
+			Dot(matrix, out.rho_i);
 
 			Dot(matrix, out.rhoBorrow_i);
 			Add(out.rhoBorrow_i, 1.0, matrixRhoBorrow, out.payoff_i);
@@ -170,12 +174,16 @@ void CTridiagonalOperator<adjointDifferentiation>::Solve(CPayoffData& unaliased 
 			Solve(out.vega_i, matrix);
 			break;
 		case EAdjointDifferentiation::Rho:
+			Solve(out.rho_i, matrix);
+
 			Add(out.rhoBorrow_i, -1.0, matrixRhoBorrow, out.payoff_i);
 			Solve(out.rhoBorrow_i, matrix);
 			break;
 		case EAdjointDifferentiation::All:
 			Add(out.vega_i, -1.0, matrixVega, out.payoff_i);
 			Solve(out.vega_i, matrix);
+
+			Solve(out.rho_i, matrix);
 
 			Add(out.rhoBorrow_i, -1.0, matrixRhoBorrow, out.payoff_i);
 			Solve(out.rhoBorrow_i, matrix);

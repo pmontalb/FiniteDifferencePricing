@@ -130,6 +130,7 @@ TEST (TridiagonalOperator, ExplicitEulerRhoBorrow)
 	CPayoffData payoffDataPlus(payoffData), payoffDataMinus(payoffData);
 
 	payoffData.rhoBorrow_i.resize(inputData.N, 0.0);
+	payoffData.rho_i.resize(inputData.N, 0.0);
 	u.Apply(payoffData);
 
 	uPlus.Apply(payoffDataPlus);
@@ -186,6 +187,7 @@ TEST (TridiagonalOperator, ExplicitEulerAll)
 
 	payoffData.vega_i.resize(inputData.N, 0.0);
 	payoffData.rhoBorrow_i.resize(inputData.N, 0.0);
+	payoffData.rho_i.resize(inputData.N, 0.0);
 	u.Apply(payoffData);
 
 	uPlus.Apply(payoffDataPlus);
@@ -361,6 +363,7 @@ TEST (TridiagonalOperator, ImplicitEulerRhoBorrow)
 	CPayoffData payoffDataPlus(payoffData), payoffDataMinus(payoffData);
 
 	payoffData.rhoBorrow_i.resize(inputData.N, 0.0);
+	payoffData.rho_i.resize(inputData.N, 0.0);
 	u.Apply(payoffData);
 
 	uPlus.Apply(payoffDataPlus);
@@ -417,6 +420,7 @@ TEST (TridiagonalOperator, ImplicitEulerAll)
 
 	payoffData.vega_i.resize(inputData.N, 0.0);
 	payoffData.rhoBorrow_i.resize(inputData.N, 0.0);
+	payoffData.rho_i.resize(inputData.N, 0.0);
 	u.Apply(payoffData);
 
 	uPlus.Apply(payoffDataPlus);
@@ -618,6 +622,7 @@ TEST (TridiagonalOperator, CrankNicolsonRhoBorrow)
 	CPayoffData payoffDataPlus(payoffData), payoffDataMinus(payoffData);
 
 	payoffData.rhoBorrow_i.resize(inputData.N, 0.0);
+	payoffData.rho_i.resize(inputData.N, 0.0);
 	u.Apply(payoffData);
 
 	uPlus.Apply(payoffDataPlus);
@@ -674,6 +679,7 @@ TEST (TridiagonalOperator, CrankNicolsonAll)
 
 	payoffData.vega_i.resize(inputData.N, 0.0);
 	payoffData.rhoBorrow_i.resize(inputData.N, 0.0);
+	payoffData.rho_i.resize(inputData.N, 0.0);
 	u.Apply(payoffData);
 
 	uPlus.Apply(payoffDataPlus);

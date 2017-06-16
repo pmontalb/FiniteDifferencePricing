@@ -26,10 +26,11 @@ TEST (BlackScholesTest, PutCallParity)
 
 	for (int i = 0; i < 20; ++i)
 	{
-		bs.Update(80 * (1 + .025 * i));
+		double S = 80 * (1 + .025 * i);
+		bs.Update(S);
 		double C = bs.Value<EOptionType::Call>();
 		double P = bs.Value<EOptionType::Put>();
-		double F = (input.S * exp(input.b * input.T) - input.K) * exp(-input.r * input.T);
+		double F = (S * exp(input.b * input.T) - input.K) * exp(-input.r * input.T);
 
 		ASSERT_FLOAT_EQ(F, C - P);
 	}

@@ -44,14 +44,15 @@ TEST (FDTest, BlackScholesConsistency)
 	COutputData callOutput, putOutput;
 	pricer.Price(callOutput, putOutput);
 
-	EXPECT_LE(fabs(bsC - callOutput.price), 0.00281162);
-	EXPECT_LE(fabs(bsP - putOutput.price) , 0.00207582);
+	ASSERT_LE(fabs(bsC - callOutput.price), 0.00281162);
+	ASSERT_LE(fabs(bsP - putOutput.price) , 0.00207582);
 
-	EXPECT_LE(fabs(bsV - callOutput.vega), 0.438633);
-	EXPECT_LE(fabs(bsV - putOutput.vega), 0.440376);
+	ASSERT_LE(fabs(bsV - callOutput.vega), 0.438633);
+	ASSERT_LE(fabs(bsV - putOutput.vega), 0.440376);
 
-	EXPECT_LE(fabs(bsRBC - callOutput.rhoBorrow), 1.25332);
-	EXPECT_LE(fabs(bsRBP - putOutput.rhoBorrow), 1.25323);
+	ASSERT_LE(fabs(bsRC - callOutput.rho), 0.00562323);
+	ASSERT_LE(fabs(bsRP - putOutput.rho), 0.00415164);
 
-	printf("R(BS=(%g %g) FD=(%g %g) E=(%g %g))\n", bsRC, bsRP, callOutput.rho, putOutput.rho, fabs(bsRC - callOutput.rho), fabs(bsRP - putOutput.rho));
+	ASSERT_LE(fabs(bsRBC - callOutput.rhoBorrow), 0.034);
+	ASSERT_LE(fabs(bsRBP - putOutput.rhoBorrow), 0.0172);
 }
