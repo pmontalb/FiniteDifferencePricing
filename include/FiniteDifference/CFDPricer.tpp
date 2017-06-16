@@ -23,16 +23,16 @@ CFDPricer<solverType, adjointDifferentiation>::CFDPricer(const CInputData& unali
 {
 	cache.discountFactor = exp(-input.r * u.GetDt());
 
-	const size_t nLastDiv = input.dividends.size() ? input.dividends[input.dividends.size() - 1].time / u.GetDt() : (input.N - 1);
+	//const size_t nLastDiv = input.dividends.size() ? input.dividends[input.dividends.size() - 1].time / u.GetDt() : (input.N - 1);
 	if (calculateCall)
 	{
 		callData.Init<adjointDifferentiation>(input.N);
-		nBackwardInductionCall = accelerateCall ? nLastDiv : input.N;
+		//nBackwardInductionCall = accelerateCall ? nLastDiv : input.N;
 	}
 	if (calculatePut)
 	{
 		putData.Init<adjointDifferentiation>(input.N);
-		nBackwardInductionPut = acceleratePut ? nLastDiv : input.N;
+		//nBackwardInductionPut = acceleratePut ? nLastDiv : input.N;
 	}
 
 	switch (settings.calculationType)
@@ -330,11 +330,41 @@ void CFDPricer<solverType, adjointDifferentiation>::Price(COutputData& unaliased
 	else
 		(this->*exerciseDelegate)();
 
+	std::array<double, 9> callLeavesDt, putLeavesDt;
 	for (; m --> 0 ;)
 	{
 		BackwardInduction();
+
+		if (m < 3)
+			SaveLeaves(m, callLeavesDt, putLeavesDt);
 	}
 
+	ComputeGreeks(callOutput, putOutput, callLeavesDt, putLeavesDt);
+	SetOutput(callOutput, putOutput);
+}
+
+template <ESolverType solverType, EAdjointDifferentiation adjointDifferentiation>
+void CFDPricer<solverType, adjointDifferentiation>::SaveLeaves(const size_t m, std::array<double, 9>& unaliased callLeavesDt, std::array<double, 9>& unaliased putLeavesDt) const noexcept
+{
+	const size_t idx = 3 * m;
+	if (calculateCall)
+	{
+		callLeavesDt[idx]     = callData.payoff_i[(input.N >> 1) - 1];
+		callLeavesDt[idx + 1] = callData.payoff_i[input.N >> 1];
+		callLeavesDt[idx + 2] = callData.payoff_i[(input.N >> 1) + 1];
+	}
+
+	if (calculatePut)
+	{
+		putLeavesDt[idx]     = putData.payoff_i[(input.N >> 1) - 1];
+		putLeavesDt[idx + 1] = putData.payoff_i[input.N >> 1];
+		putLeavesDt[idx + 2] = putData.payoff_i[(input.N >> 1) + 1];
+	}
+}
+
+template <ESolverType solverType, EAdjointDifferentiation adjointDifferentiation>
+void CFDPricer<solverType, adjointDifferentiation>::SetOutput(COutputData& unaliased callOutput, COutputData& unaliased putOutput) const noexcept
+{
 	if (calculateCall)
 	{
 		callOutput.price = callData.payoff_i[input.N >> 1];
@@ -380,6 +410,52 @@ void CFDPricer<solverType, adjointDifferentiation>::Price(COutputData& unaliased
 			default:
 				break;
 		}
+	}
+}
+
+template <ESolverType solverType, EAdjointDifferentiation adjointDifferentiation>
+void CFDPricer<solverType, adjointDifferentiation>::ComputeGreeks(COutputData& unaliased callOutput, COutputData& unaliased putOutput, const std::array<double, 9>& unaliased callLeavesDt, const std::array<double, 9>& unaliased putLeavesDt) const noexcept
+{
+	const auto& grid = u.GetGrid();
+
+	const double dxPlus  = grid.Get((input.N >> 1) + 1) - grid.Get((input.N >> 1));
+	const double dxMinus = grid.Get((input.N >> 1))     - grid.Get((input.N >> 1) - 1);
+	const double dx = dxPlus + dxMinus;
+
+	const double b0 = 1.0 / (dx * dxMinus);
+	const double b2 = 1.0 / (dx * dxPlus);
+	const double b1 = -b0 - b2;
+
+	const double a0 = -dxPlus * b0;
+	const double a2 =  dxMinus * b2;
+	const double a1 = -a0 - a2;
+
+	double oneOverHalfDt = 1.0 / u.GetDt();
+	const double oneOverDt2 = oneOverHalfDt * oneOverHalfDt;
+	oneOverHalfDt = .5;
+
+	if (calculateCall)
+	{
+		callOutput.delta = a0 * callData.payoff_i[(input.N >> 1) - 1] + a1 * callData.payoff_i[input.N >> 1] + a2 * callData.payoff_i[(input.N >> 1) + 1];
+		callOutput.gamma = 2.0 * (b0 * callData.payoff_i[(input.N >> 1) - 1] + b1 * callData.payoff_i[input.N >> 1] + b2 * callData.payoff_i[(input.N >> 1) + 1]);
+
+		callOutput.theta  = oneOverHalfDt  * (callLeavesDt[7]                         - callLeavesDt[1]);
+		callOutput.theta2 = oneOverDt2 *     (callLeavesDt[7] - 2.0 * callLeavesDt[4] + callLeavesDt[1]);
+
+		const double delta_2dt = a0 * callLeavesDt[5] + a1 * callLeavesDt[6] + a2 * callLeavesDt[7];
+		callOutput.charm = oneOverHalfDt * (delta_2dt - callOutput.delta);
+	}
+
+	if (calculatePut)
+	{
+		putOutput.delta = a0 * putData.payoff_i[(input.N >> 1) - 1] + a1 * putData.payoff_i[input.N >> 1] + a2 * putData.payoff_i[(input.N >> 1) + 1];
+		putOutput.gamma = 2.0 * (b0 * putData.payoff_i[(input.N >> 1) - 1] + b1 * putData.payoff_i[input.N >> 1] + b2 * putData.payoff_i[(input.N >> 1) + 1]);
+
+		putOutput.theta  = oneOverHalfDt  * (putLeavesDt[7]                        - putLeavesDt[1]);
+		putOutput.theta2 = oneOverDt2 *     (putLeavesDt[7] - 2.0 * putLeavesDt[4] + putLeavesDt[1]);
+
+		const double delta_2dt = a0 * putLeavesDt[5] + a1 * putLeavesDt[6] + a2 * putLeavesDt[7];
+		putOutput.charm = oneOverHalfDt * (delta_2dt - putOutput.delta);
 	}
 }
 

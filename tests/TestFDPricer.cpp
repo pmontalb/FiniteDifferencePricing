@@ -40,6 +40,9 @@ TEST (FDTest, BlackScholesConsistency)
 	double bsRBP = bs.RhoBorrow<EOptionType::Put>();
 	double bsRC = bs.Rho<EOptionType::Call>();
 	double bsRP = bs.Rho<EOptionType::Put>();
+	double bsDC = bs.Delta<EOptionType::Call>();
+	double bsDP = bs.Delta<EOptionType::Put>();
+	double bsG = bs.Gamma();
 
 	COutputData callOutput, putOutput;
 	pricer.Price(callOutput, putOutput);
@@ -55,4 +58,15 @@ TEST (FDTest, BlackScholesConsistency)
 
 	ASSERT_LE(fabs(bsRBC - callOutput.rhoBorrow), 0.034);
 	ASSERT_LE(fabs(bsRBP - putOutput.rhoBorrow), 0.0172);
+
+	ASSERT_LE(fabs(bsRBC - callOutput.rhoBorrow), 0.034);
+	ASSERT_LE(fabs(bsRBP - putOutput.rhoBorrow), 0.0172);
+
+	ASSERT_LE(fabs(bsDC - callOutput.delta), 0.000174);
+	ASSERT_LE(fabs(bsDP - putOutput.delta), 9.8392e-05);
+
+	ASSERT_LE(fabs(bsG - callOutput.gamma), 5.40176e-06);
+	ASSERT_LE(fabs(bsG - putOutput.gamma), 5.63647e-07);
+
+	// TODO: implement bs theta and compare it
 }

@@ -62,9 +62,6 @@ private:
 	InitializerDelegate smoothingDelegate;
 	InitializerDelegate discountDelegate;
 
-	size_t nBackwardInductionCall;
-	size_t nBackwardInductionPut;
-
 	void Initialise() noexcept;
 
 	template<ECalculationType calculationType>
@@ -75,6 +72,14 @@ private:
 	void RollBack();
 
 	void BackwardInduction() noexcept;
+	void SetOutput(COutputData& unaliased callOutput, COutputData& unaliased putOutput) const noexcept;
+
+	void SaveLeaves(const size_t m, std::array<double, 9>& unaliased callLeavesDt, std::array<double, 9>& unaliased putLeavesDt) const noexcept;
+
+	/**
+	 * Usual 2nd order FD derivatives: http://www.m-hikari.com/ijma/ijma-password-2009/ijma-password17-20-2009/bhadauriaIJMA17-20-2009.pdf
+	 */
+	void ComputeGreeks(COutputData& unaliased callOutput, COutputData& unaliased putOutput, const std::array<double, 9>& unaliased callLeavesDt, const std::array<double, 9>& unaliased putLeavesDt) const noexcept;
 };
 
 } /* namespace fdpricing */

@@ -43,6 +43,7 @@ public:
 	template<EOptionType>
 	double RhoBorrow() const noexcept;
 
+
 protected:
 	const CInputData& unaliased input;
 	double d1;
