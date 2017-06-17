@@ -8,7 +8,7 @@
 #ifndef FLAGS_H_
 #define FLAGS_H_
 
-#define DEBUG
+//#define DEBUG
 
 #define unaliased __restrict__
 
