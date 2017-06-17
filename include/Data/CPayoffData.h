@@ -32,6 +32,9 @@ public:
 
 	template<EAdjointDifferentiation adjointDifferentiation>
 	void ZeroGreeks(const size_t i) noexcept;
+
+	template<EAdjointDifferentiation adjointDifferentiation>
+	void Lerp(const size_t i, const size_t j, const double w0, const double w1) noexcept;
 };
 }
 

@@ -31,6 +31,7 @@ class CEvolutionOperator
 {
 public:
 	CEvolutionOperator(const CInputData& unaliased input, const CFiniteDifferenceSettings& unaliased settings) noexcept;
+	CEvolutionOperator(const CEvolutionOperator& rhs, const double dt) noexcept;
 
 	virtual ~CEvolutionOperator() = default;
 
@@ -52,8 +53,6 @@ public:
 	}
 
 private:
-	const CInputData& unaliased input;
-	const CFiniteDifferenceSettings& unaliased settings;
 	const CGrid grid;
 
 	// Space Discretization
@@ -63,6 +62,8 @@ private:
 	const double dt;
 	CTridiagonalOperator<adjointDifferentiation> A; // right operator
 	std::unique_ptr<CTridiagonalOperator<adjointDifferentiation>> B; // left operator
+
+	void ctor() noexcept;
 };
 
 } /* namespace fdpricing */

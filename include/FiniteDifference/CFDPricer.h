@@ -58,29 +58,46 @@ private:
 
 	CEvolutionOperator<solverType, adjointDifferentiation> u;
 
+	// TODO: is it really faster?
 	typedef void (CFDPricer<solverType, adjointDifferentiation>::*InitializerDelegate)();
 	InitializerDelegate exerciseDelegate;
 	InitializerDelegate smoothingDelegate;
-	InitializerDelegate discountDelegate;
+
+	typedef void (CFDPricer<solverType, adjointDifferentiation>::*RollBackDelegate)(const double dt, const double df);
+	RollBackDelegate discountDelegate;
+
+	typedef void (CFDPricer<solverType, adjointDifferentiation>::*JumpConditionDelegate)(const double shift);
+	JumpConditionDelegate jumpConditionDelegate;
 
 	void Initialise() noexcept;
+	void PayoffInitialise(size_t& m) noexcept;
+	void RefinedPayoffInitialise(size_t& m) noexcept;
 
 	template<ECalculationType calculationType>
 	void Exercise();
 	template<ECalculationType calculationType>
 	void PayoffSmoothing();
+	void RefinedPayoffSmoothing(const double previousTime, const double currentTime, const CDividend& unaliased dividend) noexcept;
+
 	template<ECalculationType calculationType>
-	void RollBack();
+	void RollBack(const double dt, const double df);
 
 	void BackwardInduction() noexcept;
-	void SetOutput(COutputData& unaliased callOutput, COutputData& unaliased putOutput) const noexcept;
+	void RefinedBackwardInduction(const double previousTime, const double currentTime, const CDividend& unaliased dividend) noexcept;
 
-	void SaveLeaves(const size_t m, std::array<double, 9>& unaliased callLeavesDt, std::array<double, 9>& unaliased putLeavesDt) const noexcept;
+	/**
+	 * Linear interpolation
+	 */
+	template<ECalculationType calculationType>
+	void ApplyJumpCondition(const double shift) noexcept;
+
+	void SetOutput(COutputData& unaliased callOutput, COutputData& unaliased putOutput) const noexcept;
+	void SaveLeaves(const size_t m, std::array<double, 6>& unaliased callLeavesDt, std::array<double, 6>& unaliased putLeavesDt) const noexcept;
 
 	/**
 	 * Usual 2nd order FD derivatives: http://www.m-hikari.com/ijma/ijma-password-2009/ijma-password17-20-2009/bhadauriaIJMA17-20-2009.pdf
 	 */
-	void ComputeGreeks(COutputData& unaliased callOutput, COutputData& unaliased putOutput, const std::array<double, 9>& unaliased callLeavesDt, const std::array<double, 9>& unaliased putLeavesDt) const noexcept;
+	void ComputeGreeks(COutputData& unaliased callOutput, COutputData& unaliased putOutput, const std::array<double, 6>& unaliased callLeavesDt, const std::array<double, 6>& unaliased putLeavesDt) const noexcept;
 };
 
 } /* namespace fdpricing */

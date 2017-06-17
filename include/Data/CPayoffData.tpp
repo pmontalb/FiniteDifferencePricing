@@ -77,4 +77,28 @@ void CPayoffData::ZeroGreeks(const size_t i) noexcept
 	}
 }
 
+template<EAdjointDifferentiation adjointDifferentiation>
+void CPayoffData::Lerp(const size_t i, const size_t j, const double w0, const double w1) noexcept
+{
+	payoff_i[i] = w0 * payoff_i[j - 1] + w1 * payoff_i[j];
+
+	switch (adjointDifferentiation)
+	{
+		case EAdjointDifferentiation::Vega:
+			vega_i[i] = w0 * vega_i[j - 1] + w1 * vega_i[j];
+			break;
+		case EAdjointDifferentiation::Rho:
+			rho_i[i] = w0 * rho_i[j - 1] + w1 * rho_i[j];
+			rhoBorrow_i[i] = w0 * rhoBorrow_i[j - 1] + w1 * rhoBorrow_i[j];
+			break;
+		case EAdjointDifferentiation::All:
+			vega_i[i] = w0 * vega_i[j - 1] + w1 * vega_i[j];
+			rho_i[i] = w0 * rho_i[j - 1] + w1 * rho_i[j];
+			rhoBorrow_i[i] = w0 * rhoBorrow_i[j - 1] + w1 * rhoBorrow_i[j];
+			break;
+		default:
+			break;
+	}
+}
+
 }

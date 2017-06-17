@@ -87,7 +87,7 @@ void CTridiagonalOperator<adjointDifferentiation>::Dot(CPayoffData& unaliased ou
 #ifdef DEBUG
 	if (out.payoff_i.size() != N)
 	{
-		printf("WRONG SIZE");
+		printf("*** WRONG PAYOFF SIZE ***\n");
 		return;
 	}
 #endif
@@ -156,7 +156,7 @@ void CTridiagonalOperator<adjointDifferentiation>::Solve(CPayoffData& unaliased 
 #ifdef DEBUG
 	if (out.payoff_i.size() != N)
 	{
-		printf("WRONG SIZE\n");
+		printf("*** WRONG PAYOFF SIZE ***\n");
 		return;
 	}
 #endif
@@ -199,7 +199,7 @@ void CTridiagonalOperator<T>::Solve(std::vector<double>& unaliased x, const deta
 #ifdef DEBUG
 	if (x.size() != N)
 	{
-		printf("WRONG SIZE");
+		printf("*** WRONG VECTOR SIZE***\n");
 		return;
 	}
 #endif
