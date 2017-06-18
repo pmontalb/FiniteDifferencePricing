@@ -5,7 +5,6 @@
  *      Author: raiden
  */
 
-#include <BlackScholes/CBlackScholes.h>
 #include <Flags.h>
 
 namespace fdpricing
@@ -29,6 +28,12 @@ CFDPricer<solverType, adjointDifferentiation>::CFDPricer(const CInputData& unali
 	if (calculatePut)
 		putData.Init<adjointDifferentiation>(input.N);
 
+	UpdateDelegates();
+}
+
+template <ESolverType solverType, EAdjointDifferentiation adjointDifferentiation>
+void CFDPricer<solverType, adjointDifferentiation>::UpdateDelegates() noexcept
+{
 	switch (settings.calculationType)
 	{
 		case ECalculationType::All:
@@ -36,18 +41,21 @@ CFDPricer<solverType, adjointDifferentiation>::CFDPricer(const CInputData& unali
 			smoothingDelegate = &CFDPricer<solverType, adjointDifferentiation>::PayoffSmoothing<ECalculationType::All>;
 			discountDelegate = &CFDPricer<solverType, adjointDifferentiation>::RollBack<ECalculationType::All>;
 			jumpConditionDelegate = &CFDPricer<solverType, adjointDifferentiation>::ApplyJumpCondition<ECalculationType::All>;
+			refinedSmoothingDelegate = &CFDPricer<solverType, adjointDifferentiation>::RefinedPayoffSmoothing<ECalculationType::All>;
 			break;
 		case ECalculationType::CallOnly:
 			exerciseDelegate = &CFDPricer<solverType, adjointDifferentiation>::Exercise<ECalculationType::CallOnly>;
 			smoothingDelegate = &CFDPricer<solverType, adjointDifferentiation>::PayoffSmoothing<ECalculationType::CallOnly>;
 			discountDelegate = &CFDPricer<solverType, adjointDifferentiation>::RollBack<ECalculationType::CallOnly>;
 			jumpConditionDelegate = &CFDPricer<solverType, adjointDifferentiation>::ApplyJumpCondition<ECalculationType::CallOnly>;
+			refinedSmoothingDelegate = &CFDPricer<solverType, adjointDifferentiation>::RefinedPayoffSmoothing<ECalculationType::CallOnly>;
 			break;
 		case ECalculationType::PutOnly:
 			exerciseDelegate = &CFDPricer<solverType, adjointDifferentiation>::Exercise<ECalculationType::PutOnly>;
 			smoothingDelegate = &CFDPricer<solverType, adjointDifferentiation>::PayoffSmoothing<ECalculationType::PutOnly>;
 			discountDelegate = &CFDPricer<solverType, adjointDifferentiation>::RollBack<ECalculationType::PutOnly>;
 			jumpConditionDelegate = &CFDPricer<solverType, adjointDifferentiation>::ApplyJumpCondition<ECalculationType::PutOnly>;
+			refinedSmoothingDelegate = &CFDPricer<solverType, adjointDifferentiation>::RefinedPayoffSmoothing<ECalculationType::PutOnly>;
 			break;
 		default:
 			printf("WRONG SETTINGS");
@@ -115,102 +123,12 @@ void CFDPricer<solverType, adjointDifferentiation>::PayoffSmoothing()
 	{
 		bs.Update(grid.Get(i));
 
-		switch (calculationType)
-		{
-			case ECalculationType::All:
-				#if(1) // ******* All *******
-
-				callData.payoff_i[i] = bs.Value<EOptionType::Call>();
-				putData.payoff_i[i] = bs.Value<EOptionType::Put>();
-
-				switch (adjointDifferentiation)
-				{
-					case EAdjointDifferentiation::All:
-						callData.vega_i[i] = putData.vega_i[i] = bs.Vega();
-
-						callData.rho_i[i] = - u.GetDt() * callData.payoff_i[i];
-						putData.rho_i[i] = - u.GetDt() * putData.payoff_i[i];
-						callData.rhoBorrow_i[i] = bs.RhoBorrow<EOptionType::Call>();
-						putData.rhoBorrow_i[i] = bs.RhoBorrow<EOptionType::Put>();
-						break;
-					case EAdjointDifferentiation::Vega:
-						callData.vega_i[i] = putData.vega_i[i] = bs.Vega();
-						break;
-					case EAdjointDifferentiation::Rho:
-						callData.rho_i[i] = - u.GetDt() * callData.payoff_i[i];
-						putData.rho_i[i] = - u.GetDt() * putData.payoff_i[i];
-						callData.rhoBorrow_i[i] = bs.RhoBorrow<EOptionType::Call>();
-						putData.rhoBorrow_i[i] = bs.RhoBorrow<EOptionType::Put>();
-						break;
-					default:
-						break;
-				}
-
-				#endif
-
-				break;
-
-			case ECalculationType::CallOnly:
-				#if(1) // ****** Call *******
-
-				callData.payoff_i[i] = bs.Value<EOptionType::Call>();
-
-				switch (adjointDifferentiation)
-				{
-					case EAdjointDifferentiation::All:
-						callData.vega_i[i] = bs.Vega();
-
-						callData.rho_i[i] = - u.GetDt() * callData.payoff_i[i];
-						callData.rhoBorrow_i[i] = bs.RhoBorrow<EOptionType::Call>();
-						break;
-					case EAdjointDifferentiation::Vega:
-						callData.vega_i[i] = bs.Vega();
-						break;
-					case EAdjointDifferentiation::Rho:
-						callData.rho_i[i] = - u.GetDt() * callData.payoff_i[i];
-						callData.rhoBorrow_i[i] = bs.RhoBorrow<EOptionType::Call>();
-						break;
-					default:
-						break;
-				}
-
-				#endif
-
-				break;
-			case ECalculationType::PutOnly:
-				#if(1) // ******* Put *******
-
-				putData.payoff_i[i] = bs.Value<EOptionType::Put>();
-
-				switch (adjointDifferentiation)
-				{
-					case EAdjointDifferentiation::All:
-						putData.vega_i[i] = bs.Vega();
-
-						putData.rho_i[i] = - u.GetDt() * putData.payoff_i[i];
-						putData.rhoBorrow_i[i] = bs.RhoBorrow<EOptionType::Put>();
-						break;
-					case EAdjointDifferentiation::Vega:
-						putData.vega_i[i] = bs.Vega();
-						break;
-					case EAdjointDifferentiation::Rho:
-						putData.rho_i[i] = - u.GetDt() * putData.payoff_i[i];
-						putData.rhoBorrow_i[i] = bs.RhoBorrow<EOptionType::Put>();
-						break;
-					default:
-						break;
-				}
-
-				#endif
-
-				break;
-			default:
-				break;
-		}
+		SmoothingWorker<calculationType>(i, bs);
 	}
 }
 
 template <ESolverType solverType, EAdjointDifferentiation adjointDifferentiation>
+template<ECalculationType calculationType>
 void CFDPricer<solverType, adjointDifferentiation>::RefinedPayoffSmoothing(const double previousTime, const double currentTime, const CDividend& unaliased dividend) noexcept
 {
 	const double dtAfter  = currentTime - dividend.time;
@@ -239,98 +157,7 @@ void CFDPricer<solverType, adjointDifferentiation>::RefinedPayoffSmoothing(const
 
 		bs.Update(shiftedValue);
 
-		switch (settings.calculationType)
-		{
-			case ECalculationType::All:
-				#if(1) // ******* All *******
-
-				callData.payoff_i[i] = bs.Value<EOptionType::Call>();
-				putData.payoff_i[i] = bs.Value<EOptionType::Put>();
-
-				switch (adjointDifferentiation)
-				{
-					case EAdjointDifferentiation::All:
-						callData.vega_i[i] = putData.vega_i[i] = bs.Vega();
-
-						callData.rho_i[i] = - u.GetDt() * callData.payoff_i[i];
-						putData.rho_i[i] = - u.GetDt() * putData.payoff_i[i];
-						callData.rhoBorrow_i[i] = bs.RhoBorrow<EOptionType::Call>();
-						putData.rhoBorrow_i[i] = bs.RhoBorrow<EOptionType::Put>();
-						break;
-					case EAdjointDifferentiation::Vega:
-						callData.vega_i[i] = putData.vega_i[i] = bs.Vega();
-						break;
-					case EAdjointDifferentiation::Rho:
-						callData.rho_i[i] = - u.GetDt() * callData.payoff_i[i];
-						putData.rho_i[i] = - u.GetDt() * putData.payoff_i[i];
-						callData.rhoBorrow_i[i] = bs.RhoBorrow<EOptionType::Call>();
-						putData.rhoBorrow_i[i] = bs.RhoBorrow<EOptionType::Put>();
-						break;
-					default:
-						break;
-				}
-
-				#endif
-
-				break;
-
-			case ECalculationType::CallOnly:
-				#if(1) // ****** Call *******
-
-				callData.payoff_i[i] = bs.Value<EOptionType::Call>();
-
-				switch (adjointDifferentiation)
-				{
-					case EAdjointDifferentiation::All:
-						callData.vega_i[i] = bs.Vega();
-
-						callData.rho_i[i] = - u.GetDt() * callData.payoff_i[i];
-						callData.rhoBorrow_i[i] = bs.RhoBorrow<EOptionType::Call>();
-						break;
-					case EAdjointDifferentiation::Vega:
-						callData.vega_i[i] = bs.Vega();
-						break;
-					case EAdjointDifferentiation::Rho:
-						callData.rho_i[i] = - u.GetDt() * callData.payoff_i[i];
-						callData.rhoBorrow_i[i] = bs.RhoBorrow<EOptionType::Call>();
-						break;
-					default:
-						break;
-				}
-
-				#endif
-
-				break;
-			case ECalculationType::PutOnly:
-				#if(1) // ******* Put *******
-
-				putData.payoff_i[i] = bs.Value<EOptionType::Put>();
-
-				switch (adjointDifferentiation)
-				{
-					case EAdjointDifferentiation::All:
-						putData.vega_i[i] = bs.Vega();
-
-						putData.rho_i[i] = - u.GetDt() * putData.payoff_i[i];
-						putData.rhoBorrow_i[i] = bs.RhoBorrow<EOptionType::Put>();
-						break;
-					case EAdjointDifferentiation::Vega:
-						putData.vega_i[i] = bs.Vega();
-						break;
-					case EAdjointDifferentiation::Rho:
-						putData.rho_i[i] = - u.GetDt() * putData.payoff_i[i];
-						putData.rhoBorrow_i[i] = bs.RhoBorrow<EOptionType::Put>();
-						break;
-					default:
-						break;
-				}
-
-				#endif
-
-				break;
-			default:
-				break;
-		}
+		SmoothingWorker<calculationType>(i, bs);
 	}
 
 	cache.discountFactor = currentDf;
@@ -339,7 +166,7 @@ void CFDPricer<solverType, adjointDifferentiation>::RefinedPayoffSmoothing(const
 
 	CEvolutionOperator<solverType, adjointDifferentiation> uBefore(u, dtBefore);
 
-	(this->*jumpConditionDelegate)(dividend.dividend);
+	//(this->*jumpConditionDelegate)(dividend.dividend);
 
 	if (settings.exerciseType == EExerciseType::American)
 		(this->*exerciseDelegate)();
@@ -352,6 +179,105 @@ void CFDPricer<solverType, adjointDifferentiation>::RefinedPayoffSmoothing(const
 	(this->*discountDelegate)(dtBefore, dfBefore);
 	if (settings.exerciseType == EExerciseType::American)
 		(this->*exerciseDelegate)();
+}
+
+
+template <ESolverType solverType, EAdjointDifferentiation adjointDifferentiation>
+template<ECalculationType calculationType>
+void CFDPricer<solverType, adjointDifferentiation>::SmoothingWorker(const size_t i, CBlackScholes& unaliased bs) noexcept
+{
+	switch (calculationType)
+	{
+		case ECalculationType::All:
+			#if(1) // ******* All *******
+
+			callData.payoff_i[i] = bs.Value<EOptionType::Call>();
+			putData.payoff_i[i] = bs.Value<EOptionType::Put>();
+
+			switch (adjointDifferentiation)
+			{
+				case EAdjointDifferentiation::All:
+					callData.vega_i[i] = putData.vega_i[i] = bs.Vega();
+
+					callData.rho_i[i] = - u.GetDt() * callData.payoff_i[i];
+					putData.rho_i[i] = - u.GetDt() * putData.payoff_i[i];
+					callData.rhoBorrow_i[i] = bs.RhoBorrow<EOptionType::Call>();
+					putData.rhoBorrow_i[i] = bs.RhoBorrow<EOptionType::Put>();
+					break;
+				case EAdjointDifferentiation::Vega:
+					callData.vega_i[i] = putData.vega_i[i] = bs.Vega();
+					break;
+				case EAdjointDifferentiation::Rho:
+					callData.rho_i[i] = - u.GetDt() * callData.payoff_i[i];
+					putData.rho_i[i] = - u.GetDt() * putData.payoff_i[i];
+					callData.rhoBorrow_i[i] = bs.RhoBorrow<EOptionType::Call>();
+					putData.rhoBorrow_i[i] = bs.RhoBorrow<EOptionType::Put>();
+					break;
+				default:
+					break;
+			}
+
+			#endif
+
+			break;
+
+		case ECalculationType::CallOnly:
+			#if(1) // ****** Call *******
+
+			callData.payoff_i[i] = bs.Value<EOptionType::Call>();
+
+			switch (adjointDifferentiation)
+			{
+				case EAdjointDifferentiation::All:
+					callData.vega_i[i] = bs.Vega();
+
+					callData.rho_i[i] = - u.GetDt() * callData.payoff_i[i];
+					callData.rhoBorrow_i[i] = bs.RhoBorrow<EOptionType::Call>();
+					break;
+				case EAdjointDifferentiation::Vega:
+					callData.vega_i[i] = bs.Vega();
+					break;
+				case EAdjointDifferentiation::Rho:
+					callData.rho_i[i] = - u.GetDt() * callData.payoff_i[i];
+					callData.rhoBorrow_i[i] = bs.RhoBorrow<EOptionType::Call>();
+					break;
+				default:
+					break;
+			}
+
+			#endif
+
+			break;
+		case ECalculationType::PutOnly:
+			#if(1) // ******* Put *******
+
+			putData.payoff_i[i] = bs.Value<EOptionType::Put>();
+
+			switch (adjointDifferentiation)
+			{
+				case EAdjointDifferentiation::All:
+					putData.vega_i[i] = bs.Vega();
+
+					putData.rho_i[i] = - u.GetDt() * putData.payoff_i[i];
+					putData.rhoBorrow_i[i] = bs.RhoBorrow<EOptionType::Put>();
+					break;
+				case EAdjointDifferentiation::Vega:
+					putData.vega_i[i] = bs.Vega();
+					break;
+				case EAdjointDifferentiation::Rho:
+					putData.rho_i[i] = - u.GetDt() * putData.payoff_i[i];
+					putData.rhoBorrow_i[i] = bs.RhoBorrow<EOptionType::Put>();
+					break;
+				default:
+					break;
+			}
+
+			#endif
+
+			break;
+		default:
+			break;
+	}
 }
 
 
@@ -583,7 +509,7 @@ void CFDPricer<solverType, adjointDifferentiation>::ApplyJumpCondition(const dou
 }
 
 template <ESolverType solverType, EAdjointDifferentiation adjointDifferentiation>
-void CFDPricer<solverType, adjointDifferentiation>::PayoffInitialise(size_t& m) noexcept
+void CFDPricer<solverType, adjointDifferentiation>::PayoffInitialise(size_t& unaliased m) noexcept
 {
 	if (m != input.M)
 		return;
@@ -598,7 +524,7 @@ void CFDPricer<solverType, adjointDifferentiation>::PayoffInitialise(size_t& m) 
 }
 
 template <ESolverType solverType, EAdjointDifferentiation adjointDifferentiation>
-void CFDPricer<solverType, adjointDifferentiation>::RefinedPayoffInitialise(size_t& m) noexcept
+void CFDPricer<solverType, adjointDifferentiation>::RefinedPayoffInitialise(size_t& unaliased m) noexcept
 {
 	if (m != input.M)
 		return;
@@ -609,7 +535,7 @@ void CFDPricer<solverType, adjointDifferentiation>::RefinedPayoffInitialise(size
 
 	if (input.smoothing)
 	{
-		RefinedPayoffSmoothing(previousTime, currentTime, input.dividends[divIdx]);
+		(this->*refinedSmoothingDelegate)(previousTime, currentTime, input.dividends[divIdx]);
 		--m;
 	}
 	else

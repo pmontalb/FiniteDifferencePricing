@@ -14,6 +14,7 @@
 #include <Data/EExerciseType.h>
 #include <Data/CCacheData.h>
 #include <Data/COutputData.h>
+#include <BlackScholes/CBlackScholes.h>
 #include <Flags.h>
 
 namespace fdpricing
@@ -58,7 +59,8 @@ private:
 
 	CEvolutionOperator<solverType, adjointDifferentiation> u;
 
-	// TODO: is it really faster?
+	void UpdateDelegates() noexcept;
+
 	typedef void (CFDPricer<solverType, adjointDifferentiation>::*InitializerDelegate)();
 	InitializerDelegate exerciseDelegate;
 	InitializerDelegate smoothingDelegate;
@@ -69,15 +71,23 @@ private:
 	typedef void (CFDPricer<solverType, adjointDifferentiation>::*JumpConditionDelegate)(const double shift);
 	JumpConditionDelegate jumpConditionDelegate;
 
+	typedef void (CFDPricer<solverType, adjointDifferentiation>::*RefinedSmoothingDelegate)(const double previousTime, const double currentTime, const CDividend& unaliased dividend);
+	RefinedSmoothingDelegate refinedSmoothingDelegate;
+
 	void Initialise() noexcept;
-	void PayoffInitialise(size_t& m) noexcept;
-	void RefinedPayoffInitialise(size_t& m) noexcept;
+	void PayoffInitialise(size_t& unaliased m) noexcept;
+	void RefinedPayoffInitialise(size_t& unaliased m) noexcept;
 
 	template<ECalculationType calculationType>
 	void Exercise();
+
 	template<ECalculationType calculationType>
 	void PayoffSmoothing();
+	template<ECalculationType calculationType>
 	void RefinedPayoffSmoothing(const double previousTime, const double currentTime, const CDividend& unaliased dividend) noexcept;
+	template<ECalculationType calculationType>
+	void SmoothingWorker(const size_t i, CBlackScholes& unaliased bs) noexcept;
+
 
 	template<ECalculationType calculationType>
 	void RollBack(const double dt, const double df);

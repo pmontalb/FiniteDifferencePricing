@@ -15,7 +15,7 @@ namespace fdpricing
 class CDividend
 {
 public:
-	CDividend(const double t = 0, const double d = 0) noexcept;
+	explicit CDividend(const double t = 0, const double d = 0) noexcept;
 
 	CDividend(const CDividend& unaliased rhs) noexcept;
 	CDividend(const CDividend&& unaliased rhs) noexcept;

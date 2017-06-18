@@ -49,10 +49,13 @@ void PlotConvergence()
 
 	std::vector<size_t> x;
 	std::vector<double> y;
-	for (size_t M = 60; M <= 240; ++M)
+	for (size_t i = 0; i < 100; ++i)
 	{
-		x.push_back(M);
-		input.M = M;
+		x.push_back(i);
+		const double td = .9 * input.T + i * (.9999 * input.T - .9 * input.T) / 99;
+		const double dv = 10.0;
+		input.dividends.resize(1);
+		input.dividends[0] = CDividend(td, dv);
 		CFDPricer<ESolverType::CrankNicolson, EAdjointDifferentiation::All> pricer(input, settings);
 		COutputData callOutput, putOutput;
 		pricer.Price(callOutput, putOutput);
