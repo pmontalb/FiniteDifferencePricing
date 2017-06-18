@@ -138,7 +138,7 @@ void CTridiagonalOperator<T>::Add(std::vector<double>& unaliased out, const doub
 template<EAdjointDifferentiation T>
 void CTridiagonalOperator<T>::Dot(const details::Matrix& unaliased A, std::vector<double>& unaliased x) const noexcept
 {
-	std::array<double, 2> cache = { x[0], 0.0 };
+	std::array<double, 2> cache = { { x[0], 0.0 } };
 	x[0] = A[0].Get(details::Zero) * x[0] + A[0].Get(details::Plus) * x[1];
 
 	for(size_t i = 1; i < N - 1; ++i)

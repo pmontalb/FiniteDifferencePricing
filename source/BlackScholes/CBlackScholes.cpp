@@ -35,7 +35,7 @@ CBlackScholes::CBlackScholes(const CInputData & unaliased input) noexcept
 }
 
 CBlackScholes::CBlackScholes(const CInputData & unaliased input, const details::CCacheData& unaliased cacheData) noexcept
-		: input(input), cacheData(cacheData)
+		: input(input), currentS(input.S), cacheData(cacheData)
 {
 	oneOverSigmaSqrtT = 1.0 / cacheData.sigmaSqrtDt;
 	oneOverSigmaSqrtTtimesGrowthFactorTimesDiscountFactor = oneOverSigmaSqrtT * cacheData.growthFactorTimesDiscountFactor;
@@ -43,6 +43,7 @@ CBlackScholes::CBlackScholes(const CInputData & unaliased input, const details::
 	TtimesGrowthFactorTimesDiscountFactor = cacheData.T * cacheData.growthFactorTimesDiscountFactor;
 
 	Make();
+	Update(currentS);
 }
 
 void CBlackScholes::Update(double S) noexcept

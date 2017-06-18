@@ -46,8 +46,8 @@ private:
 	const CInputData& unaliased input;
 	const CPricerSettings& unaliased settings;
 
-	const bool calculateCall;
-	const bool calculatePut;
+	bool calculateCall;
+	bool calculatePut;
 
 	const bool accelerateCall;
 	const bool acceleratePut;
@@ -59,11 +59,17 @@ private:
 
 	CEvolutionOperator<solverType, adjointDifferentiation> u;
 
-	void UpdateDelegates() noexcept;
+	typedef std::array<double, 6> TimeLeaves;
+
+	void UpdateDelegates(const CPricerSettings& unaliased settings, const bool accelerateCall, const bool acceleratePut) noexcept;
 
 	typedef void (CFDPricer<solverType, adjointDifferentiation>::*InitializerDelegate)();
 	InitializerDelegate exerciseDelegate;
 	InitializerDelegate smoothingDelegate;
+
+	typedef void (CFDPricer<solverType, adjointDifferentiation>::*AccelerationDelegate)(size_t& unaliased m,
+			COutputData& unaliased callOutput, COutputData& unaliased putOutput, TimeLeaves& unaliased callLeavesDt, TimeLeaves& unaliased putLeavesDt);
+	AccelerationDelegate accelerationDelegate;
 
 	typedef void (CFDPricer<solverType, adjointDifferentiation>::*RollBackDelegate)(const double dt, const double df);
 	RollBackDelegate discountDelegate;
@@ -82,11 +88,16 @@ private:
 	void Exercise();
 
 	template<ECalculationType calculationType>
+	void Accelerate(size_t& unaliased m, COutputData& unaliased callOutput, COutputData& unaliased putOutput, TimeLeaves& unaliased callLeavesDt, TimeLeaves& unaliased putLeavesDt);
+
+	void PriceUntil(size_t start, const size_t end, TimeLeaves& unaliased callLeavesDt, TimeLeaves& unaliased putLeavesDt) noexcept;
+
+	template<ECalculationType calculationType>
 	void PayoffSmoothing();
 	template<ECalculationType calculationType>
 	void RefinedPayoffSmoothing(const double previousTime, const double currentTime, const CDividend& unaliased dividend) noexcept;
 	template<ECalculationType calculationType>
-	void SmoothingWorker(const size_t i, CBlackScholes& unaliased bs) noexcept;
+	void SmoothingWorker(const size_t i, CBlackScholes& unaliased bs, const double dt) noexcept;
 
 
 	template<ECalculationType calculationType>
@@ -102,12 +113,12 @@ private:
 	void ApplyJumpCondition(const double shift) noexcept;
 
 	void SetOutput(COutputData& unaliased callOutput, COutputData& unaliased putOutput) const noexcept;
-	void SaveLeaves(const size_t m, std::array<double, 6>& unaliased callLeavesDt, std::array<double, 6>& unaliased putLeavesDt) const noexcept;
+	void SaveLeaves(const size_t m, TimeLeaves& unaliased callLeavesDt, TimeLeaves& unaliased putLeavesDt) const noexcept;
 
 	/**
 	 * Usual 2nd order FD derivatives: http://www.m-hikari.com/ijma/ijma-password-2009/ijma-password17-20-2009/bhadauriaIJMA17-20-2009.pdf
 	 */
-	void ComputeGreeks(COutputData& unaliased callOutput, COutputData& unaliased putOutput, const std::array<double, 6>& unaliased callLeavesDt, const std::array<double, 6>& unaliased putLeavesDt) const noexcept;
+	void ComputeGreeks(COutputData& unaliased callOutput, COutputData& unaliased putOutput, const TimeLeaves& unaliased callLeavesDt, const TimeLeaves& unaliased putLeavesDt) const noexcept;
 };
 
 } /* namespace fdpricing */

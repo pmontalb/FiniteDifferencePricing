@@ -31,7 +31,7 @@ enum ETridiagIndex
 class Triple
 {
 public:
-	Triple(const double sub, const double diag, const double super) : data({sub, diag, super}) {};
+	Triple(const double sub, const double diag, const double super) : data({ {sub, diag, super} }) {};
 	Triple() noexcept: Triple(0.0, 0.0, 0.0){};
 	Triple(const Triple& rhs) : data(rhs.data) {}
 
