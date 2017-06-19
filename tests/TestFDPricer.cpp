@@ -466,7 +466,7 @@ TEST (FDTest, VellekoopPage280Table1)
 		CPricerSettings settings;
 		settings.exerciseType = EExerciseType::American;
 		settings.fdSettings.gridType = EGridType::Adaptive;
-		settings.calculationType = ECalculationType::CallOnly;
+		settings.calculationType = ECalculationType::All;
 		CFDPricer<ESolverType::CrankNicolson, EAdjointDifferentiation::None> pricer(input, settings);
 		pricer.Price(callOutput, putOutput);
 
@@ -525,7 +525,7 @@ TEST (FDTest, VellekoopPage282Table3)
 		CPricerSettings settings;
 		settings.exerciseType = EExerciseType::American;
 		settings.fdSettings.gridType = EGridType::Adaptive;
-		settings.calculationType = ECalculationType::CallOnly;
+		settings.calculationType = ECalculationType::All;
 		CFDPricer<ESolverType::CrankNicolson, EAdjointDifferentiation::None> pricer(input, settings);
 		pricer.Price(callOutput, putOutput);
 
@@ -589,7 +589,7 @@ TEST (FDTest, VellekoopPage280Table1Acceleration)
 		CPricerSettings settings;
 		settings.exerciseType = EExerciseType::American;
 		settings.fdSettings.gridType = EGridType::Adaptive;
-		settings.calculationType = ECalculationType::CallOnly;
+		settings.calculationType = ECalculationType::All;
 		CFDPricer<ESolverType::CrankNicolson, EAdjointDifferentiation::None> pricer(input, settings);
 		pricer.Price(callOutput, putOutput);
 
@@ -648,7 +648,7 @@ TEST (FDTest, VellekoopPage282Table3Acceleration)
 		CPricerSettings settings;
 		settings.exerciseType = EExerciseType::American;
 		settings.fdSettings.gridType = EGridType::Adaptive;
-		settings.calculationType = ECalculationType::CallOnly;
+		settings.calculationType = ECalculationType::All;
 		CFDPricer<ESolverType::CrankNicolson, EAdjointDifferentiation::None> pricer(input, settings);
 		pricer.Price(callOutput, putOutput);
 

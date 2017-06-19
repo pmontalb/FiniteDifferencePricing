@@ -16,8 +16,7 @@ CFDPricer<solverType, adjointDifferentiation>::CFDPricer(const CInputData& unali
 		: input(input), settings(settings),
 		  calculateCall(settings.calculationType == ECalculationType::All || settings.calculationType == ECalculationType::CallOnly),
 		  calculatePut(settings.calculationType == ECalculationType::All || settings.calculationType == ECalculationType::PutOnly),
-		  accelerateCall(calculateCall && input.acceleration && (input.b > 0.0 && input.r > 0.0)),
-		  acceleratePut(calculatePut && input.acceleration && !accelerateCall),
+		  divIdx(input.dividends.size() - 1),
 		  u(input, settings.fdSettings)
 {
 	cache.discountFactor = exp(-input.r * u.GetDt());
@@ -28,6 +27,8 @@ CFDPricer<solverType, adjointDifferentiation>::CFDPricer(const CInputData& unali
 	if (calculatePut)
 		putData.Init<adjointDifferentiation>(input.N);
 
+	const bool accelerateCall = calculateCall && input.acceleration && (input.b > 0.0 && input.r > 0.0);
+	const bool acceleratePut = calculatePut && input.acceleration && !accelerateCall;
 	UpdateDelegates(settings, accelerateCall, acceleratePut);
 }
 
@@ -42,6 +43,9 @@ void CFDPricer<solverType, adjointDifferentiation>::UpdateDelegates(const CPrice
 			discountDelegate = &CFDPricer<solverType, adjointDifferentiation>::RollBack<ECalculationType::All>;
 			jumpConditionDelegate = &CFDPricer<solverType, adjointDifferentiation>::ApplyJumpCondition<ECalculationType::All>;
 			refinedSmoothingDelegate = &CFDPricer<solverType, adjointDifferentiation>::RefinedPayoffSmoothing<ECalculationType::All>;
+			applyOperatorDelegate = &CFDPricer<solverType, adjointDifferentiation>::ApplyOperator<ECalculationType::All>;
+			setOutputDelegate = &CFDPricer<solverType, adjointDifferentiation>::SetOutput<ECalculationType::All>;
+			computeGreeksDelegate = &CFDPricer<solverType, adjointDifferentiation>::ComputeGreeks<ECalculationType::All>;
 			break;
 		case ECalculationType::CallOnly:
 			exerciseDelegate = &CFDPricer<solverType, adjointDifferentiation>::Exercise<ECalculationType::CallOnly>;
@@ -49,6 +53,9 @@ void CFDPricer<solverType, adjointDifferentiation>::UpdateDelegates(const CPrice
 			discountDelegate = &CFDPricer<solverType, adjointDifferentiation>::RollBack<ECalculationType::CallOnly>;
 			jumpConditionDelegate = &CFDPricer<solverType, adjointDifferentiation>::ApplyJumpCondition<ECalculationType::CallOnly>;
 			refinedSmoothingDelegate = &CFDPricer<solverType, adjointDifferentiation>::RefinedPayoffSmoothing<ECalculationType::CallOnly>;
+			applyOperatorDelegate = &CFDPricer<solverType, adjointDifferentiation>::ApplyOperator<ECalculationType::CallOnly>;
+			setOutputDelegate = &CFDPricer<solverType, adjointDifferentiation>::SetOutput<ECalculationType::CallOnly>;
+			computeGreeksDelegate = &CFDPricer<solverType, adjointDifferentiation>::ComputeGreeks<ECalculationType::CallOnly>;
 			break;
 		case ECalculationType::PutOnly:
 			exerciseDelegate = &CFDPricer<solverType, adjointDifferentiation>::Exercise<ECalculationType::PutOnly>;
@@ -56,6 +63,20 @@ void CFDPricer<solverType, adjointDifferentiation>::UpdateDelegates(const CPrice
 			discountDelegate = &CFDPricer<solverType, adjointDifferentiation>::RollBack<ECalculationType::PutOnly>;
 			jumpConditionDelegate = &CFDPricer<solverType, adjointDifferentiation>::ApplyJumpCondition<ECalculationType::PutOnly>;
 			refinedSmoothingDelegate = &CFDPricer<solverType, adjointDifferentiation>::RefinedPayoffSmoothing<ECalculationType::PutOnly>;
+			applyOperatorDelegate = &CFDPricer<solverType, adjointDifferentiation>::ApplyOperator<ECalculationType::PutOnly>;
+			setOutputDelegate = &CFDPricer<solverType, adjointDifferentiation>::SetOutput<ECalculationType::PutOnly>;
+			computeGreeksDelegate = &CFDPricer<solverType, adjointDifferentiation>::ComputeGreeks<ECalculationType::PutOnly>;
+			break;
+		case ECalculationType::Null:
+			exerciseDelegate = &CFDPricer<solverType, adjointDifferentiation>::Exercise<ECalculationType::Null>;
+			smoothingDelegate = &CFDPricer<solverType, adjointDifferentiation>::PayoffSmoothing<ECalculationType::Null>;
+			discountDelegate = &CFDPricer<solverType, adjointDifferentiation>::RollBack<ECalculationType::Null>;
+			jumpConditionDelegate = &CFDPricer<solverType, adjointDifferentiation>::ApplyJumpCondition<ECalculationType::Null>;
+			refinedSmoothingDelegate = &CFDPricer<solverType, adjointDifferentiation>::RefinedPayoffSmoothing<ECalculationType::Null>;
+			applyOperatorDelegate = &CFDPricer<solverType, adjointDifferentiation>::ApplyOperator<ECalculationType::Null>;
+			applyOperatorDelegate = &CFDPricer<solverType, adjointDifferentiation>::ApplyOperator<ECalculationType::Null>;
+			setOutputDelegate = &CFDPricer<solverType, adjointDifferentiation>::SetOutput<ECalculationType::Null>;
+			computeGreeksDelegate = &CFDPricer<solverType, adjointDifferentiation>::ComputeGreeks<ECalculationType::Null>;
 			break;
 		default:
 			printf("WRONG SETTINGS");
@@ -69,6 +90,16 @@ void CFDPricer<solverType, adjointDifferentiation>::UpdateDelegates(const CPrice
 	else
 		// default is not accelerate
 		accelerationDelegate = &CFDPricer<solverType, adjointDifferentiation>::Accelerate<ECalculationType::Null>;
+}
+
+template <ESolverType solverType, EAdjointDifferentiation adjointDifferentiation>
+template<ECalculationType calculationType>
+void CFDPricer<solverType, adjointDifferentiation>::ApplyOperator(CEvolutionOperator<solverType, adjointDifferentiation>& unaliased u)
+{
+	if (calculationType == ECalculationType::CallOnly || calculationType == ECalculationType::All)
+		u.Apply(callData);
+	if (calculationType == ECalculationType::PutOnly || calculationType == ECalculationType::All)
+		u.Apply(putData);
 }
 
 template <ESolverType solverType, EAdjointDifferentiation adjointDifferentiation>
@@ -172,17 +203,16 @@ void CFDPricer<solverType, adjointDifferentiation>::RefinedPayoffSmoothing(const
 	if (settings.exerciseType == EExerciseType::American)
 		(this->*exerciseDelegate)();
 
-	CEvolutionOperator<solverType, adjointDifferentiation> uBefore(u, dtBefore);
+	// it means that dividend falls exactly on a time grid point
+	if (fabs(dtBefore) <= 1e-12)
+		return;
 
-	//(this->*jumpConditionDelegate)(dividend.dividend);
+	CEvolutionOperator<solverType, adjointDifferentiation> uBefore(u, dtBefore);
 
 	if (settings.exerciseType == EExerciseType::American)
 		(this->*exerciseDelegate)();
 
-	if (calculateCall)
-		uBefore.Apply(callData);
-	if (calculatePut)
-		uBefore.Apply(putData);
+	(this->*applyOperatorDelegate)(uBefore);
 
 	(this->*discountDelegate)(dtBefore, dfBefore);
 	if (settings.exerciseType == EExerciseType::American)
@@ -382,11 +412,7 @@ void CFDPricer<solverType, adjointDifferentiation>::RollBack(const double dt, co
 template <ESolverType solverType, EAdjointDifferentiation adjointDifferentiation>
 void CFDPricer<solverType, adjointDifferentiation>::BackwardInduction() noexcept
 {
-	// TODO: use delegate here?
-	if (calculateCall)
-		u.Apply(callData);
-	if (calculatePut)
-		u.Apply(putData);
+	(this->*applyOperatorDelegate)(u);
 
 	(this->*discountDelegate)(u.GetDt(), cache.discountFactor);
 
@@ -434,10 +460,7 @@ void CFDPricer<solverType, adjointDifferentiation>::RefinedBackwardInduction(con
 	CEvolutionOperator<solverType, adjointDifferentiation> uAfter(u, dtAfter);
 	CEvolutionOperator<solverType, adjointDifferentiation> uBefore(u, dtBefore);
 
-	if (calculateCall)
-		uAfter.Apply(callData);
-	if (calculatePut)
-		uAfter.Apply(putData);
+	(this->*applyOperatorDelegate)(uAfter);
 
 	(this->*discountDelegate)(dtAfter, dfAfter);
 
@@ -449,10 +472,7 @@ void CFDPricer<solverType, adjointDifferentiation>::RefinedBackwardInduction(con
 	if (settings.exerciseType == EExerciseType::American)
 		(this->*exerciseDelegate)();
 
-	if (calculateCall)
-		uBefore.Apply(callData);
-	if (calculatePut)
-		uBefore.Apply(putData);
+	(this->*applyOperatorDelegate)(uBefore);
 
 	(this->*discountDelegate)(dtBefore, dfBefore);
 	if (settings.exerciseType == EExerciseType::American)
@@ -540,7 +560,6 @@ void CFDPricer<solverType, adjointDifferentiation>::RefinedPayoffInitialise(size
 
 	double currentTime = input.T;
 	double previousTime = currentTime - u.GetDt();
-	size_t divIdx = input.dividends.size() - 1;
 
 	if (input.smoothing)
 	{
@@ -558,7 +577,8 @@ void CFDPricer<solverType, adjointDifferentiation>::RefinedPayoffInitialise(size
 template <ESolverType solverType, EAdjointDifferentiation adjointDifferentiation>
 template<ECalculationType calculationType>
 void CFDPricer<solverType, adjointDifferentiation>::Accelerate(size_t& unaliased m,
-		COutputData& unaliased callOutput, COutputData& unaliased putOutput, TimeLeaves& unaliased callLeavesDt, TimeLeaves& unaliased putLeavesDt)
+		COutputData& unaliased callOutput, COutputData& unaliased putOutput,
+		TimeLeaves& unaliased callLeavesDt, TimeLeaves& unaliased putLeavesDt)
 {
 	if (calculationType == ECalculationType::Null)
 		return;
@@ -566,15 +586,13 @@ void CFDPricer<solverType, adjointDifferentiation>::Accelerate(size_t& unaliased
 	if (input.dividends.size())
 	{
 		// Price the accelerated option until last dividend time
-		const size_t divIdx = input.dividends.size() - 1;
 		const double lastDivTime = input.dividends[divIdx].time;
-		const double timeAfterDividend = input.T - lastDivTime;
 
 		 // this floors it to being the greatest integer j s.t. j * dt <= lastDivTime
 		size_t j = static_cast<size_t>(lastDivTime / u.GetDt());
 		const double previousTime = j * u.GetDt();
 
-		(this->*refinedSmoothingDelegate)(previousTime, timeAfterDividend, input.dividends[divIdx]);
+		(this->*refinedSmoothingDelegate)(previousTime, input.T, input.dividends[divIdx]);
 
 		// Price the non-accelerated option
 		CPricerSettings newSettings(settings);
@@ -582,31 +600,30 @@ void CFDPricer<solverType, adjointDifferentiation>::Accelerate(size_t& unaliased
 		{
 			if (calculatePut)
 				newSettings.calculationType = ECalculationType::PutOnly;
+			else
+				newSettings.calculationType = ECalculationType::Null;
 		}
 		else if (calculationType == ECalculationType::PutOnly)
 		{
 			if (calculateCall)
 				newSettings.calculationType = ECalculationType::CallOnly;
+			else
+				newSettings.calculationType = ECalculationType::Null;
 		}
 
 		UpdateDelegates(newSettings, false, false);
-
 		PriceUntil(m, j, callLeavesDt, putLeavesDt);
 
+		// Restore original settings
+		UpdateDelegates(settings, false, false);
+
+		// Now the calculations are in line for both option types at step j
 		m = j;
 	}
 	else
 	{
 		// Price the accelerated option
-		cache.T = input.T;
-		const double currentDf = cache.discountFactor;
-
-		cache.discountFactor = exp(-input.r * cache.T);
-		cache.growthFactor   = exp( input.b * cache.T);
-		cache.sqrtDt = sqrt(cache.T);
-		cache.sigmaSqrtDt = input.sigma * cache.sqrtDt;
-		cache.growthFactorTimesDiscountFactor = cache.discountFactor * cache.growthFactor;
-		CBlackScholes bs(input, cache);
+		CBlackScholes bs(input);
 		SmoothingWorker<calculationType>(input.N >> 1, bs, input.T);
 
 		// Sets non-AD greeks
@@ -629,29 +646,27 @@ void CFDPricer<solverType, adjointDifferentiation>::Accelerate(size_t& unaliased
 			// TODO: theta charm
 		}
 
-		cache.discountFactor = currentDf;
-
 		// Price the non-accelerated option
 		CPricerSettings newSettings(settings);
 		if (calculationType == ECalculationType::CallOnly)
 		{
 			if (calculatePut)
 				newSettings.calculationType = ECalculationType::PutOnly;
-			calculateCall = false;
+			else
+				newSettings.calculationType = ECalculationType::Null;
 		}
 		else if (calculationType == ECalculationType::PutOnly)
 		{
 			if (calculateCall)
 				newSettings.calculationType = ECalculationType::CallOnly;
-			calculatePut = false;
+			else
+				newSettings.calculationType = ECalculationType::Null;
 		}
-
 		UpdateDelegates(newSettings, false, false);
 
 		Price(callOutput, putOutput);
 
-		calculateCall = calculatePut = true;
-		SetOutput(callOutput, putOutput);
+		SetOutput<calculationType>(callOutput, putOutput);
 
 		m = 0;
 	}
@@ -669,8 +684,8 @@ void CFDPricer<solverType, adjointDifferentiation>::Price(COutputData& unaliased
 
 	PriceUntil(m, 0, callLeavesDt, putLeavesDt);
 
-	ComputeGreeks(callOutput, putOutput, callLeavesDt, putLeavesDt);
-	SetOutput(callOutput, putOutput);
+	(this->*computeGreeksDelegate)(callOutput, putOutput, callLeavesDt, putLeavesDt);
+	(this->*setOutputDelegate)(callOutput, putOutput);
 }
 
 template <ESolverType solverType, EAdjointDifferentiation adjointDifferentiation>
@@ -680,7 +695,6 @@ void CFDPricer<solverType, adjointDifferentiation>::PriceUntil(size_t start, con
 	{
 		double currentTime = start * u.GetDt();
 		double previousTime = currentTime - u.GetDt();
-		size_t divIdx = input.dividends.size() - 1;
 
 		if (input.dividends[divIdx].time >= previousTime && input.dividends[divIdx].time < currentTime)
 			RefinedPayoffInitialise(start);
@@ -742,9 +756,10 @@ void CFDPricer<solverType, adjointDifferentiation>::SaveLeaves(const size_t m, T
 }
 
 template <ESolverType solverType, EAdjointDifferentiation adjointDifferentiation>
-void CFDPricer<solverType, adjointDifferentiation>::SetOutput(COutputData& unaliased callOutput, COutputData& unaliased putOutput) const noexcept
+template <ECalculationType calculationType>
+void CFDPricer<solverType, adjointDifferentiation>::SetOutput(COutputData& unaliased callOutput, COutputData& unaliased putOutput) const
 {
-	if (calculateCall)
+	if (calculationType == ECalculationType::CallOnly || calculationType == ECalculationType::All)
 	{
 		callOutput.price = callData.payoff_i[input.N >> 1];
 
@@ -768,7 +783,7 @@ void CFDPricer<solverType, adjointDifferentiation>::SetOutput(COutputData& unali
 
 	}
 
-	if (calculatePut)
+	if (calculationType == ECalculationType::PutOnly || calculationType == ECalculationType::All)
 	{
 		putOutput.price = putData.payoff_i[input.N >> 1];
 
@@ -793,7 +808,8 @@ void CFDPricer<solverType, adjointDifferentiation>::SetOutput(COutputData& unali
 }
 
 template <ESolverType solverType, EAdjointDifferentiation adjointDifferentiation>
-void CFDPricer<solverType, adjointDifferentiation>::ComputeGreeks(COutputData& unaliased callOutput, COutputData& unaliased putOutput, const TimeLeaves& unaliased callLeavesDt, const TimeLeaves& unaliased putLeavesDt) const noexcept
+template <ECalculationType calculationType>
+void CFDPricer<solverType, adjointDifferentiation>::ComputeGreeks(COutputData& unaliased callOutput, COutputData& unaliased putOutput, const TimeLeaves& unaliased callLeavesDt, const TimeLeaves& unaliased putLeavesDt) const
 {
 	const auto& grid = u.GetGrid();
 
@@ -813,7 +829,7 @@ void CFDPricer<solverType, adjointDifferentiation>::ComputeGreeks(COutputData& u
 	const double oneOverDt2 = oneOverHalfDt * oneOverHalfDt;
 	oneOverHalfDt = .5;
 
-	if (calculateCall)
+	if (calculationType == ECalculationType::CallOnly || calculationType == ECalculationType::All)
 	{
 		callOutput.delta = a0 * callData.payoff_i[(input.N >> 1) - 1] + a1 * callData.payoff_i[input.N >> 1] + a2 * callData.payoff_i[(input.N >> 1) + 1];
 		callOutput.gamma = 2.0 * (b0 * callData.payoff_i[(input.N >> 1) - 1] + b1 * callData.payoff_i[input.N >> 1] + b2 * callData.payoff_i[(input.N >> 1) + 1]);
@@ -825,7 +841,7 @@ void CFDPricer<solverType, adjointDifferentiation>::ComputeGreeks(COutputData& u
 		callOutput.charm = oneOverHalfDt * (delta_2dt - callOutput.delta);
 	}
 
-	if (calculatePut)
+	if (calculationType == ECalculationType::PutOnly || calculationType == ECalculationType::All)
 	{
 		putOutput.delta = a0 * putData.payoff_i[(input.N >> 1) - 1] + a1 * putData.payoff_i[input.N >> 1] + a2 * putData.payoff_i[(input.N >> 1) + 1];
 		putOutput.gamma = 2.0 * (b0 * putData.payoff_i[(input.N >> 1) - 1] + b1 * putData.payoff_i[input.N >> 1] + b2 * putData.payoff_i[(input.N >> 1) + 1]);
