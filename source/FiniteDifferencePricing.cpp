@@ -9,6 +9,8 @@
 #include <iostream>
 #include <string>
 #include <algorithm>
+#include <chrono>
+#include <valgrind/callgrind.h>
 #include <gtest/gtest.h>
 
 #include <FiniteDifference/CFDPricer.h>
@@ -67,6 +69,57 @@ void PlotConvergence()
 	plotter.plot(y, x);
 }
 
+void Profile()
+{
+	const size_t iterations = 100;
+	const size_t nDivs = 8;
+	const double dtDivs = .25;
+
+	using namespace fdpricing;
+
+	CInputData input;
+	input.smoothing = true;
+	input.S = 100;
+	input.K = 100;
+	input.r = .05;
+	input.b = .02;
+	input.sigma = .3;
+	input.T = 2;
+	input.N = 129;
+	input.M = 80;
+	CPricerSettings settings;
+	settings.exerciseType = EExerciseType::American;
+	settings.fdSettings.gridType = EGridType::Adaptive;
+
+	auto started = std::chrono::high_resolution_clock::now();
+
+	CALLGRIND_START_INSTRUMENTATION;
+
+	for (size_t iter = 0; iter < iterations; ++iter)
+	{
+		for (size_t n = 0; n < nDivs; ++n)
+		{
+			input.dividends.resize(n);
+			for (size_t m = 0; m < n; ++m)
+				input.dividends[m] = CDividend(0.001 + dtDivs, 1.0);
+
+			CFDPricer<ESolverType::CrankNicolson, EAdjointDifferentiation::All> pricer(input, settings);
+			COutputData callOutput, putOutput;
+			pricer.Price(callOutput, putOutput);
+		}
+	}
+
+	CALLGRIND_STOP_INSTRUMENTATION;
+	CALLGRIND_DUMP_STATS;
+
+	auto done = std::chrono::high_resolution_clock::now();
+	double avgTime = std::chrono::duration_cast<std::chrono::milliseconds>(done - started).count();
+	avgTime /= (iterations * nDivs);
+
+	printf("Avg Time(ms) Per Option: %.5f\n", avgTime);
+	printf("Opt/Sec: %.5f\n", iterations / (.001 * avgTime));
+}
+
 int main(int argc, char * argv[])
 {
 	if(cmdOptionExists(argv, argv+argc, "-test"))
@@ -77,6 +130,10 @@ int main(int argc, char * argv[])
 	if(cmdOptionExists(argv, argv+argc, "-conv"))
 	{
 		PlotConvergence();
+	}
+	if(cmdOptionExists(argv, argv+argc, "-profile"))
+	{
+		Profile();
 	}
 
 
