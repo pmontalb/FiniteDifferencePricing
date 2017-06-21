@@ -42,6 +42,8 @@ public:
 
 	void Price(COutputData& unaliased callOutput, COutputData& unaliased putOutput) noexcept;
 
+	void Update(const CInputData& unaliased newInput) noexcept;
+
 private:
 	const CInputData& unaliased input;
 	const CPricerSettings& unaliased settings;

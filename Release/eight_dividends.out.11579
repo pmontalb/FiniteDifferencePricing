@@ -1,0 +1,20 @@
+version: 1
+creator: callgrind-3.11.0
+pid: 11579
+cmd:  ./FiniteDifferencePricing -profile -iter 100 -acc -divs 8 -method single --callgrind-out-file eight_dividends.out
+part: 2
+
+
+desc: I1 cache: 
+desc: D1 cache: 
+desc: LL cache: 
+
+desc: Timerange: Basic block 37378103 - 37378104
+desc: Trigger: Program termination
+
+positions: line
+events: Ir
+summary: 0
+
+
+totals: 0

@@ -10,6 +10,7 @@
 #include <string>
 #include <algorithm>
 #include <chrono>
+#include <thread>
 #include <valgrind/callgrind.h>
 #include <gtest/gtest.h>
 
@@ -69,55 +70,112 @@ void PlotConvergence()
 	plotter.plot(y, x);
 }
 
-void Profile()
+enum class EProfileMethod
 {
-	const size_t iterations = 100;
-	const size_t nDivs = 8;
-	const double dtDivs = .25;
+	SingleThreaded,
+	MultiThreaded,
+};
 
+template <EProfileMethod profileMethod>
+void ProfileWorker(const size_t iterations, const size_t nDivs, const bool smoothing, const bool acceleration) noexcept
+{
 	using namespace fdpricing;
 
 	CInputData input;
-	input.smoothing = true;
+	input.smoothing = smoothing;
+	input.acceleration = acceleration;
 	input.S = 100;
 	input.K = 100;
 	input.r = .05;
 	input.b = .02;
 	input.sigma = .3;
-	input.T = 2;
+	input.T = 7;
 	input.N = 129;
 	input.M = 80;
-	CPricerSettings settings;
-	settings.exerciseType = EExerciseType::American;
-	settings.fdSettings.gridType = EGridType::Adaptive;
+	input.dividends.resize(nDivs);
+	for (size_t m = 0; m < nDivs; ++m)
+		input.dividends[m] = CDividend(0.001 + .25 * m, 1.0);
 
-	auto started = std::chrono::high_resolution_clock::now();
+	CPricerSettings settings;
+	settings.calculationType = ECalculationType::All;
+	settings.exerciseType = EExerciseType::European;
+	settings.fdSettings.gridType = EGridType::Adaptive;
 
 	CALLGRIND_START_INSTRUMENTATION;
 
-	for (size_t iter = 0; iter < iterations; ++iter)
+	switch(profileMethod)
 	{
-		for (size_t n = 0; n < nDivs; ++n)
-		{
-			input.dividends.resize(n);
-			for (size_t m = 0; m < n; ++m)
-				input.dividends[m] = CDividend(0.001 + dtDivs, 1.0);
+		case EProfileMethod::SingleThreaded:
+			for (size_t iter = 0; iter < iterations; ++iter)
+			{
+				CFDPricer<ESolverType::CrankNicolson, EAdjointDifferentiation::All> pricer(input, settings);
+				COutputData callOutput, putOutput;
+				pricer.Price(callOutput, putOutput);
+			}
+		break;
 
-			CFDPricer<ESolverType::CrankNicolson, EAdjointDifferentiation::All> pricer(input, settings);
-			COutputData callOutput, putOutput;
-			pricer.Price(callOutput, putOutput);
+		case EProfileMethod::MultiThreaded:
+		{
+			size_t nThreads = std::thread::hardware_concurrency();
+			std::vector<std::thread> threads(nThreads);
+			const size_t optionsPerThread = static_cast<size_t>(iterations / nThreads);
+
+			size_t start = 0;
+			for (size_t i = 0; i < nThreads - 1; ++i)
+			{
+				start = i * optionsPerThread;
+				threads[i] = std::thread([&]()
+						{
+							for (size_t iter = start; iter < start + optionsPerThread; ++iter)
+							{
+								CFDPricer<ESolverType::CrankNicolson, EAdjointDifferentiation::All> pricer(input, settings);
+								COutputData callOutput, putOutput;
+								pricer.Price(callOutput, putOutput);
+							}
+						});
+			}
+			threads[nThreads - 1] = std::thread([&]()
+					{
+						for (size_t iter = optionsPerThread * (nThreads - 2); iter < iterations; ++iter)
+						{
+							CFDPricer<ESolverType::CrankNicolson, EAdjointDifferentiation::All> pricer(input, settings);
+							COutputData callOutput, putOutput;
+							pricer.Price(callOutput, putOutput);
+						}
+					});
+
+			for (size_t i = 0; i < nThreads; ++i)
+				threads[i].join();
 		}
+		break;
 	}
 
 	CALLGRIND_STOP_INSTRUMENTATION;
 	CALLGRIND_DUMP_STATS;
+}
+
+void Profile(const size_t iterations = 100,
+		const size_t nDivs = 8,
+		const bool smoothing = true,
+		const bool acceleration = true,
+		const EProfileMethod profileMethod = EProfileMethod::SingleThreaded) noexcept
+{
+	auto started = std::chrono::high_resolution_clock::now();
+
+	if (profileMethod == EProfileMethod::SingleThreaded)
+		ProfileWorker<EProfileMethod::SingleThreaded>(iterations, nDivs, smoothing, acceleration);
+	if (profileMethod == EProfileMethod::MultiThreaded)
+		ProfileWorker<EProfileMethod::MultiThreaded>(iterations, nDivs, smoothing, acceleration);
 
 	auto done = std::chrono::high_resolution_clock::now();
 	double avgTime = std::chrono::duration_cast<std::chrono::milliseconds>(done - started).count();
-	avgTime /= (iterations * nDivs);
+	avgTime /= iterations;
 
-	printf("Avg Time(ms) Per Option: %.5f\n", avgTime);
-	printf("Opt/Sec: %.5f\n", iterations / (.001 * avgTime));
+	printf("--------- SMOOTH=%d - ACCEL=%d - %zu DIVIDENDS (out of %zu iterations)  ---------\n", smoothing, acceleration, nDivs, iterations);
+	printf("\n\t* Avg Time(ms) Per Option: %.5f\n", avgTime);
+	printf("\n\t* Opt/Sec: %.5f\n", iterations / (.001 * avgTime));
+	printf("\n----------------------------------------------------------\n");
+
 }
 
 int main(int argc, char * argv[])
@@ -133,7 +191,35 @@ int main(int argc, char * argv[])
 	}
 	if(cmdOptionExists(argv, argv+argc, "-profile"))
 	{
-		Profile();
+		size_t nIterations = 100;
+		size_t nDivs = 8;
+		EProfileMethod profileMethod = EProfileMethod::SingleThreaded;
+		bool smoothing = false;
+		bool acceleration = false;
+
+		if (cmdOptionExists(argv, argv+argc, "-iter"))
+			nIterations = std::atoi(getCmdOption(argv, argv + argc, "-iter"));
+		if (cmdOptionExists(argv, argv+argc, "-divs"))
+			nDivs = std::atoi(getCmdOption(argv, argv + argc, "-divs"));
+		if (cmdOptionExists(argv, argv+argc, "-smooth"))
+			smoothing = true;
+		if (cmdOptionExists(argv, argv+argc, "-acc"))
+			acceleration = true;
+		if (cmdOptionExists(argv, argv+argc, "-method"))
+		{
+			const auto method = std::string(getCmdOption(argv, argv + argc, "-method"));
+			if (method == "single")
+			{
+				printf("============== SINGLE THREADED ==============\n");
+				profileMethod = EProfileMethod::SingleThreaded;
+			}
+			if (method == "multi")
+			{
+				printf("============== MULTI-THREADED ==============\n");
+				profileMethod = EProfileMethod::MultiThreaded;
+			}
+		}
+		Profile(nIterations, nDivs, smoothing, acceleration, profileMethod);
 	}
 
 

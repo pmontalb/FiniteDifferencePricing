@@ -1,0 +1,1825 @@
+version: 1
+creator: callgrind-3.11.0
+pid: 11661
+cmd:  ./FiniteDifferencePricing -profile -iter 100 -acc -divs 0 -method single
+part: 1
+
+
+desc: I1 cache: 
+desc: D1 cache: 
+desc: LL cache: 
+
+desc: Timerange: Basic block 0 - 14718668
+desc: Trigger: Client Request
+
+positions: line
+events: Ir
+summary: 0
+
+
+ob=(8) /lib/x86_64-linux-gnu/libm-2.23.so
+fl=(20) /build/glibc-9tT8Do/glibc-2.23/math/../sysdeps/ieee754/dbl-64/w_exp.c
+fn=(82) exp
+25 600
++1 1200
+cfi=(21) /build/glibc-9tT8Do/glibc-2.23/math/../sysdeps/ieee754/dbl-64/e_exp.c
+cfn=(86) __ieee754_exp_sse2
+calls=600 +30 
+* 60000
+* 600
++1 6000
++5 1200
+
+fl=(16) /build/glibc-9tT8Do/glibc-2.23/math/w_sinh.c
+fn=(58) sinh
+22 12900
++1 25800
+cfi=(17) /build/glibc-9tT8Do/glibc-2.23/math/../sysdeps/ieee754/dbl-64/e_sinh.c
+cfn=(60) __sinh_finite
+calls=12900 +26 
+* 1544900
++1 90300
++5 25800
+
+fl=(15) /build/glibc-9tT8Do/glibc-2.23/math/../sysdeps/ieee754/dbl-64/e_log.c
+fn=(52) __ieee754_log_sse2
+78 300
+-20 1200
++19 300
+-19 600
++20 300
+-20 300
++23 300
+-23 300
++23 300
+-1 300
++11 600
++5 600
++1 300
+-1 300
++1 1200
++71 300
++1 300
+-1 600
++1 600
+-1 300
++1 300
+-1 300
++1 300
++1 1200
++2 200
++1 200
++6 200
+-3 200
++3 200
++8 400
+-11 200
++20 200
+-17 200
++1 400
++3 400
++4 200
+-4 200
++14 200
+-10 200
+-4 400
++13 200
+-13 200
++4 200
+-4 200
++1 400
++3 400
++2 200
+-2 200
++2 400
++8 200
++2 200
+-2 400
++4 200
+-12 200
++12 400
+-14 600
++1 200
++2 400
++3 1200
++5 200
++1 600
++1 200
++1 600
+-22 100
+-3 100
++3 100
++8 200
+-11 100
++20 100
+-17 100
++1 200
++3 200
++4 100
+-4 100
++14 100
+-10 100
+-4 200
++13 100
+-13 100
++4 100
+-4 100
++1 200
++3 200
++2 100
+-2 100
++2 200
++8 100
++2 100
+-2 200
++4 100
+-12 100
++12 200
+-14 300
++1 100
++2 200
++3 600
++5 100
++1 300
++1 100
++1 900
++1 3000
++1 900
++4 300
+-4 900
++1 300
++3 2400
+-6 900
++57 2700
+
+fl=(12) /build/glibc-9tT8Do/glibc-2.23/math/../sysdeps/ieee754/dbl-64/s_log1p.c
+fn=(44) __log1p
+105 200
++4 200
++31 300
++1 300
++1 200
++1 200
++1 100
++9 100
++1 100
+-14 100
++4 100
++10 100
++7 200
+-1 100
++1 600
++1 400
+-1 200
+-27 200
++4 200
++26 100
++2 100
++1 100
+-1 200
++1 100
++17 200
++6 100
++1 100
+-7 100
++6 100
+-6 100
++6 100
+-5 200
++5 100
+-4 100
++4 100
+-4 100
++4 400
+-3 200
++3 800
++1 100
++3 1600
+-51 500
+
+fl=(21)
+fn=(86)
+56 2400
+fi=(23) /build/glibc-9tT8Do/glibc-2.23/math/../sysdeps/i386/fpu/fenv_private.h
+429 600
++1 1800
++3 600
+-3 600
++3 600
+fe=(21)
+66 600
+-1 600
++1 600
++1 1200
++2 1800
++2 600
++6 600
+-6 600
++19 600
+-19 600
++8 600
+-3 600
+-5 600
++1 600
++2 600
+-2 600
++13 2400
+-13 600
++4 600
++1 1200
++2 600
+-2 600
++2 600
++2 600
++1 600
++5 600
++1 600
+-1 600
++1 600
+-1 600
++3 600
++1 600
+-9 600
++1 600
++4 600
++4 1800
+-1 600
+-8 600
++8 1200
++1 600
+-1 1200
+-7 1200
++7 600
+-7 600
++8 600
+-8 1200
++8 1800
+-8 600
++8 600
++3 1200
+-3 600
++3 600
+-3 600
++3 1800
++1 1200
++2 4200
++2 1200
+fi=(23)
+445 1200
+fe=(21)
+231 2400
+
+fl=(11) /build/glibc-9tT8Do/glibc-2.23/math/../sysdeps/ieee754/dbl-64/s_asinh.c
+fn=(42) asinh
+38 200
+-3 400
++3 200
++1 200
++1 400
++6 800
++9 800
+fi=(14) /build/glibc-9tT8Do/glibc-2.23/math/../sysdeps/x86_64/fpu/math_private.h
++3 700
+fe=(11)
+-1 500
+cfi=(15)
+cfn=(52)
+calls=100 +21 
+* 13600
+* 100
+* 200
+fi=(13) /build/glibc-9tT8Do/glibc-2.23/math/../sysdeps/generic/math_private.h
+233 400
+fe=(11)
+67 200
+fi=(13)
+233 400
+fe=(11)
+67 200
+-5 400
+fi=(14)
+-4 300
+fe=(11)
++5 400
+cfi=(12)
+cfn=(44)
+calls=100 +42 
+* 9500
+* 300
+
+fl=(17)
+fn=(60)
+49 12900
+-6 25800
++6 12900
+-6 12900
++7 25800
++3 25800
++4 12900
+-1 12900
++1 25800
++3 38700
++2 25800
++6 51600
+cfi=(18) /build/glibc-9tT8Do/glibc-2.23/math/../sysdeps/ieee754/dbl-64/s_expm1.c
+cfn=(62) expm1
+calls=12900 +69 
+* 1073300
++1 38700
++2 34800
++18 17400
+-31 4600
++31 7100
+-19 21300
++19 7100
+-19 14200
++19 7100
+-19 28400
++19 7100
+
+fl=(18)
+fn=(62)
+137 38700
++6 12900
+-5 12900
++5 12900
+-5 12900
++8 25800
+257 8000
+-84 25800
++23 9900
++7 3300
++3 3300
++1 3300
++4 3300
++3 3300
+-8 3300
++5 6600
+-4 3300
++4 3300
+-3 3300
++3 3300
+-3 3300
++3 29700
++1 3300
+-1 3300
++1 9900
++1 19800
++1 3300
+-8 9600
++1 9600
++4 9600
++3 9600
+-8 9600
++5 19200
+-4 9600
++4 9600
+-3 9600
++3 9600
+-3 9600
++3 86400
++1 9600
+-1 9600
++1 28800
++1 57600
++1 9600
++4 9600
++2 9600
+-2 19200
++1 9600
++1 9600
++2 19200
++7 16800
++9 11200
++14 5600
++1 5600
+-1 5600
++1 39200
++4 11200
+-82 19200
++2 4000
++2 4000
+-2 4000
++16 19200
++1 28800
++21 13200
++42 6600
+-69 5600
++2 11200
+-2 5600
++1 11200
++1 5600
++1 5600
+-1 11200
+-11 20000
++45 12000
++1 3600
+-37 22400
++39 15500
++14 5600
++1 5600
+-1 39200
++1 5600
++1 11200
+-55 16800
+
+fl=(22) /build/glibc-9tT8Do/glibc-2.23/math/w_log.c
+fn=(104) log
+28 600
++14 200
+cfi=(15)
+cfn=(52)
+calls=200 +36 
+* 27600
+* 200
+
+ob=(5) /lib/x86_64-linux-gnu/ld-2.23.so
+fl=(9) /build/glibc-9tT8Do/glibc-2.23/string/../sysdeps/x86_64/multiarch/../strcmp.S
+fn=(36) strcmp
+144 40
++1 40
++2 40
++1 40
++21 40
++1 40
++1 24
++1 24
++1 24
++1 24
++1 24
++1 24
++21 24
++1 24
++1 24
++1 24
++1 24
++1 24
++1 24
++15 16
++1 16
++1 16
++1 16
++1 16
++1 16
++1 16
++1 16
++1 16
++1 14
++1 14
++1 14
++2 14
++1 14
++1 14
++1 14
++1 14
++1 14
+-5 2
++1 2
++1 2
++1 2
++1 2
++1 2
+1071 4
++1 4
++1 4
++1 4
++1 4
++2 4
++1 4
++1 4
++1 4
++1 4
++1 4
++1 4
++1 4
++4 4
++1 4
++1 4
++6 4
++1 4
++1 8
++4 4
++1 4
++3 4
++1 4
++1 4
++3 4
++1 4
++1 4
++6 4
++1 4
++1 4
++1 4
++1 4
++1 4
+1446 2
++1 2
++1 2
++1 2
++1 2
++2 2
++1 2
++1 2
++1 2
++1 2
++1 2
++1 2
++1 2
++4 2
++1 2
++1 2
++6 2
++1 2
++1 4
++4 2
++1 2
++3 2
++1 2
++1 2
++3 2
++1 2
++1 2
++6 2
++1 2
++1 2
++1 2
++1 2
++1 2
++72 1
++1 1
++1 1
++1 1
++1 1
++2 1
++1 1
++1 1
++1 1
++1 1
++1 1
++1 1
+1821 8
++1 8
++1 8
++1 8
++1 8
++2 8
++1 8
++1 8
++1 8
++1 8
++1 8
++1 8
+1946 1
++1 1
++1 1
++1 1
++1 1
++2 1
++1 1
++1 1
++1 1
++1 1
++1 1
++1 1
+2200 6
++2 6
++1 6
++1 6
++1 6
+-3 10
++1 10
++1 10
++1 10
++1 42
++5 14
++6 14
++1 14
++8 14
++1 14
+-16 26
++6 26
++1 26
++8 26
++1 26
+
+fl=(8) /build/glibc-9tT8Do/glibc-2.23/elf/dl-misc.c
+fn=(34) _dl_name_match_p
+288 80
++1 32
+cfi=(9)
+cfn=(36)
+calls=16 144 
+* 480
+* 16
++1 16
+-1 16
++3 16
++2 32
++4 16
+-4 32
++1 48
+cfi=(9)
+cfn=(36)
+calls=16 144 
+* 480
+* 32
++6 16
+-1 16
++1 64
+
+fl=(6) /build/glibc-9tT8Do/glibc-2.23/elf/../elf/dl-runtime.c
+fn=(28) _dl_fixup
+66 8
++5 8
+-5 4
++3 8
++3 4
+-1 8
+-3 4
++5 24
++1 4
+-1 4
++1 8
++5 8
++4 8
++4 12
++4 4
++1 20
++2 16
++7 8
+-1 4
++1 4
++10 36
+cfi=(7) /build/glibc-9tT8Do/glibc-2.23/elf/dl-lookup.c
+cfn=(30) _dl_lookup_symbol_x
+calls=4 806 
+* 4156
+* 4
++4 20
++10 24
++16 4
+-8 4
++8 12
++4 12
+fi=(10) /build/glibc-9tT8Do/glibc-2.23/elf/../sysdeps/x86_64/dl-machine.h
++90 4
+fe=(6)
+-86 12
+
+fl=(5) /build/glibc-9tT8Do/glibc-2.23/elf/../sysdeps/x86_64/dl-trampoline.h
+fn=(26) _dl_runtime_resolve_sse
+64 4
++3 4
++2 4
++2 4
++3 4
++1 4
++1 4
++1 4
++1 4
++1 4
++1 4
++1 4
++1 4
++1 4
++1 4
++1 4
++1 4
++1 4
++1 4
++5 4
++1 4
++1 4
++1 4
++14 4
++1 4
++1 4
+cfi=(6)
+cfn=(28)
+calls=4 -46 
+* 4456
++1 4
++5 4
++1 4
++1 4
++1 4
++13 4
++1 4
++1 4
++1 4
++1 4
++1 4
++1 4
++1 4
++1 4
++1 4
++1 4
++1 4
++1 4
++1 4
++1 4
++2 4
++2 4
++4 4
++3 4
+cob=(8)
+cfi=(22)
+cfn=(104)
+calls=1 28 
+* 143
+cob=(8)
+cfi=(20)
+cfn=(82)
+calls=1 25 
+* 116
+cob=(8)
+cfi=(16)
+cfn=(58)
+calls=1 22 
+* 129
+cob=(8)
+cfi=(11)
+cfn=(42)
+calls=1 38 
+* 130
+
+fl=(7)
+fn=(30)
+806 44
+568 4
+806 16
+568 20
++1 4
+-1 4
++1 12
+-1 12
++1 11
+-1 11
++1 33
+-1 41
+808 4
++4 4
++4 4
+-8 4
++1 8
++7 12
++7 4
+-2 4
++2 4
+-2 4
++6 4
+-7 4
++7 8
+-7 24
++9 56
+cfn=(32) do_lookup_x
+calls=4 355 
+* 3656
++3 12
++26 8
++22 4
++1 28
++31 4
++9 20
++14 12
++3 16
++5 4
++2 32
+
+fn=(38) check_match
+92 32
++3 28
++12 24
++3 32
+cfi=(9)
+cfn=(36)
+calls=4 +34 
+* 226
+* 8
++5 4
+-1 4
++1 4
++2 8
++19 8
++1 32
++46 4
+-7 4
++7 20
+-45 12
+cfi=(9)
+cfn=(36)
+calls=4 +6 
+* 284
+* 12
+
+fn=(32)
+355 28
++1 4
+-1 20
++48 4
+-30 4
+-11 4
++41 4
++7 8
+-7 8
+-30 16
++37 16
+-44 8
++3 8
+-3 32
++3 32
++4 40
++4 40
++4 40
++6 60
++8 20
+-4 20
++1 20
++3 40
++1 60
++3 20
++1 40
++2 40
++8 20
+-8 20
++8 200
+-99 16
+553 128
++1 32
+cfi=(8)
+cfn=(34)
+calls=16 288 
+* 1392
+* 48
++3 48
++4 32
+-92 8
++50 16
++4 12
++12 8
++1 4
++1 8
+413 30
++2 10
++2 65
++13 9
+-10 35
++2 8
++1 20
+-1 4
++1 28
+-1 4
++1 12
+cfn=(38)
+calls=4 92 
+* 746
++4 12
++34 2
++94 7
+439 36
+
+ob=(3) /lib/x86_64-linux-gnu/libc-2.23.so
+fl=(4) /build/glibc-9tT8Do/glibc-2.23/malloc/malloc.c
+fn=(152) free
+2932 10000
++5 4000
++1 4000
++6 4000
++5 2000
+-2 2000
++2 4000
++16 6000
++1 4000
+cfn=(154) _int_free
+calls=2000 3839 
+* 234100
++1 12000
+
+fn=(16) malloc
+2900 6000
++5 4000
++1 4000
++3 16000
++2 6000
+cfn=(18) _int_malloc
+calls=2000 3347 
+* 270956
++3 2000
+-3 2000
++3 2000
++8 8000
++2 22000
++3 8000
+-18 12000
+
+fn=(18)
+3347 6000
+-30 4000
++30 2000
+-30 8000
++30 6000
+-30 2000
++30 6000
++4 6000
++14 4000
++2 300
++2 100
+-1 100
+-1 100
++1 100
++5 200
++29 4000
++2 300
++1 300
++2 100
+-2 100
++2 200
++39 7600
++1 3800
+3817 28000
+-2 2000
++2 2000
+-2 2000
++2 4000
+5000 2000
+3815 2000
++2 2000
+5002 2000
+3817 2000
+5002 2000
+3817 6000
+5002 4000
+3817 8000
+5000 4000
+3467 10000
+3831 18000
+3601 4000
++73 4000
++1 4000
++1 4000
++1 4000
++1 4000
++5 4000
++16 26
++2 52
+-4 54
++8 1
++3 2
++2 1
++2 1
+-1 1
+-1 3
+-27 1
++27 1
+-27 1
++4 6003
++3 4404
+-3 3300
++3 400
+-3 200
++3 297
+3790 2000
++3 2000
+-2 4000
++2 4000
+3603 5700
++3 1900
+-3 1900
++3 5700
+3446 5701
+3690 3
++2 2
++1 2
+3798 2000
+-3 2000
++1 2000
++2 2000
+-1 2000
++1 4000
++2 2000
+-2 8000
++2 2000
++3 2000
+1877 6000
+
+fn=(156) malloc_consolidate
+4142 200
+-22 800
++23 300
++12 100
+5000 100
+4145 100
++11 100
+-1 100
+5002 100
+-2 100
++2 500
+4158 200
++1 200
+-1 1800
++1 2100
++21 100
++1 1400
++4 100
++4 100
+-3 100
++1 100
++2 100
++1 100
++1 100
++3 100
++1 100
++1 100
+-2 100
++12 100
+-12 100
++3 200
++9 100
+-41 100
+-3 100
++3 200
++1 100
++1 200
++2 200
++7 200
++3 200
++27 200
++3 4000
++6 800
+
+fn=(154)
+3839 18000
++13 2000
+-13 2000
++13 4000
++6 8000
++1 4000
++11 8000
++13 4000
++11 400
++1 300
+1884 100
+3919 100
+1884 200
+3921 300
++1 200
++4 100
+-4 100
++1 100
++9 700
++9 400
++2 100
++2 600
+4103 16000
+3958 3800
++1 5700
++15 3800
++8 5700
++6 3800
++1 3800
++1 3800
+1884 5700
+3999 3800
++1 100
++2 100
+-1 100
++2 1300
++3 3800
++5 2000
++1 9000
++1 900
++11 900
+-1 900
++2 1800
+-1 100
+-1 100
++2 200
++7 1000
+-2 1000
++1 1000
++1 1000
++2 1000
++1 1000
++2 1000
++1 1000
++2 3000
++1 1000
++30 3800
++1 1800
++3 2700
+3960 9500
++8 1900
+-4 1900
++4 5700
+-7 3800
+4091 5700
++1 5700
++1 9500
+3947 400
++68 200
+-3 2700
++61 200
+cfn=(156)
+calls=100 +69 
+* 16200
+* 100
+-21 900
++1 2700
++1 1800
+-80 9500
+4077 4500
+
+fl=(19) /build/glibc-9tT8Do/glibc-2.23/string/../sysdeps/x86_64/multiarch/../memset.S
+fn=(68) __GI_memset
+53 1200
++1 1200
++1 1200
++1 1200
++1 1200
++2 1200
++1 1200
++17 1200
++1 1200
++1 1200
++1 1200
++1 1200
++1 1200
++1 1200
++1 1200
++1 1200
++1 1200
++1 1200
++1 1200
++1 1200
++1 2400
++3 1200
++1 1200
++1 1200
++1 1200
++1 1200
++1 1200
++1 1200
+-6 26400
++1 26400
++1 26400
++1 26400
++1 26400
++1 26400
++1 26400
++1 1200
+
+ob=(2) /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.23
+fl=(3) ???
+fn=(12) operator new(unsigned long)
+0 14000
+cob=(3)
+cfi=(4)
+cfn=(16)
+calls=2000 2900 
+0 362956
+0 2000
+0 8000
+
+fn=(148) operator delete(void*)
+0 2000
+cob=(3)
+cfi=(4)
+cfn=(152)
+calls=2000 2932 
+0 286100
+0 2000
+
+ob=(1) /home/raiden/workspace/FiniteDifferencePricing/Release Clang-4.0/FiniteDifferencePricing
+fl=(1) ???
+fn=(136) void fdpricing::CFDPricer<(fdpricing::ESolverType)3, (EAdjointDifferentiation)4>::ComputeGreeks<(ECalculationType)2>(fdpricing::COutputData&, fdpricing::COutputData&, std::array<double, 6ul> const&, std::array<double, 6ul> const&) const
+0 6800
+
+fn=(116) double fdpricing::CBlackScholes::Delta<(fdpricing::EOptionType)1>() const
+0 300
+
+fn=(132) fdpricing::CTridiagonalOperator<(EAdjointDifferentiation)4>::Solve(std::vector<double, std::allocator<double> >&, std::vector<details::Triple, std::allocator<details::Triple> > const&)
+0 288500
+cfn=(90) std::vector<double, std::allocator<double> >::_M_default_append(unsigned long)
+calls=100 0 
+0 39600
+0 106080000
+
+fn=(88) void fdpricing::CPayoffData::Init<(EAdjointDifferentiation)4>(unsigned long)
+0 3000
+cfn=(90)
+calls=200 0 
+0 79200
+0 2200
+cfn=(90)
+calls=200 0 
+0 79200
+0 2200
+cfn=(90)
+calls=200 0 
+0 79200
+0 2400
+cfn=(90)
+calls=200 0 
+0 79200
+0 1000
+
+fn=(96) void fdpricing::CFDPricer<(fdpricing::ESolverType)3, (EAdjointDifferentiation)4>::Accelerate<(ECalculationType)1>(unsigned long&, fdpricing::COutputData&, fdpricing::COutputData&, std::array<double, 6ul>&, std::array<double, 6ul>&)
+0 2000
+cfn=(98) fdpricing::CBlackScholes::CBlackScholes(fdpricing::CInputData const&)
+calls=100 0 
+0 106940
+0 900
+cfn=(110) double fdpricing::CBlackScholes::Value<(fdpricing::EOptionType)1>() const
+calls=100 0 
+0 900
+0 400
+cfn=(112) fdpricing::CBlackScholes::Vega() const
+calls=100 0 
+0 400
+0 1000
+cfn=(114) double fdpricing::CBlackScholes::RhoBorrow<(fdpricing::EOptionType)1>() const
+calls=100 0 
+0 400
+0 400
+cfn=(116)
+calls=100 0 
+0 300
+0 300
+cfn=(118) fdpricing::CBlackScholes::Gamma() const
+calls=100 0 
+0 500
+0 1100
+cfn=(114)
+calls=100 0 
+0 400
+0 1400
+cfn=(92) fdpricing::CFDPricer<(fdpricing::ESolverType)3, (EAdjointDifferentiation)4>::UpdateDelegates(fdpricing::CPricerSettings const&, bool, bool)
+calls=100 0 
+0 3800
+0 400
+cfn=(95) fdpricing::CFDPricer<(fdpricing::ESolverType)3, (EAdjointDifferentiation)4>::Price(fdpricing::COutputData&, fdpricing::COutputData&)'2
+calls=100 0 
+0 252305800
+0 2600
+
+fn=(108) fdpricing::CStats::normPdf(double)
+0 500
+cob=(8)
+cfi=(20)
+cfn=(82)
+calls=100 25 
+0 11600
+0 100
+0 300
+
+fn=(0) void ProfileWorker<(EProfileMethod)0>(unsigned long, unsigned long, bool, bool)
+0 14
+cfn=(2) fdpricing::CFDPricer<(fdpricing::ESolverType)3, (EAdjointDifferentiation)4>::CFDPricer(fdpricing::CInputData const&, fdpricing::CPricerSettings const&)
+calls=1 0 
+0 49508
+0 396
+cfn=(2)
+calls=99 0 
+0 4536180
+0 1500
+cfn=(94) fdpricing::CFDPricer<(fdpricing::ESolverType)3, (EAdjointDifferentiation)4>::Price(fdpricing::COutputData&, fdpricing::COutputData&)
+calls=100 0 
+0 252432840
+0 200
+cfn=(140) fdpricing::CFDPricer<(fdpricing::ESolverType)3, (EAdjointDifferentiation)4>::~CFDPricer()
+calls=100 0 
+0 304200
+0 200
+
+fn=(72) fdpricing::CTridiagonalOperator<(EAdjointDifferentiation)4>::Make(fdpricing::CInputData const&, fdpricing::CGrid const&)
+0 475600
+
+fn=(76) fdpricing::CEvolutionOperator<(fdpricing::ESolverType)3, (EAdjointDifferentiation)4>::ctor()
+0 600
+cob=(2)
+cfi=(3)
+cfn=(12)
+calls=100 0 
+0 20856
+0 100
+0 400
+cfn=(74) fdpricing::CTridiagonalOperator<(EAdjointDifferentiation)4>::CTridiagonalOperator(fdpricing::CTridiagonalOperator<(EAdjointDifferentiation)4> const&)
+calls=100 0 
+0 376800
+0 700500
+
+fn=(120) void fdpricing::CFDPricer<(fdpricing::ESolverType)3, (EAdjointDifferentiation)4>::Accelerate<(ECalculationType)0>(unsigned long&, fdpricing::COutputData&, fdpricing::COutputData&, std::array<double, 6ul>&, std::array<double, 6ul>&)
+0 100
+
+fn=(144) fdpricing::CTridiagonalOperator<(EAdjointDifferentiation)4>::~CTridiagonalOperator()
+0 1200
+cob=(2)
+cfi=(3)
+cfn=(148)
+calls=100 0 
+0 13400
+0 100
+0 400
+cob=(2)
+cfi=(3)
+cfn=(148)
+calls=100 0 
+0 14600
+0 100
+0 400
+cob=(2)
+cfi=(3)
+cfn=(148)
+calls=100 0 
+0 14600
+0 100
+0 300
+cob=(2)
+cfi=(3)
+cfn=(148)
+calls=100 0 
+0 10200
+0 100
+
+fn=(122) fdpricing::CFDPricer<(fdpricing::ESolverType)3, (EAdjointDifferentiation)4>::PriceUntil(unsigned long, unsigned long, std::array<double, 6ul>&, std::array<double, 6ul>&)
+0 2700
+cfn=(124) void fdpricing::CFDPricer<(fdpricing::ESolverType)3, (EAdjointDifferentiation)4>::Exercise<(ECalculationType)2>()
+calls=100 0 
+0 155300
+0 56800
+cfn=(126) void fdpricing::CFDPricer<(fdpricing::ESolverType)3, (EAdjointDifferentiation)4>::ApplyOperator<(ECalculationType)2>(fdpricing::CEvolutionOperator<(fdpricing::ESolverType)3, (EAdjointDifferentiation)4>&)
+calls=8000 0 
+0 232240100
+0 64000
+cfn=(134) void fdpricing::CFDPricer<(fdpricing::ESolverType)3, (EAdjointDifferentiation)4>::RollBack<(ECalculationType)2>(double, double)
+calls=8000 0 
+0 19688000
+0 85100
+
+fn=(74)
+0 5600
+cob=(2)
+cfi=(3)
+cfn=(12)
+calls=200 0 
+0 37800
+0 200
+0 211600
+cob=(2)
+cfi=(3)
+cfn=(12)
+calls=200 0 
+0 37800
+0 200
+0 211800
+cob=(2)
+cfi=(3)
+cfn=(12)
+calls=200 0 
+0 37800
+0 200
+0 210600
+
+fn=(90)
+0 36000
+cob=(2)
+cfi=(3)
+cfn=(12)
+calls=900 0 
+0 176400
+0 900
+0 11700
+cob=(3)
+cfi=(19)
+cfn=(68)
+calls=900 53 
+0 115200
+0 900
+0 15300
+
+fn=(92)
+0 7200
+
+fn=(110)
+0 900
+
+fn=(118)
+0 500
+
+fn=(142) fdpricing::CEvolutionOperator<(fdpricing::ESolverType)3, (EAdjointDifferentiation)4>::~CEvolutionOperator()
+0 1200
+cfn=(144)
+calls=100 0 
+0 55500
+0 800
+cob=(2)
+cfi=(3)
+cfn=(148)
+calls=100 0 
+0 29500
+0 100
+0 400
+cob=(2)
+cfi=(3)
+cfn=(148)
+calls=100 0 
+0 14600
+0 100
+0 400
+cob=(2)
+cfi=(3)
+cfn=(148)
+calls=100 0 
+0 14600
+0 100
+0 400
+cob=(2)
+cfi=(3)
+cfn=(148)
+calls=100 0 
+0 14600
+0 100
+0 800
+cob=(2)
+cfi=(3)
+cfn=(148)
+calls=100 0 
+0 14600
+0 100
+0 400
+cob=(2)
+cfi=(3)
+cfn=(148)
+calls=100 0 
+0 14600
+0 100
+0 400
+cob=(2)
+cfi=(3)
+cfn=(148)
+calls=100 0 
+0 14600
+0 100
+0 1000
+cob=(2)
+cfi=(3)
+cfn=(148)
+calls=100 0 
+0 14600
+0 100
+
+fn=(4) fdpricing::CGrid::CGrid(double, double, double, fdpricing::EGridType, unsigned long)
+0 1400
+cfn=(6) void fdpricing::CGrid::Make<(fdpricing::EGridType)3>()
+calls=100 0 
+0 2089384
+
+fn=(6)
+0 2000
+cfn=(8) std::vector<double, std::allocator<double> >::_M_fill_insert(__gnu_cxx::__normal_iterator<double*, std::vector<double, std::allocator<double> > >, unsigned long, double const&)
+calls=100 0 
+0 38600
+0 1200
+cob=(8)
+cfi=(11)
+cfn=(42)
+calls=99 38 
+0 12870
+cob=(5)
+cfi=(5)
+cfn=(26)
+calls=1 64 
+0 1345
+0 104
+0 500
+cob=(8)
+cfi=(11)
+cfn=(42)
+calls=100 38 
+0 17200
+0 100
+0 2900
+cob=(8)
+cfi=(16)
+cfn=(58)
+calls=99 22 
+0 12771
+cob=(5)
+cfi=(5)
+cfn=(26)
+calls=1 64 
+0 1290
+0 104
+0 166400
+cob=(8)
+cfi=(16)
+cfn=(58)
+calls=12800 22 
+0 1686800
+0 12800
+0 132400
+
+fn=(128) fdpricing::CTridiagonalOperator<(EAdjointDifferentiation)4>::Dot(fdpricing::CPayoffData&) const
+0 18608000
+cfn=(130) fdpricing::CTridiagonalOperator<(EAdjointDifferentiation)4>::Add(std::vector<double, std::allocator<double> >&, double, std::vector<details::Triple, std::allocator<details::Triple> > const&, std::vector<double, std::allocator<double> > const&) const
+calls=8000 0 
+0 12808000
+0 37024000
+cfn=(130)
+calls=8000 0 
+0 12808000
+0 18552000
+
+fn=(2)
+0 6200
+cfn=(4)
+calls=100 0 
+0 2090784
+0 400
+cfn=(64) fdpricing::CTridiagonalOperator<(EAdjointDifferentiation)4>::CTridiagonalOperator(unsigned long)
+calls=100 0 
+0 186400
+0 400
+cfn=(72)
+calls=100 0 
+0 475600
+0 1100
+cfn=(74)
+calls=100 0 
+0 376800
+0 300
+cfn=(76)
+calls=100 0 
+0 1099256
+0 400
+cob=(8)
+cfi=(20)
+cfn=(82)
+calls=99 25 
+0 11484
+cob=(5)
+cfi=(5)
+cfn=(26)
+calls=1 64 
+0 1260
+0 104
+0 600
+cfn=(88)
+calls=100 0 
+0 163800
+0 500
+cfn=(88)
+calls=100 0 
+0 163800
+0 3100
+cfn=(92)
+calls=100 0 
+0 3400
+
+fn=(64)
+0 2400
+cob=(2)
+cfi=(3)
+cfn=(12)
+calls=100 0 
+0 18900
+0 100
+0 1500
+cob=(3)
+cfi=(19)
+cfn=(68)
+calls=100 53 
+0 35200
+0 100
+0 1200
+cfn=(70) std::vector<details::Triple, std::allocator<details::Triple> >::_M_default_append(unsigned long)
+calls=100 0 
+0 62400
+0 1300
+cfn=(70)
+calls=100 0 
+0 62400
+0 900
+
+fn=(98)
+0 2800
+cob=(8)
+cfi=(20)
+cfn=(82)
+calls=100 25 
+0 11600
+0 100
+0 400
+cob=(8)
+cfi=(20)
+cfn=(82)
+calls=100 25 
+0 11600
+0 100
+0 2300
+cob=(8)
+cfi=(22)
+cfn=(104)
+calls=99 28 
+0 14157
+cob=(5)
+cfi=(5)
+cfn=(26)
+calls=1 64 
+0 1279
+0 104
+0 800
+cob=(8)
+cfi=(22)
+cfn=(104)
+calls=100 28 
+0 14300
+0 100
+0 700
+cfn=(106) fdpricing::CStats::normCdf(double)
+calls=100 0 
+0 16200
+0 600
+cfn=(106)
+calls=100 0 
+0 16200
+0 600
+cfn=(108)
+calls=100 0 
+0 12500
+0 500
+
+fn=(138) void fdpricing::CFDPricer<(fdpricing::ESolverType)3, (EAdjointDifferentiation)4>::SetOutput<(ECalculationType)2>(fdpricing::COutputData&, fdpricing::COutputData&) const
+0 1700
+
+fn=(112)
+0 400
+
+fn=(124)
+0 155300
+
+fn=(134)
+0 19688000
+
+fn=(94)
+0 2100
+cfn=(96)
+calls=100 0 
+0 252429940
+0 800
+
+fn=(95)
+0 2100
+cfn=(120)
+calls=100 0 
+0 100
+0 800
+cfn=(122)
+calls=100 0 
+0 252292000
+0 1000
+cfn=(136)
+calls=100 0 
+0 6800
+0 800
+cfn=(138)
+calls=100 0 
+0 1700
+0 500
+
+fn=(140)
+0 700
+cfn=(142)
+calls=100 0 
+0 193800
+0 400
+cob=(2)
+cfi=(3)
+cfn=(148)
+calls=100 0 
+0 13000
+0 100
+0 400
+cob=(2)
+cfi=(3)
+cfn=(148)
+calls=100 0 
+0 13000
+0 100
+0 400
+cob=(2)
+cfi=(3)
+cfn=(148)
+calls=100 0 
+0 13000
+0 100
+0 400
+cob=(2)
+cfi=(3)
+cfn=(148)
+calls=100 0 
+0 13000
+0 100
+0 400
+cob=(2)
+cfi=(3)
+cfn=(148)
+calls=100 0 
+0 13000
+0 100
+0 400
+cob=(2)
+cfi=(3)
+cfn=(148)
+calls=100 0 
+0 13000
+0 100
+0 400
+cob=(2)
+cfi=(3)
+cfn=(148)
+calls=100 0 
+0 13000
+0 100
+0 500
+cob=(2)
+cfi=(3)
+cfn=(148)
+calls=100 0 
+0 14600
+0 100
+
+fn=(70)
+0 9200
+cob=(2)
+cfi=(3)
+cfn=(12)
+calls=200 0 
+0 37800
+0 200
+0 2800
+cob=(3)
+cfi=(19)
+cfn=(68)
+calls=200 53 
+0 70400
+0 200
+0 4200
+
+fn=(8)
+0 4300
+cob=(2)
+cfi=(3)
+cfn=(12)
+calls=100 0 
+0 19600
+0 100
+0 14600
+
+fn=(106)
+0 6600
+cob=(8)
+cfi=(20)
+cfn=(82)
+calls=200 25 
+0 23200
+0 200
+0 2400
+
+fn=(126)
+0 104000
+cfn=(128)
+calls=8000 0 
+0 99800000
+0 48000
+cfn=(132)
+calls=8000 0 
+0 26632100
+0 56000
+cfn=(130)
+calls=8000 0 
+0 12808000
+0 32000
+cfn=(132)
+calls=8000 0 
+0 26592000
+0 32000
+cfn=(132)
+calls=8000 0 
+0 26592000
+0 56000
+cfn=(130)
+calls=8000 0 
+0 12808000
+0 88000
+cfn=(132)
+calls=8000 0 
+0 26592000
+
+fn=(114)
+0 800
+
+fn=(130)
+0 51232000
+
+totals: 257325038

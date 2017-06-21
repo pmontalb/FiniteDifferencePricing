@@ -1,0 +1,20 @@
+version: 1
+creator: callgrind-3.11.0
+pid: 12466
+cmd:  ./FiniteDifferencePricing -profile -iter 100 -acc -divs 0 -method single
+part: 2
+
+
+desc: I1 cache: 
+desc: D1 cache: 
+desc: LL cache: 
+
+desc: Timerange: Basic block 14675603 - 14675604
+desc: Trigger: Program termination
+
+positions: line
+events: Ir
+summary: 0
+
+
+totals: 0
