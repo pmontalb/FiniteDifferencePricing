@@ -688,3 +688,56 @@ TEST (FDTest, VellekoopPage282Table3Acceleration)
 	EXPECT_LE(fabs(RE() - 15.21), 0.01);
 }
 
+
+TEST (FDTest, AccelerationDividendConsistency)
+{
+	CInputData input;
+	input.S = 100;
+	input.K = 100;
+	input.r = .06;
+	input.b = .06;
+	input.sigma = .25;
+	input.T = 7;
+	input.N = 257;
+	input.M = 80;
+	input.smoothing = true;
+	input.acceleration = true;
+	input.dividends.resize(7);
+	double t0 = .1;
+	for (size_t i = 0; i < 7; i++)
+		input.dividends[i] = CDividend(t0 + i, std::min(8.0, 6.0 + .5 * i));
+
+	COutputData callOutput;
+	COutputData putOutput;
+
+	CPricerSettings settings;
+	settings.exerciseType = EExerciseType::American;
+	settings.fdSettings.gridType = EGridType::Adaptive;
+	settings.calculationType = ECalculationType::All;
+	CFDPricer<ESolverType::CrankNicolson, EAdjointDifferentiation::All> pricer(input, settings);
+	pricer.Price(callOutput, putOutput);
+
+	CInputData input2(input);
+	input2.smoothing = false;
+	input2.acceleration = false;
+
+	COutputData callOutput2;
+	COutputData putOutput2;
+
+	CFDPricer<ESolverType::CrankNicolson, EAdjointDifferentiation::All> pricer2(input2, settings);
+	pricer2.Price(callOutput2, putOutput2);
+
+	EXPECT_LE(fabs(callOutput.price - callOutput2.price), 1.5e-5);
+	EXPECT_LE(fabs(callOutput.delta - callOutput2.delta), 1e-5);
+	EXPECT_LE(fabs(callOutput.gamma - callOutput2.gamma), 1e-5);
+	EXPECT_LE(fabs(callOutput.vega - callOutput2.vega), 1.9e-5);
+	EXPECT_LE(fabs(callOutput.rho - callOutput2.rho), .05);
+	EXPECT_LE(fabs(callOutput.rhoBorrow - callOutput2.rhoBorrow), .59);
+
+	EXPECT_LE(fabs(putOutput.price - putOutput2.price), .0021);
+	EXPECT_LE(fabs(putOutput.delta - putOutput2.delta), 2.62e-5);
+	EXPECT_LE(fabs(putOutput.gamma - putOutput2.gamma), 1e-5);
+	EXPECT_LE(fabs(putOutput.vega - putOutput2.vega), 0.013);
+	EXPECT_LE(fabs(putOutput.rho - putOutput2.rho), .05);
+	EXPECT_LE(fabs(putOutput.rhoBorrow - putOutput2.rhoBorrow), .5);
+}
