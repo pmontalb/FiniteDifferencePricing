@@ -453,8 +453,8 @@ TEST (FDTest, VellekoopPage280Table1)
 	input.b = .05;
 	input.sigma = .3;
 	input.T = 1.0;
-	input.N = 2049;
-	input.M = 200;
+	input.N = 81;
+	input.M = 50;
 	input.smoothing = true;
 	input.acceleration = false;
 
@@ -511,8 +511,8 @@ TEST (FDTest, VellekoopPage282Table3)
 	input.b = .06;
 	input.sigma = .25;
 	input.T = 7;
-	input.N = 4057;
-	input.M = 200;
+	input.N = 257;
+	input.M = 240;
 	input.smoothing = true;
 	input.acceleration = false;
 	input.dividends.resize(7);
@@ -576,8 +576,8 @@ TEST (FDTest, VellekoopPage280Table1Acceleration)
 	input.b = .05;
 	input.sigma = .3;
 	input.T = 1.0;
-	input.N = 2049;
-	input.M = 200;
+	input.N = 81;
+	input.M = 10;
 	input.smoothing = true;
 	input.acceleration = true;
 
@@ -634,8 +634,8 @@ TEST (FDTest, VellekoopPage282Table3Acceleration)
 	input.b = .06;
 	input.sigma = .25;
 	input.T = 7;
-	input.N = 4057;
-	input.M = 200;
+	input.N = 257;
+	input.M = 80;
 	input.smoothing = true;
 	input.acceleration = true;
 	input.dividends.resize(7);

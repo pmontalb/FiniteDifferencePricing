@@ -192,7 +192,7 @@ void CFDPricer<solverType, adjointDifferentiation>::RefinedPayoffSmoothing(const
 	{
 		double shiftedValue = grid.Get(i) - dividend.dividend;
 		if (shiftedValue <= 0.0)
-			shiftedValue = 1e-7;
+			shiftedValue = 1e-7; // TODO: start from last and stop once reaching 0
 
 		bs.Update(shiftedValue);
 
@@ -208,9 +208,6 @@ void CFDPricer<solverType, adjointDifferentiation>::RefinedPayoffSmoothing(const
 		return;
 
 	CEvolutionOperator<solverType, adjointDifferentiation> uBefore(u, dtBefore);
-
-	if (settings.exerciseType == EExerciseType::American)
-		(this->*exerciseDelegate)();
 
 	(this->*applyOperatorDelegate)(uBefore);
 
@@ -589,7 +586,8 @@ void CFDPricer<solverType, adjointDifferentiation>::Accelerate(size_t& unaliased
 		const double lastDivTime = input.dividends[divIdx].time;
 
 		 // this floors it to being the greatest integer j s.t. j * dt <= lastDivTime
-		size_t j = static_cast<size_t>(lastDivTime / u.GetDt());
+		double floatJ = lastDivTime / u.GetDt();
+		size_t j = static_cast<size_t>(floatJ);
 		const double previousTime = j * u.GetDt();
 
 		(this->*refinedSmoothingDelegate)(previousTime, input.T, input.dividends[divIdx]);
@@ -614,11 +612,14 @@ void CFDPricer<solverType, adjointDifferentiation>::Accelerate(size_t& unaliased
 		UpdateDelegates(newSettings, false, false);
 		PriceUntil(m, j, callLeavesDt, putLeavesDt);
 
+		// make sure that div idx is the correct one
+		divIdx = input.dividends.size() - 2;
+
 		// Restore original settings
 		UpdateDelegates(settings, false, false);
 
 		// Now the calculations are in line for both option types at step j
-		m = j;
+		m = j;//(fabs(floatJ - j) > 1e-12) ? (j + 1) : j;
 	}
 	else
 	{
@@ -701,11 +702,12 @@ void CFDPricer<solverType, adjointDifferentiation>::PriceUntil(size_t start, con
 		else
 			PayoffInitialise(start);
 
+		// might be updated from smoothing
+		currentTime = start * u.GetDt();
+		previousTime = currentTime - u.GetDt();
+
 		for (; start --> end ;)
 		{
-			currentTime = previousTime;
-			previousTime -= u.GetDt();
-
 			if (input.dividends[divIdx].time >= previousTime && input.dividends[divIdx].time < currentTime)
 			{
 				RefinedBackwardInduction(previousTime, currentTime, input.dividends[divIdx]);
@@ -717,6 +719,9 @@ void CFDPricer<solverType, adjointDifferentiation>::PriceUntil(size_t start, con
 
 			if (start < 3)
 				SaveLeaves(start, callLeavesDt, putLeavesDt);
+
+			currentTime = previousTime;
+			previousTime -= u.GetDt();
 		}
 	}
 	else
