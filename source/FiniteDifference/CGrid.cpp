@@ -1,18 +1,17 @@
 /*
  * CGrid.cpp
  *
- *  Created on: 11 Jun 2017
+ *  Created on: 22 Jun 2017
  *      Author: raiden
  */
 
-#include <cstdio>
 #include <FiniteDifference/CGrid.h>
 
 namespace fdpricing
 {
 
 template<>
-void CGrid::Make<EGridType::Linear>() noexcept
+void CGrid<EGridType::Linear>::Make() noexcept
 {
 	data.resize(N);
 
@@ -30,7 +29,7 @@ void CGrid::Make<EGridType::Linear>() noexcept
 
 
 template<>
-void CGrid::Make<EGridType::Logarithmic>() noexcept
+void CGrid<EGridType::Logarithmic>::Make() noexcept
 {
 	data.resize(N);
 
@@ -50,7 +49,7 @@ void CGrid::Make<EGridType::Logarithmic>() noexcept
  * Tavella-Randall Grid: http://www.thierry-roncalli.com/download/pde.pdf
  */
 template<>
-void CGrid::Make<EGridType::Adaptive>() noexcept
+void CGrid<EGridType::Adaptive>::Make() noexcept
 {
 	data.resize(N, x0);
 
@@ -73,46 +72,4 @@ void CGrid::Make<EGridType::Adaptive>() noexcept
 		data[i] *= scalingFactor;
 }
 
-CGrid::CGrid(const double x0, const double lb, const double ub, const EGridType gridType, const size_t N) noexcept
-		: N(N), x0(x0), lb(lb), ub(ub), gridType(gridType)
-{
-#ifdef DEBUG
-	if (x0 >= ub || x0 <= lb)
-	{
-		printf("WRONG BOUNDARIES");
-		return;
-	}
-	if (!(N & 1))
-	{
-		printf("NEED EVEN # of POINTS");
-		return;
-	}
-#endif
-	switch (gridType)
-	{
-		case EGridType::Linear:
-			Make<EGridType::Linear>();
-			break;
-		case EGridType::Logarithmic:
-			Make<EGridType::Logarithmic>();
-			break;
-		case EGridType::Adaptive:
-			Make<EGridType::Adaptive>();
-			break;
-		default:
-			break;
-	}
 }
-
-CGrid::CGrid(const CGrid& unaliased rhs) noexcept
-	: N(rhs.N), x0(rhs.x0), lb(rhs.lb), ub(rhs.ub), gridType(rhs.gridType), data(rhs.data)
-{
-}
-
-CGrid::CGrid(const CGrid&& unaliased rhs) noexcept
-	: N(rhs.N), x0(rhs.x0), lb(rhs.lb), ub(rhs.ub), gridType(rhs.gridType), data(rhs.data)
-{
-}
-
-
-} /* namespace fdpricing */

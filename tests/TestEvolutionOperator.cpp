@@ -24,7 +24,7 @@ TEST (TridiagonalOperator, ExplicitEulerBase)
 	inputData.M = 10;
 
 	CFiniteDifferenceSettings settings;
-	CEvolutionOperator<ESolverType::ExplicitEuler, EAdjointDifferentiation::None> u(inputData, settings);
+	CEvolutionOperator<ESolverType::ExplicitEuler, EGridType::Adaptive, EAdjointDifferentiation::None> u(inputData, settings);
 
 	CPayoffData payoffData;
 	payoffData.payoff_i.resize(inputData.N);
@@ -35,7 +35,7 @@ TEST (TridiagonalOperator, ExplicitEulerBase)
 
 	u.Apply(payoffData);
 
-	CGrid grid(inputData.S, 1e-3 * inputData.S, 10.0 * inputData.S, EGridType::Adaptive, inputData.N);
+	CGrid<EGridType::Adaptive> grid(inputData.S, 1e-3 * inputData.S, 10.0 * inputData.S, inputData.N);
 	const double dt = inputData.T / inputData.M;
 	for (size_t i = 1; i < inputData.N - 1; ++i)
 	{
@@ -69,15 +69,15 @@ TEST (TridiagonalOperator, ExplicitEulerVega)
 	inputData.M = 100;
 
 	CFiniteDifferenceSettings settings;
-	CEvolutionOperator<ESolverType::ExplicitEuler, EAdjointDifferentiation::Vega> u(inputData, settings);
+	CEvolutionOperator<ESolverType::ExplicitEuler, EGridType::Adaptive, EAdjointDifferentiation::Vega> u(inputData, settings);
 
 	CInputData inputDataPlus(inputData);
 	inputDataPlus.sigma += dSigma;
-	CEvolutionOperator<ESolverType::ExplicitEuler, EAdjointDifferentiation::None> uPlus(inputDataPlus, settings);
+	CEvolutionOperator<ESolverType::ExplicitEuler, EGridType::Adaptive, EAdjointDifferentiation::None> uPlus(inputDataPlus, settings);
 
 	CInputData inputDataMinus(inputData);
 	inputDataMinus.sigma -= dSigma;
-	CEvolutionOperator<ESolverType::ExplicitEuler, EAdjointDifferentiation::None> uMinus(inputDataMinus, settings);
+	CEvolutionOperator<ESolverType::ExplicitEuler, EGridType::Adaptive, EAdjointDifferentiation::None> uMinus(inputDataMinus, settings);
 
 	CPayoffData payoffData;
 	payoffData.payoff_i.resize(inputData.N, 0.0);
@@ -114,15 +114,15 @@ TEST (TridiagonalOperator, ExplicitEulerRhoBorrow)
 	inputData.M = 100;
 
 	CFiniteDifferenceSettings settings;
-	CEvolutionOperator<ESolverType::ExplicitEuler, EAdjointDifferentiation::Rho> u(inputData, settings);
+	CEvolutionOperator<ESolverType::ExplicitEuler, EGridType::Adaptive, EAdjointDifferentiation::Rho> u(inputData, settings);
 
 	CInputData inputDataPlus(inputData);
 	inputDataPlus.b += db;
-	CEvolutionOperator<ESolverType::ExplicitEuler, EAdjointDifferentiation::None> uPlus(inputDataPlus, settings);
+	CEvolutionOperator<ESolverType::ExplicitEuler, EGridType::Adaptive, EAdjointDifferentiation::None> uPlus(inputDataPlus, settings);
 
 	CInputData inputDataMinus(inputData);
 	inputDataMinus.b -= db;
-	CEvolutionOperator<ESolverType::ExplicitEuler, EAdjointDifferentiation::None> uMinus(inputDataMinus, settings);
+	CEvolutionOperator<ESolverType::ExplicitEuler, EGridType::Adaptive, EAdjointDifferentiation::None> uMinus(inputDataMinus, settings);
 
 	CPayoffData payoffData;
 	payoffData.payoff_i.resize(inputData.N, 0.0);
@@ -161,23 +161,23 @@ TEST (TridiagonalOperator, ExplicitEulerAll)
 	inputData.M = 100;
 
 	CFiniteDifferenceSettings settings;
-	CEvolutionOperator<ESolverType::ExplicitEuler, EAdjointDifferentiation::All> u(inputData, settings);
+	CEvolutionOperator<ESolverType::ExplicitEuler, EGridType::Adaptive, EAdjointDifferentiation::All> u(inputData, settings);
 
 	CInputData inputDataPlus(inputData);
 	inputDataPlus.sigma += dSigma;
-	CEvolutionOperator<ESolverType::ExplicitEuler, EAdjointDifferentiation::None> uPlus(inputDataPlus, settings);
+	CEvolutionOperator<ESolverType::ExplicitEuler, EGridType::Adaptive, EAdjointDifferentiation::None> uPlus(inputDataPlus, settings);
 
 	CInputData inputDataMinus(inputData);
 	inputDataMinus.sigma -= dSigma;
-	CEvolutionOperator<ESolverType::ExplicitEuler, EAdjointDifferentiation::None> uMinus(inputDataMinus, settings);
+	CEvolutionOperator<ESolverType::ExplicitEuler, EGridType::Adaptive, EAdjointDifferentiation::None> uMinus(inputDataMinus, settings);
 
 	CInputData inputDataPlus2(inputData);
 	inputDataPlus2.b += db;
-	CEvolutionOperator<ESolverType::ExplicitEuler, EAdjointDifferentiation::None> uPlus2(inputDataPlus2, settings);
+	CEvolutionOperator<ESolverType::ExplicitEuler, EGridType::Adaptive, EAdjointDifferentiation::None> uPlus2(inputDataPlus2, settings);
 
 	CInputData inputDataMinus2(inputData);
 	inputDataMinus2.b -= db;
-	CEvolutionOperator<ESolverType::ExplicitEuler, EAdjointDifferentiation::None> uMinus2(inputDataMinus2, settings);
+	CEvolutionOperator<ESolverType::ExplicitEuler, EGridType::Adaptive, EAdjointDifferentiation::None> uMinus2(inputDataMinus2, settings);
 
 	CPayoffData payoffData;
 	payoffData.payoff_i.resize(inputData.N, 0.0);
@@ -220,7 +220,7 @@ TEST (TridiagonalOperator, ImplicitEulerBase)
 	inputData.M = 10;
 
 	CFiniteDifferenceSettings settings;
-	CEvolutionOperator<ESolverType::ImplicitEuler, EAdjointDifferentiation::None> u(inputData, settings);
+	CEvolutionOperator<ESolverType::ImplicitEuler, EGridType::Adaptive, EAdjointDifferentiation::None> u(inputData, settings);
 
 	CPayoffData payoffData;
 	payoffData.payoff_i.resize(inputData.N);
@@ -231,7 +231,7 @@ TEST (TridiagonalOperator, ImplicitEulerBase)
 
 	u.Apply(payoffData);
 
-	CGrid grid(inputData.S, 1e-3 * inputData.S, 10.0 * inputData.S, EGridType::Adaptive, inputData.N);
+	CGrid<EGridType::Adaptive> grid(inputData.S, 1e-3 * inputData.S, 10.0 * inputData.S,  inputData.N);
 	const double dt = inputData.T / inputData.M;
 	std::vector<std::array<double, 3>> mat(inputData.N);
 
@@ -302,15 +302,15 @@ TEST (TridiagonalOperator, ImplicitEulerVega)
 	inputData.M = 100;
 
 	CFiniteDifferenceSettings settings;
-	CEvolutionOperator<ESolverType::ImplicitEuler, EAdjointDifferentiation::Vega> u(inputData, settings);
+	CEvolutionOperator<ESolverType::ImplicitEuler, EGridType::Adaptive, EAdjointDifferentiation::Vega> u(inputData, settings);
 
 	CInputData inputDataPlus(inputData);
 	inputDataPlus.sigma += dSigma;
-	CEvolutionOperator<ESolverType::ImplicitEuler, EAdjointDifferentiation::None> uPlus(inputDataPlus, settings);
+	CEvolutionOperator<ESolverType::ImplicitEuler, EGridType::Adaptive, EAdjointDifferentiation::None> uPlus(inputDataPlus, settings);
 
 	CInputData inputDataMinus(inputData);
 	inputDataMinus.sigma -= dSigma;
-	CEvolutionOperator<ESolverType::ImplicitEuler, EAdjointDifferentiation::None> uMinus(inputDataMinus, settings);
+	CEvolutionOperator<ESolverType::ImplicitEuler, EGridType::Adaptive, EAdjointDifferentiation::None> uMinus(inputDataMinus, settings);
 
 	CPayoffData payoffData;
 	payoffData.payoff_i.resize(inputData.N, 0.0);
@@ -347,15 +347,15 @@ TEST (TridiagonalOperator, ImplicitEulerRhoBorrow)
 	inputData.M = 100;
 
 	CFiniteDifferenceSettings settings;
-	CEvolutionOperator<ESolverType::ImplicitEuler, EAdjointDifferentiation::Rho> u(inputData, settings);
+	CEvolutionOperator<ESolverType::ImplicitEuler, EGridType::Adaptive, EAdjointDifferentiation::Rho> u(inputData, settings);
 
 	CInputData inputDataPlus(inputData);
 	inputDataPlus.b += db;
-	CEvolutionOperator<ESolverType::ImplicitEuler, EAdjointDifferentiation::None> uPlus(inputDataPlus, settings);
+	CEvolutionOperator<ESolverType::ImplicitEuler, EGridType::Adaptive, EAdjointDifferentiation::None> uPlus(inputDataPlus, settings);
 
 	CInputData inputDataMinus(inputData);
 	inputDataMinus.b -= db;
-	CEvolutionOperator<ESolverType::ImplicitEuler, EAdjointDifferentiation::None> uMinus(inputDataMinus, settings);
+	CEvolutionOperator<ESolverType::ImplicitEuler, EGridType::Adaptive, EAdjointDifferentiation::None> uMinus(inputDataMinus, settings);
 
 	CPayoffData payoffData;
 	payoffData.payoff_i.resize(inputData.N, 0.0);
@@ -394,23 +394,23 @@ TEST (TridiagonalOperator, ImplicitEulerAll)
 	inputData.M = 100;
 
 	CFiniteDifferenceSettings settings;
-	CEvolutionOperator<ESolverType::ImplicitEuler, EAdjointDifferentiation::All> u(inputData, settings);
+	CEvolutionOperator<ESolverType::ImplicitEuler, EGridType::Adaptive, EAdjointDifferentiation::All> u(inputData, settings);
 
 	CInputData inputDataPlus(inputData);
 	inputDataPlus.sigma += dSigma;
-	CEvolutionOperator<ESolverType::ImplicitEuler, EAdjointDifferentiation::None> uPlus(inputDataPlus, settings);
+	CEvolutionOperator<ESolverType::ImplicitEuler, EGridType::Adaptive, EAdjointDifferentiation::None> uPlus(inputDataPlus, settings);
 
 	CInputData inputDataMinus(inputData);
 	inputDataMinus.sigma -= dSigma;
-	CEvolutionOperator<ESolverType::ImplicitEuler, EAdjointDifferentiation::None> uMinus(inputDataMinus, settings);
+	CEvolutionOperator<ESolverType::ImplicitEuler, EGridType::Adaptive, EAdjointDifferentiation::None> uMinus(inputDataMinus, settings);
 
 	CInputData inputDataPlus2(inputData);
 	inputDataPlus2.b += db;
-	CEvolutionOperator<ESolverType::ImplicitEuler, EAdjointDifferentiation::None> uPlus2(inputDataPlus2, settings);
+	CEvolutionOperator<ESolverType::ImplicitEuler, EGridType::Adaptive, EAdjointDifferentiation::None> uPlus2(inputDataPlus2, settings);
 
 	CInputData inputDataMinus2(inputData);
 	inputDataMinus2.b -= db;
-	CEvolutionOperator<ESolverType::ImplicitEuler, EAdjointDifferentiation::None> uMinus2(inputDataMinus2, settings);
+	CEvolutionOperator<ESolverType::ImplicitEuler, EGridType::Adaptive, EAdjointDifferentiation::None> uMinus2(inputDataMinus2, settings);
 
 	CPayoffData payoffData;
 	payoffData.payoff_i.resize(inputData.N, 0.0);
@@ -453,7 +453,7 @@ TEST (TridiagonalOperator, CrankNicolsonBase)
 	inputData.M = 10;
 
 	CFiniteDifferenceSettings settings;
-	CEvolutionOperator<ESolverType::CrankNicolson, EAdjointDifferentiation::None> u(inputData, settings);
+	CEvolutionOperator<ESolverType::CrankNicolson, EGridType::Adaptive, EAdjointDifferentiation::None> u(inputData, settings);
 
 	CPayoffData payoffData;
 	payoffData.payoff_i.resize(inputData.N);
@@ -464,7 +464,7 @@ TEST (TridiagonalOperator, CrankNicolsonBase)
 
 	u.Apply(payoffData);
 
-	CGrid grid(inputData.S, 1e-3 * inputData.S, 10.0 * inputData.S, EGridType::Adaptive, inputData.N);
+	CGrid<EGridType::Adaptive> grid(inputData.S, 1e-3 * inputData.S, 10.0 * inputData.S,  inputData.N);
 	const double dt = inputData.T / inputData.M;
 	std::vector<std::array<double, 3>> mat(inputData.N);
 
@@ -561,15 +561,15 @@ TEST (TridiagonalOperator, CrankNicolsonVega)
 	inputData.M = 100;
 
 	CFiniteDifferenceSettings settings;
-	CEvolutionOperator<ESolverType::CrankNicolson, EAdjointDifferentiation::Vega> u(inputData, settings);
+	CEvolutionOperator<ESolverType::CrankNicolson, EGridType::Adaptive, EAdjointDifferentiation::Vega> u(inputData, settings);
 
 	CInputData inputDataPlus(inputData);
 	inputDataPlus.sigma += dSigma;
-	CEvolutionOperator<ESolverType::CrankNicolson, EAdjointDifferentiation::None> uPlus(inputDataPlus, settings);
+	CEvolutionOperator<ESolverType::CrankNicolson, EGridType::Adaptive, EAdjointDifferentiation::None> uPlus(inputDataPlus, settings);
 
 	CInputData inputDataMinus(inputData);
 	inputDataMinus.sigma -= dSigma;
-	CEvolutionOperator<ESolverType::CrankNicolson, EAdjointDifferentiation::None> uMinus(inputDataMinus, settings);
+	CEvolutionOperator<ESolverType::CrankNicolson, EGridType::Adaptive, EAdjointDifferentiation::None> uMinus(inputDataMinus, settings);
 
 	CPayoffData payoffData;
 	payoffData.payoff_i.resize(inputData.N, 0.0);
@@ -606,15 +606,15 @@ TEST (TridiagonalOperator, CrankNicolsonRhoBorrow)
 	inputData.M = 100;
 
 	CFiniteDifferenceSettings settings;
-	CEvolutionOperator<ESolverType::CrankNicolson, EAdjointDifferentiation::Rho> u(inputData, settings);
+	CEvolutionOperator<ESolverType::CrankNicolson, EGridType::Adaptive, EAdjointDifferentiation::Rho> u(inputData, settings);
 
 	CInputData inputDataPlus(inputData);
 	inputDataPlus.b += db;
-	CEvolutionOperator<ESolverType::CrankNicolson, EAdjointDifferentiation::None> uPlus(inputDataPlus, settings);
+	CEvolutionOperator<ESolverType::CrankNicolson, EGridType::Adaptive, EAdjointDifferentiation::None> uPlus(inputDataPlus, settings);
 
 	CInputData inputDataMinus(inputData);
 	inputDataMinus.b -= db;
-	CEvolutionOperator<ESolverType::CrankNicolson, EAdjointDifferentiation::None> uMinus(inputDataMinus, settings);
+	CEvolutionOperator<ESolverType::CrankNicolson, EGridType::Adaptive, EAdjointDifferentiation::None> uMinus(inputDataMinus, settings);
 
 	CPayoffData payoffData;
 	payoffData.payoff_i.resize(inputData.N, 0.0);
@@ -653,23 +653,23 @@ TEST (TridiagonalOperator, CrankNicolsonAll)
 	inputData.M = 100;
 
 	CFiniteDifferenceSettings settings;
-	CEvolutionOperator<ESolverType::CrankNicolson, EAdjointDifferentiation::All> u(inputData, settings);
+	CEvolutionOperator<ESolverType::CrankNicolson, EGridType::Adaptive, EAdjointDifferentiation::All> u(inputData, settings);
 
 	CInputData inputDataPlus(inputData);
 	inputDataPlus.sigma += dSigma;
-	CEvolutionOperator<ESolverType::CrankNicolson, EAdjointDifferentiation::None> uPlus(inputDataPlus, settings);
+	CEvolutionOperator<ESolverType::CrankNicolson, EGridType::Adaptive, EAdjointDifferentiation::None> uPlus(inputDataPlus, settings);
 
 	CInputData inputDataMinus(inputData);
 	inputDataMinus.sigma -= dSigma;
-	CEvolutionOperator<ESolverType::CrankNicolson, EAdjointDifferentiation::None> uMinus(inputDataMinus, settings);
+	CEvolutionOperator<ESolverType::CrankNicolson, EGridType::Adaptive, EAdjointDifferentiation::None> uMinus(inputDataMinus, settings);
 
 	CInputData inputDataPlus2(inputData);
 	inputDataPlus2.b += db;
-	CEvolutionOperator<ESolverType::CrankNicolson, EAdjointDifferentiation::None> uPlus2(inputDataPlus2, settings);
+	CEvolutionOperator<ESolverType::CrankNicolson, EGridType::Adaptive, EAdjointDifferentiation::None> uPlus2(inputDataPlus2, settings);
 
 	CInputData inputDataMinus2(inputData);
 	inputDataMinus2.b -= db;
-	CEvolutionOperator<ESolverType::CrankNicolson, EAdjointDifferentiation::None> uMinus2(inputDataMinus2, settings);
+	CEvolutionOperator<ESolverType::CrankNicolson, EGridType::Adaptive, EAdjointDifferentiation::None> uMinus2(inputDataMinus2, settings);
 
 	CPayoffData payoffData;
 	payoffData.payoff_i.resize(inputData.N, 0.0);

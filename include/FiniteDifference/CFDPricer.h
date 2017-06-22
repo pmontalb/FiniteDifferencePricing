@@ -27,7 +27,7 @@ struct CPricerSettings
 	CFiniteDifferenceSettings fdSettings = CFiniteDifferenceSettings();
 };
 
-template <ESolverType solverType, EAdjointDifferentiation adjointDifferentiation>
+template <ESolverType solverType, EGridType gridType, EAdjointDifferentiation adjointDifferentiation>
 class CFDPricer
 {
 public:
@@ -48,8 +48,8 @@ private:
 	const CInputData& unaliased input;
 	const CPricerSettings& unaliased settings;
 
-	bool calculateCall;
-	bool calculatePut;
+	const bool calculateCall;
+	const bool calculatePut;
 
 	size_t divIdx;
 
@@ -58,36 +58,38 @@ private:
 	CPayoffData callData;
 	CPayoffData putData;
 
-	CEvolutionOperator<solverType, adjointDifferentiation> u;
+	typedef CFDPricer<solverType, gridType, adjointDifferentiation> Pricer;
+	typedef CEvolutionOperator<solverType, gridType, adjointDifferentiation> Operator;
+	Operator u;
 
 	typedef std::array<double, 6> TimeLeaves;
 
 	void UpdateDelegates(const CPricerSettings& unaliased settings, const bool accelerateCall, const bool acceleratePut) noexcept;
 
-	typedef void (CFDPricer<solverType, adjointDifferentiation>::*InitializerDelegate)();
+	typedef void (Pricer::*InitializerDelegate)();
 	InitializerDelegate exerciseDelegate;
 	InitializerDelegate smoothingDelegate;
 
-	typedef void (CFDPricer<solverType, adjointDifferentiation>::*AccelerationDelegate)(size_t& unaliased m,
+	typedef void (Pricer::*AccelerationDelegate)(size_t& unaliased m,
 			COutputData& unaliased callOutput, COutputData& unaliased putOutput, TimeLeaves& unaliased callLeavesDt, TimeLeaves& unaliased putLeavesDt);
 	AccelerationDelegate accelerationDelegate;
 
-	typedef void (CFDPricer<solverType, adjointDifferentiation>::*RollBackDelegate)(const double dt, const double df);
+	typedef void (Pricer::*RollBackDelegate)(const double dt, const double df);
 	RollBackDelegate discountDelegate;
 
-	typedef void (CFDPricer<solverType, adjointDifferentiation>::*JumpConditionDelegate)(const double shift);
+	typedef void (Pricer::*JumpConditionDelegate)(const double shift);
 	JumpConditionDelegate jumpConditionDelegate;
 
-	typedef void (CFDPricer<solverType, adjointDifferentiation>::*RefinedSmoothingDelegate)(const double previousTime, const double currentTime, const CDividend& unaliased dividend);
+	typedef void (Pricer::*RefinedSmoothingDelegate)(const double previousTime, const double currentTime, const CDividend& unaliased dividend);
 	RefinedSmoothingDelegate refinedSmoothingDelegate;
 
-	typedef void (CFDPricer<solverType, adjointDifferentiation>::*ApplyOperatorDelegate)(CEvolutionOperator<solverType, adjointDifferentiation>& unaliased u);
+	typedef void (Pricer::*ApplyOperatorDelegate)(Operator& unaliased u);
 	ApplyOperatorDelegate applyOperatorDelegate;
 
-	typedef void (CFDPricer<solverType, adjointDifferentiation>::*SetOutputDelegate)(COutputData& unaliased callOutput, COutputData& unaliased putOutput) const;
+	typedef void (Pricer::*SetOutputDelegate)(COutputData& unaliased callOutput, COutputData& unaliased putOutput) const;
 	SetOutputDelegate setOutputDelegate;
 
-	typedef void (CFDPricer<solverType, adjointDifferentiation>::*ComputeGreeksDelegate)(COutputData& unaliased callOutput, COutputData& unaliased putOutput, const TimeLeaves& unaliased callLeavesDt, const TimeLeaves& unaliased putLeavesDt) const;
+	typedef void (Pricer::*ComputeGreeksDelegate)(COutputData& unaliased callOutput, COutputData& unaliased putOutput, const TimeLeaves& unaliased callLeavesDt, const TimeLeaves& unaliased putLeavesDt) const;
 	ComputeGreeksDelegate computeGreeksDelegate;
 
 	void Initialise() noexcept;
@@ -98,7 +100,7 @@ private:
 	void Exercise();
 
 	template<ECalculationType calculationType>
-	void ApplyOperator(CEvolutionOperator<solverType, adjointDifferentiation>& unaliased u);
+	void ApplyOperator(Operator& unaliased u);
 
 	template<ECalculationType calculationType>
 	void Accelerate(size_t& unaliased m, COutputData& unaliased callOutput, COutputData& unaliased putOutput, TimeLeaves& unaliased callLeavesDt, TimeLeaves& unaliased putLeavesDt);

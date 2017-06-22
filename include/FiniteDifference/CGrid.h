@@ -24,6 +24,7 @@ enum class EGridType
 	Adaptive
 };
 
+template <EGridType gridType>
 class CGrid
 {
 public:
@@ -31,9 +32,9 @@ public:
 	 * x0: central point, grid will always pass through x0
 	 * lb: lower bound
 	 * ub: upper bound
-	 * N : # of points - 1
+	 * N : # of points
 	 */
-	CGrid(const double x0, const double lb, const double ub, const EGridType gridType, const size_t N) noexcept;
+	CGrid(const double x0, const double lb, const double ub, const size_t N) noexcept;
 
 	CGrid(const CGrid& unaliased rhs) noexcept;
 	CGrid(const CGrid&& unaliased rhs) noexcept;
@@ -61,10 +62,8 @@ public:
 	const double x0;
 	const double lb;
 	const double ub;
-	const EGridType gridType;
 
 private:
-	template<EGridType>
 	void Make() noexcept;
 
 	std::vector<double> data;
@@ -72,5 +71,7 @@ private:
 
 
 } /* namespace fdpricing */
+
+#include <FiniteDifference/CGrid.tpp>
 
 #endif /* FINITEDIFFERENCE_CGRID_H_ */

@@ -10,8 +10,8 @@
 namespace fdpricing
 {
 
-template<EAdjointDifferentiation adjointDifferentiation>
-CTridiagonalOperator<adjointDifferentiation>::CTridiagonalOperator(const size_t N) noexcept
+template<EGridType gridType, EAdjointDifferentiation adjointDifferentiation>
+CTridiagonalOperator<gridType, adjointDifferentiation>::CTridiagonalOperator(const size_t N) noexcept
 	: N(N), matrix(N)
 {
 	switch (adjointDifferentiation)
@@ -31,22 +31,22 @@ CTridiagonalOperator<adjointDifferentiation>::CTridiagonalOperator(const size_t 
 	}
 }
 
-template<EAdjointDifferentiation T>
-CTridiagonalOperator<T>::CTridiagonalOperator(const CInputData& unaliased input, const CGrid& unaliased grid) noexcept
+template<EGridType gridType, EAdjointDifferentiation adjointDifferentiation>
+CTridiagonalOperator<gridType, adjointDifferentiation>::CTridiagonalOperator(const CInputData& unaliased input, const CGrid<gridType>& unaliased grid) noexcept
 	: CTridiagonalOperator(input.N)
 {
 	Make(input, grid);
 }
 
-template<EAdjointDifferentiation T>
-CTridiagonalOperator<T>::CTridiagonalOperator(const CTridiagonalOperator& unaliased rhs) noexcept
+template<EGridType gridType, EAdjointDifferentiation adjointDifferentiation>
+CTridiagonalOperator<gridType, adjointDifferentiation>::CTridiagonalOperator(const CTridiagonalOperator& unaliased rhs) noexcept
 	: N(rhs.N), matrix(rhs.matrix), matrixVega(rhs.matrixVega), matrixRhoBorrow(rhs.matrixRhoBorrow)
 {
 
 }
 
-template<EAdjointDifferentiation adjointDifferentiation>
-void CTridiagonalOperator<adjointDifferentiation>::Add(const double alpha, const double beta) noexcept
+template<EGridType gridType, EAdjointDifferentiation adjointDifferentiation>
+void CTridiagonalOperator<gridType, adjointDifferentiation>::Add(const double alpha, const double beta) noexcept
 {
 	for (size_t i = 0; i < N; ++i)
 	{
@@ -81,8 +81,8 @@ void CTridiagonalOperator<adjointDifferentiation>::Add(const double alpha, const
 	}
 }
 
-template<EAdjointDifferentiation adjointDifferentiation>
-void CTridiagonalOperator<adjointDifferentiation>::Dot(CPayoffData& unaliased out) const noexcept
+template<EGridType gridType, EAdjointDifferentiation adjointDifferentiation>
+void CTridiagonalOperator<gridType, adjointDifferentiation>::Dot(CPayoffData& unaliased out) const noexcept
 {
 #ifdef DEBUG
 	if (out.payoff_i.size() != N)
@@ -124,8 +124,8 @@ void CTridiagonalOperator<adjointDifferentiation>::Dot(CPayoffData& unaliased ou
 	Dot(matrix, out.payoff_i);
 }
 
-template<EAdjointDifferentiation T>
-void CTridiagonalOperator<T>::Add(std::vector<double>& unaliased out, const double factor, const details::Matrix& unaliased A, const std::vector<double>& unaliased x) const noexcept
+template<EGridType gridType, EAdjointDifferentiation adjointDifferentiation>
+void CTridiagonalOperator<gridType, adjointDifferentiation>::Add(std::vector<double>& unaliased out, const double factor, const details::Matrix& unaliased A, const std::vector<double>& unaliased x) const noexcept
 {
 	out[0] += factor * (A[0].Get(details::Zero) * x[0] + A[0].Get(details::Plus) * x[1]);
 
@@ -135,9 +135,10 @@ void CTridiagonalOperator<T>::Add(std::vector<double>& unaliased out, const doub
 	out[N - 1] += factor * (A[N - 1].Get(details::Minus) * x[N - 2] + A[N - 1].Get(details::Zero) * x[N - 1]);
 }
 
-template<EAdjointDifferentiation T>
-void CTridiagonalOperator<T>::Dot(const details::Matrix& unaliased A, std::vector<double>& unaliased x) const noexcept
+template<EGridType gridType, EAdjointDifferentiation adjointDifferentiation>
+void CTridiagonalOperator<gridType, adjointDifferentiation>::Dot(const details::Matrix& unaliased A, std::vector<double>& unaliased x) const noexcept
 {
+	// TODO: make it a class member?
 	std::array<double, 2> cache = { { x[0], 0.0 } };
 	x[0] = A[0].Get(details::Zero) * x[0] + A[0].Get(details::Plus) * x[1];
 
@@ -150,8 +151,8 @@ void CTridiagonalOperator<T>::Dot(const details::Matrix& unaliased A, std::vecto
 	x[N - 1] = A[N - 1].Get(details::Minus) * cache[(N - 2) & 1] + A[N - 1].Get(details::Zero) * x[N - 1];
 }
 
-template<EAdjointDifferentiation adjointDifferentiation>
-void CTridiagonalOperator<adjointDifferentiation>::Solve(CPayoffData& unaliased out) noexcept
+template<EGridType gridType, EAdjointDifferentiation adjointDifferentiation>
+void CTridiagonalOperator<gridType, adjointDifferentiation>::Solve(CPayoffData& unaliased out) noexcept
 {
 #ifdef DEBUG
 	if (out.payoff_i.size() != N)
@@ -193,8 +194,8 @@ void CTridiagonalOperator<adjointDifferentiation>::Solve(CPayoffData& unaliased 
 	}
 }
 
-template<EAdjointDifferentiation T>
-void CTridiagonalOperator<T>::Solve(std::vector<double>& unaliased x, const details::Matrix& unaliased mat) noexcept
+template<EGridType gridType, EAdjointDifferentiation adjointDifferentiation>
+void CTridiagonalOperator<gridType, adjointDifferentiation>::Solve(std::vector<double>& unaliased x, const details::Matrix& unaliased mat) noexcept
 {
 #ifdef DEBUG
 	if (x.size() != N)
@@ -224,8 +225,8 @@ void CTridiagonalOperator<T>::Solve(std::vector<double>& unaliased x, const deta
         x[i] -= solve_cache[i] * x[i + 1];
 }
 
-template<EAdjointDifferentiation adjointDifferentiation>
-void CTridiagonalOperator<adjointDifferentiation>::Make(const CInputData& unaliased input, const CGrid& unaliased grid) noexcept
+template<EGridType gridType, EAdjointDifferentiation adjointDifferentiation>
+void CTridiagonalOperator<gridType, adjointDifferentiation>::Make(const CInputData& unaliased input, const CGrid<gridType>& unaliased grid) noexcept
 {
 #ifdef DEBUG
 	if (matrix.size() != N)

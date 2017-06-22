@@ -14,7 +14,7 @@ using namespace fdpricing;
 
 TEST (GridTest, LinearGrid)
 {
-	CGrid grid(50.0, 20.0, 100.0, EGridType::Linear, 101);
+	CGrid<EGridType::Linear> grid(50.0, 20.0, 100.0, 101);
 	ASSERT_NEAR(grid.Get(0), grid.lb, 1e-12);
 	ASSERT_NEAR(grid.Get(grid.N / 2), grid.x0, 1e-12);
 	ASSERT_NEAR(grid.Get(grid.N - 1), grid.ub, 1e-12);
@@ -22,7 +22,7 @@ TEST (GridTest, LinearGrid)
 
 TEST (GridTest, LogarithmicGrid)
 {
-	CGrid grid(50.0, 20.0, 100.0, EGridType::Logarithmic, 101);
+	CGrid<EGridType::Logarithmic> grid(50.0, 20.0, 100.0, 101);
 	ASSERT_NEAR(grid.Get(0), grid.lb, 1e-12);
 	ASSERT_NEAR(grid.Get(grid.N / 2), grid.x0, 1e-12);
 	ASSERT_NEAR(grid.Get(grid.N - 1), grid.ub, 1e-12);
@@ -30,7 +30,7 @@ TEST (GridTest, LogarithmicGrid)
 
 TEST (GridTest, AdaptiveGrid)
 {
-	CGrid grid(50.0, 20.0, 100.0, EGridType::Adaptive, 101);
+	CGrid<EGridType::Adaptive> grid(50.0, 20.0, 100.0, 101);
 	ASSERT_NEAR(grid.Get(0), grid.lb, 1e-12);
 	ASSERT_NEAR(grid.Get(grid.N / 2), grid.x0, 1e-12);
 	ASSERT_NEAR(grid.Get(grid.N - 1), grid.ub, 1e-12);

@@ -4,16 +4,13 @@
 
 # Add inputs and outputs from these tool invocations to the build variables 
 CPP_SRCS += \
-../source/FiniteDifference/CGrid.cpp \
-../source/FiniteDifference/CTridiagonalOperator.cpp 
+../source/FiniteDifference/CGrid.cpp 
 
 OBJS += \
-./source/FiniteDifference/CGrid.o \
-./source/FiniteDifference/CTridiagonalOperator.o 
+./source/FiniteDifference/CGrid.o 
 
 CPP_DEPS += \
-./source/FiniteDifference/CGrid.d \
-./source/FiniteDifference/CTridiagonalOperator.d 
+./source/FiniteDifference/CGrid.d 
 
 
 # Each subdirectory must supply rules for building sources it contributes

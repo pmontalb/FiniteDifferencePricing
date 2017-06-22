@@ -30,8 +30,8 @@ TEST (FDTest, BlackScholesConsistency)
 
 	CPricerSettings settings;
 	settings.exerciseType = EExerciseType::European;
-	settings.fdSettings.gridType = EGridType::Adaptive;
-	CFDPricer<ESolverType::CrankNicolson, EAdjointDifferentiation::All> pricer(input, settings);
+
+	CFDPricer<ESolverType::CrankNicolson, EGridType::Adaptive, EAdjointDifferentiation::All> pricer(input, settings);
 
 	double bsC = bs.Value<EOptionType::Call>();
 	double bsP = bs.Value<EOptionType::Put>();
@@ -90,8 +90,8 @@ TEST  (FDTest, AccelerationConsistency)
 
 	CPricerSettings settings;
 	settings.exerciseType = EExerciseType::European;
-	settings.fdSettings.gridType = EGridType::Adaptive;
-	CFDPricer<ESolverType::CrankNicolson, EAdjointDifferentiation::All> pricer(input, settings);
+
+	CFDPricer<ESolverType::CrankNicolson, EGridType::Adaptive, EAdjointDifferentiation::All> pricer(input, settings);
 
 	double bsC = bs.Value<EOptionType::Call>();
 	double bsP = bs.Value<EOptionType::Put>();
@@ -147,13 +147,11 @@ TEST (FDTest, AmericanOptionNoExercise)
 
 	CPricerSettings settings;
 	settings.exerciseType = EExerciseType::American;
-	settings.fdSettings.gridType = EGridType::Linear;
-	CFDPricer<ESolverType::CrankNicolson, EAdjointDifferentiation::None> pricerAmerican(input, settings);
+	CFDPricer<ESolverType::CrankNicolson, EGridType::Linear, EAdjointDifferentiation::None> pricerAmerican(input, settings);
 
 	CPricerSettings settings2;
 	settings2.exerciseType = EExerciseType::European;
-	settings2.fdSettings.gridType = EGridType::Linear;
-	CFDPricer<ESolverType::CrankNicolson, EAdjointDifferentiation::None> pricerEuropean(input, settings2);
+	CFDPricer<ESolverType::CrankNicolson, EGridType::Linear, EAdjointDifferentiation::None> pricerEuropean(input, settings2);
 
 	COutputData callOutputAm, putOutputAm;
 	pricerAmerican.Price(callOutputAm, putOutputAm);
@@ -166,8 +164,8 @@ TEST (FDTest, AmericanOptionNoExercise)
 
 	input.r *= -1;
 	input.b *= -1;
-	CFDPricer<ESolverType::CrankNicolson, EAdjointDifferentiation::None> pricerAmerican2(input, settings);
-	CFDPricer<ESolverType::CrankNicolson, EAdjointDifferentiation::None> pricerEuropean2(input, settings2);
+	CFDPricer<ESolverType::CrankNicolson, EGridType::Adaptive, EAdjointDifferentiation::None> pricerAmerican2(input, settings);
+	CFDPricer<ESolverType::CrankNicolson, EGridType::Adaptive, EAdjointDifferentiation::None> pricerEuropean2(input, settings2);
 	pricerAmerican2.Price(callOutputAm, putOutputAm);
 	pricerEuropean2.Price(callOutputEu, putOutputEu);
 
@@ -192,8 +190,8 @@ TEST (FDTest, BinomialTreeConsistency)
 
 	CPricerSettings settings;
 	settings.exerciseType = EExerciseType::American;
-	settings.fdSettings.gridType = EGridType::Adaptive;
-	CFDPricer<ESolverType::CrankNicolson, EAdjointDifferentiation::None> pricer(input, settings);
+
+	CFDPricer<ESolverType::CrankNicolson, EGridType::Adaptive, EAdjointDifferentiation::None> pricer(input, settings);
 
 	COutputData callOutput, putOutput;
 	pricer.Price(callOutput, putOutput);
@@ -219,14 +217,14 @@ TEST (FDTest, ZeroDividendOnTimeGridSanity)
 
 	CPricerSettings settings;
 	settings.exerciseType = EExerciseType::American;
-	settings.fdSettings.gridType = EGridType::Adaptive;
-	CFDPricer<ESolverType::CrankNicolson, EAdjointDifferentiation::All> pricerDiv(input, settings);
+
+	CFDPricer<ESolverType::CrankNicolson, EGridType::Adaptive, EAdjointDifferentiation::All> pricerDiv(input, settings);
 
 	COutputData callOutput, putOutput;
 	pricerDiv.Price(callOutput, putOutput);
 
 	input.dividends.resize(0);
-	CFDPricer<ESolverType::CrankNicolson, EAdjointDifferentiation::All> pricerNoDiv(input, settings);
+	CFDPricer<ESolverType::CrankNicolson, EGridType::Adaptive, EAdjointDifferentiation::All> pricerNoDiv(input, settings);
 
 	COutputData callOutput2, putOutput2;
 	pricerNoDiv.Price(callOutput2, putOutput2);
@@ -276,14 +274,14 @@ TEST (FDTest, ZeroDividendSanity)
 
 	CPricerSettings settings;
 	settings.exerciseType = EExerciseType::American;
-	settings.fdSettings.gridType = EGridType::Adaptive;
-	CFDPricer<ESolverType::CrankNicolson, EAdjointDifferentiation::All> pricerDiv(input, settings);
+
+	CFDPricer<ESolverType::CrankNicolson, EGridType::Adaptive, EAdjointDifferentiation::All> pricerDiv(input, settings);
 
 	COutputData callOutput, putOutput;
 	pricerDiv.Price(callOutput, putOutput);
 
 	input.dividends.resize(0);
-	CFDPricer<ESolverType::CrankNicolson, EAdjointDifferentiation::All> pricerNoDiv(input, settings);
+	CFDPricer<ESolverType::CrankNicolson, EGridType::Adaptive, EAdjointDifferentiation::All> pricerNoDiv(input, settings);
 
 	COutputData callOutput2, putOutput2;
 	pricerNoDiv.Price(callOutput2, putOutput2);
@@ -329,7 +327,7 @@ TEST (FDTest, Convergence)
 	input.T = 2;
 	CPricerSettings settings;
 	settings.exerciseType = EExerciseType::European;
-	settings.fdSettings.gridType = EGridType::Adaptive;
+
 	CBlackScholes bs(input);
 	double bsC = bs.Value<EOptionType::Call>();
 	double bsP = bs.Value<EOptionType::Put>();
@@ -344,28 +342,28 @@ TEST (FDTest, Convergence)
 
 	input.N = 129;
 	input.M = 80;
-	CFDPricer<ESolverType::CrankNicolson, EAdjointDifferentiation::All> pricerNM(input, settings);
+	CFDPricer<ESolverType::CrankNicolson, EGridType::Adaptive, EAdjointDifferentiation::All> pricerNM(input, settings);
 	COutputData callOutput, putOutput;
 	pricerNM.Price(callOutput, putOutput);
 
 	CInputData input2(input);
 	input2.N = 129;
 	input2.M = 2 * input.M;
-	CFDPricer<ESolverType::CrankNicolson, EAdjointDifferentiation::All> pricerN2M(input2, settings);
+	CFDPricer<ESolverType::CrankNicolson, EGridType::Adaptive, EAdjointDifferentiation::All> pricerN2M(input2, settings);
 	COutputData callOutput2, putOutput2;
 	pricerN2M.Price(callOutput2, putOutput2);
 
 	CInputData input3(input);
 	input3.N = 2 * input.N + 1;
 	input3.M = input.M;
-	CFDPricer<ESolverType::CrankNicolson, EAdjointDifferentiation::All> pricer2NM(input3, settings);
+	CFDPricer<ESolverType::CrankNicolson, EGridType::Adaptive, EAdjointDifferentiation::All> pricer2NM(input3, settings);
 	COutputData callOutput3, putOutput3;
 	pricer2NM.Price(callOutput3, putOutput3);
 
 	CInputData input4(input);
 	input4.N = 2 * input.N + 1;
 	input4.M = 2 * input.M;
-	CFDPricer<ESolverType::CrankNicolson, EAdjointDifferentiation::All> pricer2N2M(input3, settings);
+	CFDPricer<ESolverType::CrankNicolson, EGridType::Adaptive, EAdjointDifferentiation::All> pricer2N2M(input3, settings);
 	COutputData callOutput4, putOutput4;
 	pricer2N2M.Price(callOutput4, putOutput4);
 
@@ -465,9 +463,9 @@ TEST (FDTest, VellekoopPage280Table1)
 
 		CPricerSettings settings;
 		settings.exerciseType = EExerciseType::American;
-		settings.fdSettings.gridType = EGridType::Adaptive;
+
 		settings.calculationType = ECalculationType::All;
-		CFDPricer<ESolverType::CrankNicolson, EAdjointDifferentiation::None> pricer(input, settings);
+		CFDPricer<ESolverType::CrankNicolson, EGridType::Adaptive, EAdjointDifferentiation::None> pricer(input, settings);
 		pricer.Price(callOutput, putOutput);
 
 		double pn = callOutput.price;
@@ -524,9 +522,9 @@ TEST (FDTest, VellekoopPage282Table3)
 
 		CPricerSettings settings;
 		settings.exerciseType = EExerciseType::American;
-		settings.fdSettings.gridType = EGridType::Adaptive;
+
 		settings.calculationType = ECalculationType::All;
-		CFDPricer<ESolverType::CrankNicolson, EAdjointDifferentiation::None> pricer(input, settings);
+		CFDPricer<ESolverType::CrankNicolson, EGridType::Adaptive, EAdjointDifferentiation::None> pricer(input, settings);
 		pricer.Price(callOutput, putOutput);
 
 		double pn = callOutput.price;
@@ -588,9 +586,9 @@ TEST (FDTest, VellekoopPage280Table1Acceleration)
 
 		CPricerSettings settings;
 		settings.exerciseType = EExerciseType::American;
-		settings.fdSettings.gridType = EGridType::Adaptive;
+
 		settings.calculationType = ECalculationType::All;
-		CFDPricer<ESolverType::CrankNicolson, EAdjointDifferentiation::None> pricer(input, settings);
+		CFDPricer<ESolverType::CrankNicolson, EGridType::Adaptive, EAdjointDifferentiation::None> pricer(input, settings);
 		pricer.Price(callOutput, putOutput);
 
 		double pn = callOutput.price;
@@ -647,9 +645,9 @@ TEST (FDTest, VellekoopPage282Table3Acceleration)
 
 		CPricerSettings settings;
 		settings.exerciseType = EExerciseType::American;
-		settings.fdSettings.gridType = EGridType::Adaptive;
+
 		settings.calculationType = ECalculationType::All;
-		CFDPricer<ESolverType::CrankNicolson, EAdjointDifferentiation::None> pricer(input, settings);
+		CFDPricer<ESolverType::CrankNicolson, EGridType::Adaptive, EAdjointDifferentiation::None> pricer(input, settings);
 		pricer.Price(callOutput, putOutput);
 
 		double pn = callOutput.price;
@@ -712,9 +710,9 @@ TEST (FDTest, AccelerationDividendConsistency)
 
 	CPricerSettings settings;
 	settings.exerciseType = EExerciseType::American;
-	settings.fdSettings.gridType = EGridType::Adaptive;
+
 	settings.calculationType = ECalculationType::All;
-	CFDPricer<ESolverType::CrankNicolson, EAdjointDifferentiation::All> pricer(input, settings);
+	CFDPricer<ESolverType::CrankNicolson, EGridType::Adaptive, EAdjointDifferentiation::All> pricer(input, settings);
 	pricer.Price(callOutput, putOutput);
 
 	CInputData input2(input);
@@ -724,7 +722,7 @@ TEST (FDTest, AccelerationDividendConsistency)
 	COutputData callOutput2;
 	COutputData putOutput2;
 
-	CFDPricer<ESolverType::CrankNicolson, EAdjointDifferentiation::All> pricer2(input2, settings);
+	CFDPricer<ESolverType::CrankNicolson, EGridType::Adaptive, EAdjointDifferentiation::All> pricer2(input2, settings);
 	pricer2.Price(callOutput2, putOutput2);
 
 	EXPECT_LE(fabs(callOutput.price - callOutput2.price), 1.5e-5);

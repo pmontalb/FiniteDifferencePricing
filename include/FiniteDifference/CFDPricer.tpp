@@ -10,8 +10,8 @@
 namespace fdpricing
 {
 
-template <ESolverType solverType, EAdjointDifferentiation adjointDifferentiation>
-CFDPricer<solverType, adjointDifferentiation>::CFDPricer(const CInputData& unaliased input,
+template <ESolverType solverType, EGridType gridType, EAdjointDifferentiation adjointDifferentiation>
+CFDPricer<solverType, gridType, adjointDifferentiation>::CFDPricer(const CInputData& unaliased input,
 															const CPricerSettings& unaliased settings) noexcept
 		: input(input), settings(settings),
 		  calculateCall(settings.calculationType == ECalculationType::All || settings.calculationType == ECalculationType::CallOnly),
@@ -32,51 +32,51 @@ CFDPricer<solverType, adjointDifferentiation>::CFDPricer(const CInputData& unali
 	UpdateDelegates(settings, accelerateCall, acceleratePut);
 }
 
-template <ESolverType solverType, EAdjointDifferentiation adjointDifferentiation>
-void CFDPricer<solverType, adjointDifferentiation>::UpdateDelegates(const CPricerSettings& unaliased settings, const bool accelerateCall, const bool acceleratePut) noexcept
+template <ESolverType solverType, EGridType gridType, EAdjointDifferentiation adjointDifferentiation>
+void CFDPricer<solverType, gridType, adjointDifferentiation>::UpdateDelegates(const CPricerSettings& unaliased settings, const bool accelerateCall, const bool acceleratePut) noexcept
 {
 	switch (settings.calculationType)
 	{
 		case ECalculationType::All:
-			exerciseDelegate = &CFDPricer<solverType, adjointDifferentiation>::Exercise<ECalculationType::All>;
-			smoothingDelegate = &CFDPricer<solverType, adjointDifferentiation>::PayoffSmoothing<ECalculationType::All>;
-			discountDelegate = &CFDPricer<solverType, adjointDifferentiation>::RollBack<ECalculationType::All>;
-			jumpConditionDelegate = &CFDPricer<solverType, adjointDifferentiation>::ApplyJumpCondition<ECalculationType::All>;
-			refinedSmoothingDelegate = &CFDPricer<solverType, adjointDifferentiation>::RefinedPayoffSmoothing<ECalculationType::All>;
-			applyOperatorDelegate = &CFDPricer<solverType, adjointDifferentiation>::ApplyOperator<ECalculationType::All>;
-			setOutputDelegate = &CFDPricer<solverType, adjointDifferentiation>::SetOutput<ECalculationType::All>;
-			computeGreeksDelegate = &CFDPricer<solverType, adjointDifferentiation>::ComputeGreeks<ECalculationType::All>;
+			exerciseDelegate = &CFDPricer<solverType, gridType, adjointDifferentiation>::Exercise<ECalculationType::All>;
+			smoothingDelegate = &CFDPricer<solverType, gridType, adjointDifferentiation>::PayoffSmoothing<ECalculationType::All>;
+			discountDelegate = &CFDPricer<solverType, gridType, adjointDifferentiation>::RollBack<ECalculationType::All>;
+			jumpConditionDelegate = &CFDPricer<solverType, gridType, adjointDifferentiation>::ApplyJumpCondition<ECalculationType::All>;
+			refinedSmoothingDelegate = &CFDPricer<solverType, gridType, adjointDifferentiation>::RefinedPayoffSmoothing<ECalculationType::All>;
+			applyOperatorDelegate = &CFDPricer<solverType, gridType, adjointDifferentiation>::ApplyOperator<ECalculationType::All>;
+			setOutputDelegate = &CFDPricer<solverType, gridType, adjointDifferentiation>::SetOutput<ECalculationType::All>;
+			computeGreeksDelegate = &CFDPricer<solverType, gridType, adjointDifferentiation>::ComputeGreeks<ECalculationType::All>;
 			break;
 		case ECalculationType::CallOnly:
-			exerciseDelegate = &CFDPricer<solverType, adjointDifferentiation>::Exercise<ECalculationType::CallOnly>;
-			smoothingDelegate = &CFDPricer<solverType, adjointDifferentiation>::PayoffSmoothing<ECalculationType::CallOnly>;
-			discountDelegate = &CFDPricer<solverType, adjointDifferentiation>::RollBack<ECalculationType::CallOnly>;
-			jumpConditionDelegate = &CFDPricer<solverType, adjointDifferentiation>::ApplyJumpCondition<ECalculationType::CallOnly>;
-			refinedSmoothingDelegate = &CFDPricer<solverType, adjointDifferentiation>::RefinedPayoffSmoothing<ECalculationType::CallOnly>;
-			applyOperatorDelegate = &CFDPricer<solverType, adjointDifferentiation>::ApplyOperator<ECalculationType::CallOnly>;
-			setOutputDelegate = &CFDPricer<solverType, adjointDifferentiation>::SetOutput<ECalculationType::CallOnly>;
-			computeGreeksDelegate = &CFDPricer<solverType, adjointDifferentiation>::ComputeGreeks<ECalculationType::CallOnly>;
+			exerciseDelegate = &CFDPricer<solverType, gridType, adjointDifferentiation>::Exercise<ECalculationType::CallOnly>;
+			smoothingDelegate = &CFDPricer<solverType, gridType, adjointDifferentiation>::PayoffSmoothing<ECalculationType::CallOnly>;
+			discountDelegate = &CFDPricer<solverType, gridType, adjointDifferentiation>::RollBack<ECalculationType::CallOnly>;
+			jumpConditionDelegate = &CFDPricer<solverType, gridType, adjointDifferentiation>::ApplyJumpCondition<ECalculationType::CallOnly>;
+			refinedSmoothingDelegate = &CFDPricer<solverType, gridType, adjointDifferentiation>::RefinedPayoffSmoothing<ECalculationType::CallOnly>;
+			applyOperatorDelegate = &CFDPricer<solverType, gridType, adjointDifferentiation>::ApplyOperator<ECalculationType::CallOnly>;
+			setOutputDelegate = &CFDPricer<solverType, gridType, adjointDifferentiation>::SetOutput<ECalculationType::CallOnly>;
+			computeGreeksDelegate = &CFDPricer<solverType, gridType, adjointDifferentiation>::ComputeGreeks<ECalculationType::CallOnly>;
 			break;
 		case ECalculationType::PutOnly:
-			exerciseDelegate = &CFDPricer<solverType, adjointDifferentiation>::Exercise<ECalculationType::PutOnly>;
-			smoothingDelegate = &CFDPricer<solverType, adjointDifferentiation>::PayoffSmoothing<ECalculationType::PutOnly>;
-			discountDelegate = &CFDPricer<solverType, adjointDifferentiation>::RollBack<ECalculationType::PutOnly>;
-			jumpConditionDelegate = &CFDPricer<solverType, adjointDifferentiation>::ApplyJumpCondition<ECalculationType::PutOnly>;
-			refinedSmoothingDelegate = &CFDPricer<solverType, adjointDifferentiation>::RefinedPayoffSmoothing<ECalculationType::PutOnly>;
-			applyOperatorDelegate = &CFDPricer<solverType, adjointDifferentiation>::ApplyOperator<ECalculationType::PutOnly>;
-			setOutputDelegate = &CFDPricer<solverType, adjointDifferentiation>::SetOutput<ECalculationType::PutOnly>;
-			computeGreeksDelegate = &CFDPricer<solverType, adjointDifferentiation>::ComputeGreeks<ECalculationType::PutOnly>;
+			exerciseDelegate = &CFDPricer<solverType, gridType, adjointDifferentiation>::Exercise<ECalculationType::PutOnly>;
+			smoothingDelegate = &CFDPricer<solverType, gridType, adjointDifferentiation>::PayoffSmoothing<ECalculationType::PutOnly>;
+			discountDelegate = &CFDPricer<solverType, gridType, adjointDifferentiation>::RollBack<ECalculationType::PutOnly>;
+			jumpConditionDelegate = &CFDPricer<solverType, gridType, adjointDifferentiation>::ApplyJumpCondition<ECalculationType::PutOnly>;
+			refinedSmoothingDelegate = &CFDPricer<solverType, gridType, adjointDifferentiation>::RefinedPayoffSmoothing<ECalculationType::PutOnly>;
+			applyOperatorDelegate = &CFDPricer<solverType, gridType, adjointDifferentiation>::ApplyOperator<ECalculationType::PutOnly>;
+			setOutputDelegate = &CFDPricer<solverType, gridType, adjointDifferentiation>::SetOutput<ECalculationType::PutOnly>;
+			computeGreeksDelegate = &CFDPricer<solverType, gridType, adjointDifferentiation>::ComputeGreeks<ECalculationType::PutOnly>;
 			break;
 		case ECalculationType::Null:
-			exerciseDelegate = &CFDPricer<solverType, adjointDifferentiation>::Exercise<ECalculationType::Null>;
-			smoothingDelegate = &CFDPricer<solverType, adjointDifferentiation>::PayoffSmoothing<ECalculationType::Null>;
-			discountDelegate = &CFDPricer<solverType, adjointDifferentiation>::RollBack<ECalculationType::Null>;
-			jumpConditionDelegate = &CFDPricer<solverType, adjointDifferentiation>::ApplyJumpCondition<ECalculationType::Null>;
-			refinedSmoothingDelegate = &CFDPricer<solverType, adjointDifferentiation>::RefinedPayoffSmoothing<ECalculationType::Null>;
-			applyOperatorDelegate = &CFDPricer<solverType, adjointDifferentiation>::ApplyOperator<ECalculationType::Null>;
-			applyOperatorDelegate = &CFDPricer<solverType, adjointDifferentiation>::ApplyOperator<ECalculationType::Null>;
-			setOutputDelegate = &CFDPricer<solverType, adjointDifferentiation>::SetOutput<ECalculationType::Null>;
-			computeGreeksDelegate = &CFDPricer<solverType, adjointDifferentiation>::ComputeGreeks<ECalculationType::Null>;
+			exerciseDelegate = &CFDPricer<solverType, gridType, adjointDifferentiation>::Exercise<ECalculationType::Null>;
+			smoothingDelegate = &CFDPricer<solverType, gridType, adjointDifferentiation>::PayoffSmoothing<ECalculationType::Null>;
+			discountDelegate = &CFDPricer<solverType, gridType, adjointDifferentiation>::RollBack<ECalculationType::Null>;
+			jumpConditionDelegate = &CFDPricer<solverType, gridType, adjointDifferentiation>::ApplyJumpCondition<ECalculationType::Null>;
+			refinedSmoothingDelegate = &CFDPricer<solverType, gridType, adjointDifferentiation>::RefinedPayoffSmoothing<ECalculationType::Null>;
+			applyOperatorDelegate = &CFDPricer<solverType, gridType, adjointDifferentiation>::ApplyOperator<ECalculationType::Null>;
+			applyOperatorDelegate = &CFDPricer<solverType, gridType, adjointDifferentiation>::ApplyOperator<ECalculationType::Null>;
+			setOutputDelegate = &CFDPricer<solverType, gridType, adjointDifferentiation>::SetOutput<ECalculationType::Null>;
+			computeGreeksDelegate = &CFDPricer<solverType, gridType, adjointDifferentiation>::ComputeGreeks<ECalculationType::Null>;
 			break;
 		default:
 			printf("WRONG SETTINGS");
@@ -84,17 +84,17 @@ void CFDPricer<solverType, adjointDifferentiation>::UpdateDelegates(const CPrice
 	}
 
 	if (accelerateCall)
-		accelerationDelegate = &CFDPricer<solverType, adjointDifferentiation>::Accelerate<ECalculationType::CallOnly>;
+		accelerationDelegate = &CFDPricer<solverType, gridType, adjointDifferentiation>::Accelerate<ECalculationType::CallOnly>;
 	else if (acceleratePut)
-		accelerationDelegate = &CFDPricer<solverType, adjointDifferentiation>::Accelerate<ECalculationType::PutOnly>;
+		accelerationDelegate = &CFDPricer<solverType, gridType, adjointDifferentiation>::Accelerate<ECalculationType::PutOnly>;
 	else
 		// default is not accelerate
-		accelerationDelegate = &CFDPricer<solverType, adjointDifferentiation>::Accelerate<ECalculationType::Null>;
+		accelerationDelegate = &CFDPricer<solverType, gridType, adjointDifferentiation>::Accelerate<ECalculationType::Null>;
 }
 
-template <ESolverType solverType, EAdjointDifferentiation adjointDifferentiation>
+template <ESolverType solverType, EGridType gridType, EAdjointDifferentiation adjointDifferentiation>
 template<ECalculationType calculationType>
-void CFDPricer<solverType, adjointDifferentiation>::ApplyOperator(CEvolutionOperator<solverType, adjointDifferentiation>& unaliased u)
+void CFDPricer<solverType, gridType, adjointDifferentiation>::ApplyOperator(Operator& unaliased u)
 {
 	if (calculationType == ECalculationType::CallOnly || calculationType == ECalculationType::All)
 		u.Apply(callData);
@@ -102,9 +102,9 @@ void CFDPricer<solverType, adjointDifferentiation>::ApplyOperator(CEvolutionOper
 		u.Apply(putData);
 }
 
-template <ESolverType solverType, EAdjointDifferentiation adjointDifferentiation>
+template <ESolverType solverType, EGridType gridType, EAdjointDifferentiation adjointDifferentiation>
 template<ECalculationType calculationType>
-void CFDPricer<solverType, adjointDifferentiation>::Exercise()
+void CFDPricer<solverType, gridType, adjointDifferentiation>::Exercise()
 {
 	const auto& grid = u.GetGrid();
 
@@ -145,9 +145,9 @@ void CFDPricer<solverType, adjointDifferentiation>::Exercise()
 	}
 }
 
-template <ESolverType solverType, EAdjointDifferentiation adjointDifferentiation>
+template <ESolverType solverType, EGridType gridType, EAdjointDifferentiation adjointDifferentiation>
 template<ECalculationType calculationType>
-void CFDPricer<solverType, adjointDifferentiation>::PayoffSmoothing()
+void CFDPricer<solverType, gridType, adjointDifferentiation>::PayoffSmoothing()
 {
 	const auto& grid = u.GetGrid();
 
@@ -166,9 +166,9 @@ void CFDPricer<solverType, adjointDifferentiation>::PayoffSmoothing()
 	}
 }
 
-template <ESolverType solverType, EAdjointDifferentiation adjointDifferentiation>
+template <ESolverType solverType, EGridType gridType, EAdjointDifferentiation adjointDifferentiation>
 template<ECalculationType calculationType>
-void CFDPricer<solverType, adjointDifferentiation>::RefinedPayoffSmoothing(const double previousTime, const double currentTime, const CDividend& unaliased dividend) noexcept
+void CFDPricer<solverType, gridType, adjointDifferentiation>::RefinedPayoffSmoothing(const double previousTime, const double currentTime, const CDividend& unaliased dividend) noexcept
 {
 	const double dtAfter  = currentTime - dividend.time;
 	const double dtBefore = dividend.time - previousTime;
@@ -207,7 +207,7 @@ void CFDPricer<solverType, adjointDifferentiation>::RefinedPayoffSmoothing(const
 	if (fabs(dtBefore) <= 1e-12)
 		return;
 
-	CEvolutionOperator<solverType, adjointDifferentiation> uBefore(u, dtBefore);
+	Operator uBefore(u, dtBefore);
 
 	(this->*applyOperatorDelegate)(uBefore);
 
@@ -217,9 +217,9 @@ void CFDPricer<solverType, adjointDifferentiation>::RefinedPayoffSmoothing(const
 }
 
 
-template <ESolverType solverType, EAdjointDifferentiation adjointDifferentiation>
+template <ESolverType solverType, EGridType gridType, EAdjointDifferentiation adjointDifferentiation>
 template<ECalculationType calculationType>
-void CFDPricer<solverType, adjointDifferentiation>::SmoothingWorker(const size_t i, CBlackScholes& unaliased bs, const double dt) noexcept
+void CFDPricer<solverType, gridType, adjointDifferentiation>::SmoothingWorker(const size_t i, CBlackScholes& unaliased bs, const double dt) noexcept
 {
 	switch (calculationType)
 	{
@@ -316,9 +316,9 @@ void CFDPricer<solverType, adjointDifferentiation>::SmoothingWorker(const size_t
 }
 
 
-template <ESolverType solverType, EAdjointDifferentiation adjointDifferentiation>
+template <ESolverType solverType, EGridType gridType, EAdjointDifferentiation adjointDifferentiation>
 template<ECalculationType calculationType>
-void CFDPricer<solverType, adjointDifferentiation>::RollBack(const double dt, const double df)
+void CFDPricer<solverType, gridType, adjointDifferentiation>::RollBack(const double dt, const double df)
 {
 	for (size_t i = 0; i < input.N; ++i)
 	{
@@ -406,8 +406,8 @@ void CFDPricer<solverType, adjointDifferentiation>::RollBack(const double dt, co
 }
 
 
-template <ESolverType solverType, EAdjointDifferentiation adjointDifferentiation>
-void CFDPricer<solverType, adjointDifferentiation>::BackwardInduction() noexcept
+template <ESolverType solverType, EGridType gridType, EAdjointDifferentiation adjointDifferentiation>
+void CFDPricer<solverType, gridType, adjointDifferentiation>::BackwardInduction() noexcept
 {
 	(this->*applyOperatorDelegate)(u);
 
@@ -418,8 +418,8 @@ void CFDPricer<solverType, adjointDifferentiation>::BackwardInduction() noexcept
 }
 
 
-template <ESolverType solverType, EAdjointDifferentiation adjointDifferentiation>
-void CFDPricer<solverType, adjointDifferentiation>::RefinedBackwardInduction(const double previousTime, const double currentTime, const CDividend& unaliased dividend) noexcept
+template <ESolverType solverType, EGridType gridType, EAdjointDifferentiation adjointDifferentiation>
+void CFDPricer<solverType, gridType, adjointDifferentiation>::RefinedBackwardInduction(const double previousTime, const double currentTime, const CDividend& unaliased dividend) noexcept
 {
 	const double dtAfter  = currentTime - dividend.time;
 	const double dtBefore = dividend.time - previousTime;
@@ -454,8 +454,8 @@ void CFDPricer<solverType, adjointDifferentiation>::RefinedBackwardInduction(con
 
 #endif
 
-	CEvolutionOperator<solverType, adjointDifferentiation> uAfter(u, dtAfter);
-	CEvolutionOperator<solverType, adjointDifferentiation> uBefore(u, dtBefore);
+	Operator uAfter(u, dtAfter);
+	Operator uBefore(u, dtBefore);
 
 	(this->*applyOperatorDelegate)(uAfter);
 
@@ -476,9 +476,9 @@ void CFDPricer<solverType, adjointDifferentiation>::RefinedBackwardInduction(con
 		(this->*exerciseDelegate)();
 }
 
-template <ESolverType solverType, EAdjointDifferentiation adjointDifferentiation>
+template <ESolverType solverType, EGridType gridType, EAdjointDifferentiation adjointDifferentiation>
 template<ECalculationType calculationType>
-void CFDPricer<solverType, adjointDifferentiation>::ApplyJumpCondition(const double shift) noexcept
+void CFDPricer<solverType, gridType, adjointDifferentiation>::ApplyJumpCondition(const double shift) noexcept
 {
 #ifdef DEBUG
 	if (shift <= 0.0)
@@ -534,8 +534,8 @@ void CFDPricer<solverType, adjointDifferentiation>::ApplyJumpCondition(const dou
 	}
 }
 
-template <ESolverType solverType, EAdjointDifferentiation adjointDifferentiation>
-void CFDPricer<solverType, adjointDifferentiation>::PayoffInitialise(size_t& unaliased m) noexcept
+template <ESolverType solverType, EGridType gridType, EAdjointDifferentiation adjointDifferentiation>
+void CFDPricer<solverType, gridType, adjointDifferentiation>::PayoffInitialise(size_t& unaliased m) noexcept
 {
 	if (m != input.M)
 		return;
@@ -549,8 +549,8 @@ void CFDPricer<solverType, adjointDifferentiation>::PayoffInitialise(size_t& una
 		(this->*exerciseDelegate)();
 }
 
-template <ESolverType solverType, EAdjointDifferentiation adjointDifferentiation>
-void CFDPricer<solverType, adjointDifferentiation>::RefinedPayoffInitialise(size_t& unaliased m) noexcept
+template <ESolverType solverType, EGridType gridType, EAdjointDifferentiation adjointDifferentiation>
+void CFDPricer<solverType, gridType, adjointDifferentiation>::RefinedPayoffInitialise(size_t& unaliased m) noexcept
 {
 	if (m != input.M)
 		return;
@@ -571,9 +571,9 @@ void CFDPricer<solverType, adjointDifferentiation>::RefinedPayoffInitialise(size
 }
 
 
-template <ESolverType solverType, EAdjointDifferentiation adjointDifferentiation>
+template <ESolverType solverType, EGridType gridType, EAdjointDifferentiation adjointDifferentiation>
 template<ECalculationType calculationType>
-void CFDPricer<solverType, adjointDifferentiation>::Accelerate(size_t& unaliased m,
+void CFDPricer<solverType, gridType, adjointDifferentiation>::Accelerate(size_t& unaliased m,
 		COutputData& unaliased callOutput, COutputData& unaliased putOutput,
 		TimeLeaves& unaliased callLeavesDt, TimeLeaves& unaliased putLeavesDt)
 {
@@ -673,8 +673,8 @@ void CFDPricer<solverType, adjointDifferentiation>::Accelerate(size_t& unaliased
 	}
 }
 
-template <ESolverType solverType, EAdjointDifferentiation adjointDifferentiation>
-void CFDPricer<solverType, adjointDifferentiation>::Price(COutputData& unaliased callOutput, COutputData& unaliased putOutput) noexcept
+template <ESolverType solverType, EGridType gridType, EAdjointDifferentiation adjointDifferentiation>
+void CFDPricer<solverType, gridType, adjointDifferentiation>::Price(COutputData& unaliased callOutput, COutputData& unaliased putOutput) noexcept
 {
 	TimeLeaves callLeavesDt, putLeavesDt;
 
@@ -689,8 +689,8 @@ void CFDPricer<solverType, adjointDifferentiation>::Price(COutputData& unaliased
 	(this->*setOutputDelegate)(callOutput, putOutput);
 }
 
-template <ESolverType solverType, EAdjointDifferentiation adjointDifferentiation>
-void CFDPricer<solverType, adjointDifferentiation>::PriceUntil(size_t start, const size_t end, TimeLeaves& unaliased callLeavesDt, TimeLeaves& unaliased putLeavesDt) noexcept
+template <ESolverType solverType, EGridType gridType, EAdjointDifferentiation adjointDifferentiation>
+void CFDPricer<solverType, gridType, adjointDifferentiation>::PriceUntil(size_t start, const size_t end, TimeLeaves& unaliased callLeavesDt, TimeLeaves& unaliased putLeavesDt) noexcept
 {
 	if (input.dividends.size())
 	{
@@ -738,8 +738,8 @@ void CFDPricer<solverType, adjointDifferentiation>::PriceUntil(size_t start, con
 	}
 }
 
-template <ESolverType solverType, EAdjointDifferentiation adjointDifferentiation>
-void CFDPricer<solverType, adjointDifferentiation>::SaveLeaves(const size_t m, TimeLeaves& unaliased callLeavesDt, TimeLeaves& unaliased putLeavesDt) const noexcept
+template <ESolverType solverType, EGridType gridType, EAdjointDifferentiation adjointDifferentiation>
+void CFDPricer<solverType, gridType, adjointDifferentiation>::SaveLeaves(const size_t m, TimeLeaves& unaliased callLeavesDt, TimeLeaves& unaliased putLeavesDt) const noexcept
 {
 	if (m == 0)
 		return;
@@ -760,9 +760,9 @@ void CFDPricer<solverType, adjointDifferentiation>::SaveLeaves(const size_t m, T
 	}
 }
 
-template <ESolverType solverType, EAdjointDifferentiation adjointDifferentiation>
-template <ECalculationType calculationType>
-void CFDPricer<solverType, adjointDifferentiation>::SetOutput(COutputData& unaliased callOutput, COutputData& unaliased putOutput) const
+template <ESolverType solverType, EGridType gridType, EAdjointDifferentiation adjointDifferentiation>
+template<ECalculationType calculationType>
+void CFDPricer<solverType, gridType, adjointDifferentiation>::SetOutput(COutputData& unaliased callOutput, COutputData& unaliased putOutput) const
 {
 	if (calculationType == ECalculationType::CallOnly || calculationType == ECalculationType::All)
 	{
@@ -812,9 +812,9 @@ void CFDPricer<solverType, adjointDifferentiation>::SetOutput(COutputData& unali
 	}
 }
 
-template <ESolverType solverType, EAdjointDifferentiation adjointDifferentiation>
-template <ECalculationType calculationType>
-void CFDPricer<solverType, adjointDifferentiation>::ComputeGreeks(COutputData& unaliased callOutput, COutputData& unaliased putOutput, const TimeLeaves& unaliased callLeavesDt, const TimeLeaves& unaliased putLeavesDt) const
+template <ESolverType solverType, EGridType gridType, EAdjointDifferentiation adjointDifferentiation>
+template<ECalculationType calculationType>
+void CFDPricer<solverType, gridType, adjointDifferentiation>::ComputeGreeks(COutputData& unaliased callOutput, COutputData& unaliased putOutput, const TimeLeaves& unaliased callLeavesDt, const TimeLeaves& unaliased putLeavesDt) const
 {
 	const auto& grid = u.GetGrid();
 

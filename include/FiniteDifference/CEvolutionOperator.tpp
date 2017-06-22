@@ -10,9 +10,9 @@
 namespace fdpricing
 {
 
-template<ESolverType solverType, EAdjointDifferentiation adjointDifferentiation>
-CEvolutionOperator<solverType, adjointDifferentiation>::CEvolutionOperator(const CInputData& unaliased input, const CFiniteDifferenceSettings& unaliased settings) noexcept
-	: grid(input.S, settings.lowerFactor * input.S, settings.upperFactor * input.S, settings.gridType, input.N),
+template<ESolverType solverType, EGridType gridType, EAdjointDifferentiation adjointDifferentiation>
+CEvolutionOperator<solverType, gridType, adjointDifferentiation>::CEvolutionOperator(const CInputData& unaliased input, const CFiniteDifferenceSettings& unaliased settings) noexcept
+	: grid(input.S, settings.lowerFactor * input.S, settings.upperFactor * input.S, input.N),
 	  L(input, grid),
 	  dt(input.T / input.M),
 	  A(L)
@@ -20,15 +20,15 @@ CEvolutionOperator<solverType, adjointDifferentiation>::CEvolutionOperator(const
 	ctor();
 }
 
-template<ESolverType solverType, EAdjointDifferentiation adjointDifferentiation>
-CEvolutionOperator<solverType, adjointDifferentiation>::CEvolutionOperator(const CEvolutionOperator& rhs, const double dt) noexcept
+template<ESolverType solverType, EGridType gridType, EAdjointDifferentiation adjointDifferentiation>
+CEvolutionOperator<solverType, gridType, adjointDifferentiation>::CEvolutionOperator(const CEvolutionOperator& rhs, const double dt) noexcept
 	: grid(rhs.grid), L(rhs.L), dt(dt), A(L)
 {
 	ctor();
 }
 
-template<ESolverType solverType, EAdjointDifferentiation adjointDifferentiation>
-void CEvolutionOperator<solverType, adjointDifferentiation>::ctor() noexcept
+template<ESolverType solverType, EGridType gridType, EAdjointDifferentiation adjointDifferentiation>
+void CEvolutionOperator<solverType, gridType, adjointDifferentiation>::ctor() noexcept
 {
 	switch (solverType)
 	{
@@ -40,7 +40,7 @@ void CEvolutionOperator<solverType, adjointDifferentiation>::ctor() noexcept
 			break;
 		case ESolverType::CrankNicolson:
 		{
-			B = std::make_unique<CTridiagonalOperator<adjointDifferentiation>>(L);
+			B = std::make_unique<CTridiagonalOperator<gridType, adjointDifferentiation>>(L);
 
 			const double halfDt = .5 * dt;
 			A.Add(1.0, -halfDt);
@@ -52,8 +52,8 @@ void CEvolutionOperator<solverType, adjointDifferentiation>::ctor() noexcept
 	}
 }
 
-template<ESolverType solverType, EAdjointDifferentiation adjointDifferentiation>
-void CEvolutionOperator<solverType, adjointDifferentiation>::Apply(CPayoffData& unaliased x) noexcept
+template<ESolverType solverType, EGridType gridType, EAdjointDifferentiation adjointDifferentiation>
+void CEvolutionOperator<solverType, gridType, adjointDifferentiation>::Apply(CPayoffData& unaliased x) noexcept
 {
 	switch (solverType)
 	{

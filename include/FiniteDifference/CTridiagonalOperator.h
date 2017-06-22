@@ -56,12 +56,12 @@ typedef std::vector<Triple> Matrix;
 namespace fdpricing
 {
 
-template<EAdjointDifferentiation adjointDifferentiation>
+template<EGridType gridType, EAdjointDifferentiation adjointDifferentiation>
 class CTridiagonalOperator
 {
 public:
 	CTridiagonalOperator(const size_t N) noexcept;
-	CTridiagonalOperator(const CInputData& unaliased input, const CGrid& unaliased grid) noexcept;
+	CTridiagonalOperator(const CInputData& unaliased input, const CGrid<gridType>& unaliased grid) noexcept;
 	CTridiagonalOperator(const CTridiagonalOperator& __restrict rhs) noexcept;
 
 	virtual ~CTridiagonalOperator() = default;
@@ -93,7 +93,7 @@ private:
 	/**
 	 * Set the operator according to the second order uneven mesh finite difference
 	 */
-	void Make(const CInputData& unaliased input, const CGrid& unaliased grid) noexcept;
+	void Make(const CInputData& unaliased input, const CGrid<gridType>& unaliased grid) noexcept;
 
 	 /**
 	  * Compute out += alpha * A * x

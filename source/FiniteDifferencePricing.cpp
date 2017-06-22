@@ -47,8 +47,7 @@ void PlotConvergence()
 	input.N = 129;
 	input.M = 80;
 	CPricerSettings settings;
-	settings.exerciseType = EExerciseType::European;
-	settings.fdSettings.gridType = EGridType::Adaptive;
+	settings.exerciseType = EExerciseType::American;
 
 	std::vector<size_t> x;
 	std::vector<double> y;
@@ -59,7 +58,7 @@ void PlotConvergence()
 		const double dv = 10.0;
 		input.dividends.resize(1);
 		input.dividends[0] = CDividend(td, dv);
-		CFDPricer<ESolverType::CrankNicolson, EAdjointDifferentiation::All> pricer(input, settings);
+		CFDPricer<ESolverType::CrankNicolson, EGridType::Adaptive, EAdjointDifferentiation::All> pricer(input, settings);
 		COutputData callOutput, putOutput;
 		pricer.Price(callOutput, putOutput);
 
@@ -98,8 +97,8 @@ void ProfileWorker(const size_t iterations, const size_t nDivs, const bool smoot
 
 	CPricerSettings settings;
 	settings.calculationType = ECalculationType::All;
-	settings.exerciseType = EExerciseType::European;
-	settings.fdSettings.gridType = EGridType::Adaptive;
+	settings.exerciseType = EExerciseType::American;
+	COutputData callOutput, putOutput;
 
 	CALLGRIND_START_INSTRUMENTATION;
 
@@ -108,8 +107,7 @@ void ProfileWorker(const size_t iterations, const size_t nDivs, const bool smoot
 		case EProfileMethod::SingleThreaded:
 			for (size_t iter = 0; iter < iterations; ++iter)
 			{
-				CFDPricer<ESolverType::CrankNicolson, EAdjointDifferentiation::All> pricer(input, settings);
-				COutputData callOutput, putOutput;
+				CFDPricer<ESolverType::CrankNicolson, EGridType::Adaptive, EAdjointDifferentiation::All> pricer(input, settings);
 				pricer.Price(callOutput, putOutput);
 			}
 		break;
@@ -128,8 +126,7 @@ void ProfileWorker(const size_t iterations, const size_t nDivs, const bool smoot
 						{
 							for (size_t iter = start; iter < start + optionsPerThread; ++iter)
 							{
-								CFDPricer<ESolverType::CrankNicolson, EAdjointDifferentiation::All> pricer(input, settings);
-								COutputData callOutput, putOutput;
+								CFDPricer<ESolverType::CrankNicolson, EGridType::Adaptive, EAdjointDifferentiation::All> pricer(input, settings);
 								pricer.Price(callOutput, putOutput);
 							}
 						});
@@ -138,8 +135,7 @@ void ProfileWorker(const size_t iterations, const size_t nDivs, const bool smoot
 					{
 						for (size_t iter = optionsPerThread * (nThreads - 2); iter < iterations; ++iter)
 						{
-							CFDPricer<ESolverType::CrankNicolson, EAdjointDifferentiation::All> pricer(input, settings);
-							COutputData callOutput, putOutput;
+							CFDPricer<ESolverType::CrankNicolson, EGridType::Adaptive, EAdjointDifferentiation::All> pricer(input, settings);
 							pricer.Price(callOutput, putOutput);
 						}
 					});

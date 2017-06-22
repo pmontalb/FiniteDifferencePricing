@@ -23,10 +23,9 @@ struct CFiniteDifferenceSettings
 {
 	double lowerFactor = 1e-3;
 	double upperFactor = 10.0;
-	EGridType gridType = EGridType::Adaptive;
 };
 
-template<ESolverType solverType, EAdjointDifferentiation adjointDifferentiation>
+template<ESolverType solverType, EGridType gridType, EAdjointDifferentiation adjointDifferentiation>
 class CEvolutionOperator
 {
 public:
@@ -42,7 +41,7 @@ public:
 
 	void Apply(CPayoffData& unaliased x) noexcept;
 
-	const CGrid& GetGrid() const noexcept
+	const CGrid<gridType>& GetGrid() const noexcept
 	{
 		return grid;
 	}
@@ -53,15 +52,15 @@ public:
 	}
 
 private:
-	const CGrid grid;
+	const CGrid<gridType> grid;
 
 	// Space Discretization
-	const CTridiagonalOperator<adjointDifferentiation> L;
+	const CTridiagonalOperator<gridType, adjointDifferentiation> L;
 
 	// Space-Time Discretization
 	const double dt;
-	CTridiagonalOperator<adjointDifferentiation> A; // right operator
-	std::unique_ptr<CTridiagonalOperator<adjointDifferentiation>> B; // left operator
+	CTridiagonalOperator<gridType,adjointDifferentiation> A; // right operator
+	std::unique_ptr<CTridiagonalOperator<gridType, adjointDifferentiation>> B; // left operator
 
 	void ctor() noexcept;
 };
