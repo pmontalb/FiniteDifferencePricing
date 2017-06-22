@@ -92,6 +92,9 @@ TEST  (FDTest, AccelerationConsistency)
 	settings.exerciseType = EExerciseType::European;
 
 	CFDPricer<ESolverType::CrankNicolson, EGridType::Adaptive, EAdjointDifferentiation::All> pricer(input, settings);
+	CInputData input2(input);
+	input2.acceleration = false;
+	CFDPricer<ESolverType::CrankNicolson, EGridType::Adaptive, EAdjointDifferentiation::All> pricer2(input2, settings);
 
 	double bsC = bs.Value<EOptionType::Call>();
 	double bsP = bs.Value<EOptionType::Put>();
@@ -129,6 +132,16 @@ TEST  (FDTest, AccelerationConsistency)
 	ASSERT_LE(fabs(bsG - putOutput.gamma), 5.63647e-07);
 
 	// TODO: implement bs theta and compare it
+
+	COutputData callOutput2, putOutput2;
+	pricer2.Price(callOutput2, putOutput2);
+
+	ASSERT_LE(fabs(putOutput2.price - putOutput.price) , 1e-12);
+	ASSERT_LE(fabs(putOutput2.delta - putOutput.delta) , 1e-12);
+	ASSERT_LE(fabs(putOutput2.gamma - putOutput.gamma) , 1e-12);
+	ASSERT_LE(fabs(putOutput2.vega - putOutput.vega) , 1e-12);
+	ASSERT_LE(fabs(putOutput2.rho - putOutput.rho) , 1e-12);
+	ASSERT_LE(fabs(putOutput2.rhoBorrow - putOutput.rhoBorrow) , 1e-12);
 }
 
 
@@ -716,7 +729,6 @@ TEST (FDTest, AccelerationDividendConsistency)
 	pricer.Price(callOutput, putOutput);
 
 	CInputData input2(input);
-	input2.smoothing = false;
 	input2.acceleration = false;
 
 	COutputData callOutput2;
@@ -725,17 +737,19 @@ TEST (FDTest, AccelerationDividendConsistency)
 	CFDPricer<ESolverType::CrankNicolson, EGridType::Adaptive, EAdjointDifferentiation::All> pricer2(input2, settings);
 	pricer2.Price(callOutput2, putOutput2);
 
-	EXPECT_LE(fabs(callOutput.price - callOutput2.price), 1.5e-5);
+	// The accelerated option should be close enough
+	EXPECT_LE(fabs(callOutput.price - callOutput2.price), 1.6e-4);
 	EXPECT_LE(fabs(callOutput.delta - callOutput2.delta), 1e-5);
 	EXPECT_LE(fabs(callOutput.gamma - callOutput2.gamma), 1e-5);
-	EXPECT_LE(fabs(callOutput.vega - callOutput2.vega), 1.9e-5);
-	EXPECT_LE(fabs(callOutput.rho - callOutput2.rho), .05);
-	EXPECT_LE(fabs(callOutput.rhoBorrow - callOutput2.rhoBorrow), .59);
+	EXPECT_LE(fabs(callOutput.vega - callOutput2.vega), 1.1e-3);
+	EXPECT_LE(fabs(callOutput.rho - callOutput2.rho), .04);
+	EXPECT_LE(fabs(callOutput.rhoBorrow - callOutput2.rhoBorrow), .53);
 
-	EXPECT_LE(fabs(putOutput.price - putOutput2.price), .0021);
-	EXPECT_LE(fabs(putOutput.delta - putOutput2.delta), 2.62e-5);
-	EXPECT_LE(fabs(putOutput.gamma - putOutput2.gamma), 1e-5);
-	EXPECT_LE(fabs(putOutput.vega - putOutput2.vega), 0.013);
-	EXPECT_LE(fabs(putOutput.rho - putOutput2.rho), .05);
-	EXPECT_LE(fabs(putOutput.rhoBorrow - putOutput2.rhoBorrow), .5);
+	// The non-accelerated option must be identical
+	EXPECT_LE(fabs(putOutput.price - putOutput2.price), 1e-12);
+	EXPECT_LE(fabs(putOutput.delta - putOutput2.delta), 1e-12);
+	EXPECT_LE(fabs(putOutput.gamma - putOutput2.gamma), 1e-12);
+	EXPECT_LE(fabs(putOutput.vega - putOutput2.vega), 1e-12);
+	EXPECT_LE(fabs(putOutput.rho - putOutput2.rho), 1e-12);
+	EXPECT_LE(fabs(putOutput.rhoBorrow - putOutput2.rhoBorrow), 1e-12);
 }
