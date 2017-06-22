@@ -66,6 +66,29 @@ private:
 		}
 	}
 
+	template <typename T, typename U>
+	static void WritePlotFile(const std::string& unaliased file_name, std::vector<std::vector<T>>& unaliased y, std::vector<U>& unaliased x) noexcept
+	{
+		const string filename_x = file_name + ".txt";
+		ofstream myfile(filename_x.c_str());
+		if (myfile.is_open())
+		{
+			for (size_t i = 0; i < y.size(); ++i)
+			{
+				myfile << x[i];
+				for (size_t j = 0; j < y.size(); ++j)
+					 myfile << "\t" << y[j][i] << std::endl;
+			}
+
+			myfile.close();
+		}
+		else
+		{
+			std::cerr << "Unable to open file";
+			return;
+		}
+	}
+
 	static void DeletePlotFile(const std::string& unaliased file_name) noexcept;
 };
 

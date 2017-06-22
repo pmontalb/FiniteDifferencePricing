@@ -69,6 +69,61 @@ void PlotConvergence()
 	plotter.plot(y, x);
 }
 
+void PlotResults()
+{
+	using namespace fdpricing;
+
+	CInputData input;
+	input.smoothing = true;
+	input.S = 100;
+	input.r = .05;
+	input.b = .02;
+	input.sigma = .3;
+	input.T = 2;
+	input.N = 129;
+	input.M = 80;
+	input.dividends.resize(8);
+	for (size_t m = 0; m < 8; ++m)
+		input.dividends[m] = CDividend(0.001 + .25 * m, 1.0);
+	CPricerSettings settings;
+	settings.exerciseType = EExerciseType::American;
+
+	std::vector<double> x;
+	std::vector<double> callPrice, callDelta, callGamma, callVega;
+	std::vector<double> putPrice, putDelta, putGamma, putVega;
+
+	CFDPricer<ESolverType::CrankNicolson, EGridType::Adaptive, EAdjointDifferentiation::All> pricer(input, settings);
+	COutputData callOutput, putOutput;
+	for (size_t i = 0; i < 200; ++i)
+	{
+		const double K = 50 * (1.0 + 2 * i / 199);
+		x.push_back(K);
+
+		input.K = K;
+		pricer.Price(callOutput, putOutput);
+
+		callPrice.push_back(callOutput.price);
+		callDelta.push_back(callOutput.delta);
+		callGamma.push_back(callOutput.gamma);
+		callVega.push_back(callOutput.vega);
+
+		putPrice.push_back(putOutput.price);
+		putDelta.push_back(putOutput.delta);
+		putGamma.push_back(putOutput.gamma);
+		putVega.push_back(putOutput.vega);
+	}
+
+	CPlotter plotter;
+	plotter.SendCommand("set multiplot layout 2,2 columnsfirst");
+	plotter.SendCommand("set ylabel 'Price'");
+	plotter.SendCommand("set multiplot layout 2,2 columnsfirst");
+	plotter.SendCommand("set multiplot layout 2,2 columnsfirst");
+	plotter.SendCommand("set multiplot layout 2,2 columnsfirst");
+	plotter.SendCommand("set multiplot layout 2,2 columnsfirst");
+	plotter.SendCommand("set multiplot layout 2,2 columnsfirst");
+
+}
+
 enum class EProfileMethod
 {
 	SingleThreaded,
@@ -169,7 +224,7 @@ void Profile(const size_t iterations = 100,
 
 	printf("--------- SMOOTH=%d - ACCEL=%d - %zu DIVIDENDS (out of %zu iterations)  ---------\n", smoothing, acceleration, nDivs, iterations);
 	printf("\n\t* Avg Time(ms) Per Option: %.5f\n", avgTime);
-	printf("\n\t* Opt/Sec: %.5f\n", iterations / (.001 * avgTime));
+	printf("\n\t* Opt/Sec: %.5f\n", 1.0 / (.001 * avgTime));
 	printf("\n----------------------------------------------------------\n");
 
 }
