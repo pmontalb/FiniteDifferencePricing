@@ -6,4 +6,5 @@ gmon.out
 *.o
 *.gcda
 *.gcno
+*.optrpt
 FiniteDifferencePricing

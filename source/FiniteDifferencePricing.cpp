@@ -66,7 +66,7 @@ void PlotConvergence()
 	}
 
 	CPlotter plotter;
-	plotter.plot(y, x);
+	plotter.Plot(y, x);
 }
 
 void PlotResults()
@@ -96,7 +96,7 @@ void PlotResults()
 	COutputData callOutput, putOutput;
 	for (size_t i = 0; i < 200; ++i)
 	{
-		const double K = 50 * (1.0 + 2 * i / 199);
+		const double K = 50.0 * (1.0 + 2.0 * i / 199.0);
 		x.push_back(K);
 
 		input.K = K;
@@ -114,13 +114,9 @@ void PlotResults()
 	}
 
 	CPlotter plotter;
-	plotter.SendCommand("set multiplot layout 2,2 columnsfirst");
-	plotter.SendCommand("set ylabel 'Price'");
-	plotter.SendCommand("set multiplot layout 2,2 columnsfirst");
-	plotter.SendCommand("set multiplot layout 2,2 columnsfirst");
-	plotter.SendCommand("set multiplot layout 2,2 columnsfirst");
-	plotter.SendCommand("set multiplot layout 2,2 columnsfirst");
-	plotter.SendCommand("set multiplot layout 2,2 columnsfirst");
+	std::vector<std::vector<double>> y = {callPrice, putPrice};
+	std::vector<std::string> legend = { "Call Price", "Put Price" };
+	plotter.Plot(y, x, "", "Strike", "Price", legend);
 
 }
 
@@ -237,9 +233,9 @@ int main(int argc, char * argv[])
 		return RUN_ALL_TESTS();
 	}
 	if(cmdOptionExists(argv, argv+argc, "-conv"))
-	{
 		PlotConvergence();
-	}
+	if(cmdOptionExists(argv, argv+argc, "-res"))
+		PlotResults();
 	if(cmdOptionExists(argv, argv+argc, "-profile"))
 	{
 		size_t nIterations = 100;

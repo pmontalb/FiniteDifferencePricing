@@ -20,7 +20,7 @@ CPlotter::~CPlotter() noexcept
 	fprintf(gnuplotpipe, "exit\n");
 	pclose(gnuplotpipe);
 
-	DeletePlotFile("_aux");
+	//DeletePlotFile("_aux");
 }
 
 void CPlotter::DeletePlotFile(const std::string& unaliased file_name) noexcept
