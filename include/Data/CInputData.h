@@ -41,10 +41,25 @@ public:
 	double T;
 	double sigma;
 	std::vector<CDividend> dividends;
-	size_t N; // number of space grid points
-	size_t M; // number of time  grid points
 
+	/**
+	 * Number of space grid points
+	 */
+	size_t N;
+
+	/**
+	 * Number of time  grid points
+	 */
+	size_t M;
+
+	/**
+	 * Payoff smoothing: if true, the last Backward Induction step will be smoothed with Black-Scholes
+	 */
 	bool smoothing;
+
+	/**
+	 * Acceleration: if true, it tries (depending on interest rates) to smooth the payoff until last ex-dividend date
+	 */
 	bool acceleration;
 };
 }

@@ -23,6 +23,9 @@ public:
 	CBlackScholes(const CInputData& unaliased input, const details::CCacheData& unaliased cachedData) noexcept;
 	~CBlackScholes() = default;
 
+	/**
+	 * Update all cached quantities that depend on underlying value
+	 */
 	void Update(const double S) noexcept;
 
 	void Price(COutputData& unaliased callOutput, COutputData& unaliased putOutput) const noexcept;
@@ -53,7 +56,15 @@ protected:
 	double NminusD1;
 	double NminusD2;
 	double Pd1;
+
+	/**
+	 * d1 = d1Addend + log(currentS) / (sigma * sqrt(T))
+	 */
 	double d1Addend;
+
+	/**
+	 * Cached value for the underlying
+	 */
 	double currentS;
 
 	details::CCacheData cacheData;
@@ -65,6 +76,9 @@ protected:
 	double halfSigma2;
 	double TtimesGrowthFactorTimesDiscountFactor;
 
+	/**
+	 * Precomputes quantities that do not depend on the underlying value
+	 */
 	void Make();
 };
 }

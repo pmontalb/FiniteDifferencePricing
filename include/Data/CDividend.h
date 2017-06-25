@@ -24,7 +24,14 @@ public:
 
 	virtual ~CDividend() = default;
 
+	/**
+	 * Year Fraction for the ex-div date
+	 */
 	double time;
+
+	/**
+	 * Cash dividend value
+	 */
 	double dividend;
 };
 }

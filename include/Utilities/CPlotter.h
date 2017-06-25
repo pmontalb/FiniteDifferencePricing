@@ -20,6 +20,9 @@
 #include <string>
 
 using namespace std;
+/**
+ * Plot std::vector's using gnuplot
+ */
 class CPlotter
 {
 public:

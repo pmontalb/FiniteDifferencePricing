@@ -28,6 +28,9 @@ enum ETridiagIndex
 	Plus = 2
 };
 
+/**
+ * This is just a wrapper of a triple of double's
+ */
 class Triple
 {
 public:

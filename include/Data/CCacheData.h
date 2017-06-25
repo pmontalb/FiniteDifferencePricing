@@ -10,6 +10,9 @@
 
 namespace details
 {
+/**
+ * This class stores common quantities that can be calculated once
+ */
 class CCacheData
 {
 public:
