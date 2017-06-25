@@ -75,16 +75,17 @@ void PlotResults()
 
 	CInputData input;
 	input.smoothing = true;
+	input.acceleration = true;
 	input.S = 100;
 	input.r = .05;
 	input.b = .02;
 	input.sigma = .3;
-	input.T = 2;
+	input.T = 7;
 	input.N = 129;
 	input.M = 80;
 	input.dividends.resize(8);
 	for (size_t m = 0; m < 8; ++m)
-		input.dividends[m] = CDividend(0.001 + .25 * m, 1.0);
+		input.dividends[m] = CDividend(.25 * (m + 1), 1.0);
 	CPricerSettings settings;
 	settings.exerciseType = EExerciseType::American;
 
@@ -92,14 +93,15 @@ void PlotResults()
 	std::vector<double> callPrice, callDelta, callGamma, callVega;
 	std::vector<double> putPrice, putDelta, putGamma, putVega;
 
-	CFDPricer<ESolverType::CrankNicolson, EGridType::Adaptive, EAdjointDifferentiation::All> pricer(input, settings);
+	CFDPricer<> pricer(input, settings);
 	COutputData callOutput, putOutput;
 	for (size_t i = 0; i < 200; ++i)
 	{
-		const double K = 50.0 * (1.0 + 2.0 * i / 199.0);
+		const double K = 60.0 * (1.0 + 2.0 * i / 199.0);
 		x.push_back(K);
 
 		input.K = K;
+		CFDPricer<> pricer(input, settings);
 		pricer.Price(callOutput, putOutput);
 
 		callPrice.push_back(callOutput.price);
@@ -114,9 +116,15 @@ void PlotResults()
 	}
 
 	CPlotter plotter;
-	std::vector<std::vector<double>> y = {callPrice, putPrice};
-	std::vector<std::string> legend = { "Call Price", "Put Price" };
-	plotter.Plot(y, x, "", "Strike", "Price", legend);
+	std::vector<std::vector<std::vector<double>>> y = { {callPrice, putPrice},
+													    {callDelta, putDelta},
+														{callGamma, putGamma},
+														{callVega, putVega}};
+	std::vector<std::vector<std::string>> legend = { {"Call Price", "Put Price"},
+													 {"Call Delta", "Put Delta"},
+													 {"Call Gamma", "Put Gamma"},
+													 {"Call Vega", "Put Vega"}};
+	plotter.Plot(22, y, x, "", "Strike", "", legend);
 
 }
 

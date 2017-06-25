@@ -56,7 +56,8 @@ typedef std::vector<Triple> Matrix;
 namespace fdpricing
 {
 
-template<EGridType gridType, EAdjointDifferentiation adjointDifferentiation>
+template<EGridType gridType=EGridType::Adaptive,
+		EAdjointDifferentiation adjointDifferentiation=EAdjointDifferentiation::All>
 class CTridiagonalOperator
 {
 public:

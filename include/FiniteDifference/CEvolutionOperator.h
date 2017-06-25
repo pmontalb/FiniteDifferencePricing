@@ -25,7 +25,9 @@ struct CFiniteDifferenceSettings
 	double upperFactor = 10.0;
 };
 
-template<ESolverType solverType, EGridType gridType, EAdjointDifferentiation adjointDifferentiation>
+template<ESolverType solverType=ESolverType::CrankNicolson,
+		EGridType gridType=EGridType::Adaptive,
+		EAdjointDifferentiation adjointDifferentiation=EAdjointDifferentiation::All>
 class CEvolutionOperator
 {
 public:

@@ -24,7 +24,7 @@ enum class EGridType
 	Adaptive
 };
 
-template <EGridType gridType>
+template <EGridType gridType=EGridType::Adaptive>
 class CGrid
 {
 public:

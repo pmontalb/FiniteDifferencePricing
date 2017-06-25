@@ -27,7 +27,9 @@ struct CPricerSettings
 	CFiniteDifferenceSettings fdSettings = CFiniteDifferenceSettings();
 };
 
-template <ESolverType solverType, EGridType gridType, EAdjointDifferentiation adjointDifferentiation>
+template <ESolverType solverType=ESolverType::CrankNicolson,
+		EGridType gridType=EGridType::Adaptive,
+		EAdjointDifferentiation adjointDifferentiation=EAdjointDifferentiation::All>
 class CFDPricer
 {
 public:
