@@ -1,0 +1,325 @@
+Version,Instructions,Average Time Per Option (ms),Option Per Second,Dividends,Smoothing,Acceleration,Threads
+Release,620241718,2.15780,463.43498,0,False,False,SingleThreaded
+Release GCC-7.1,602862717,2.14140,466.98422,0,False,False,SingleThreaded
+Optimized GCC-7.1,602913617,3.01550,331.61996,0,False,False,SingleThreaded
+Graphite GCC-7.1,603290003,2.23390,447.64761,0,False,False,SingleThreaded
+Release Clang-4.0,519622891,2.27070,440.39283,0,False,False,SingleThreaded
+Optimized Clang-4.0,519395638,2.26970,440.58686,0,False,False,SingleThreaded
+Polly Clang-4.0,519843638,2.70380,369.84984,0,False,False,SingleThreaded
+Release Intel,550482332,2.83070,353.26951,0,False,False,SingleThreaded
+Optimized Intel,526117790,2.69060,371.66431,0,False,False,SingleThreaded
+Release,634838616,3.95620,252.76781,1,False,False,SingleThreaded
+Release GCC-7.1,616393219,2.52550,395.96120,1,False,False,SingleThreaded
+Optimized GCC-7.1,616444119,3.03460,329.53272,1,False,False,SingleThreaded
+Graphite GCC-7.1,616766805,2.84340,351.69164,1,False,False,SingleThreaded
+Release Clang-4.0,531668593,2.56120,390.44198,1,False,False,SingleThreaded
+Optimized Clang-4.0,531428840,2.90700,343.99725,1,False,False,SingleThreaded
+Polly Clang-4.0,531805940,3.25970,306.77670,1,False,False,SingleThreaded
+Release Intel,563770034,3.30890,302.21524,1,False,False,SingleThreaded
+Optimized Intel,539109092,3.55050,281.65047,1,False,False,SingleThreaded
+Release,649239150,2.75090,363.51739,2,False,False,SingleThreaded
+Release GCC-7.1,629735763,3.10230,322.34149,2,False,False,SingleThreaded
+Optimized GCC-7.1,629786663,3.11290,321.24386,2,False,False,SingleThreaded
+Graphite GCC-7.1,630111305,3.48110,287.26552,2,False,False,SingleThreaded
+Release Clang-4.0,543573437,2.46140,406.27285,2,False,False,SingleThreaded
+Optimized Clang-4.0,543329184,3.04130,328.80676,2,False,False,SingleThreaded
+Polly Clang-4.0,543635384,2.42470,412.42216,2,False,False,SingleThreaded
+Release Intel,576924978,3.12000,320.51282,2,False,False,SingleThreaded
+Optimized Intel,551967792,3.15590,316.86682,2,False,False,SingleThreaded
+Release,663627950,3.51870,284.19587,3,False,False,SingleThreaded
+Release GCC-7.1,643073563,3.38300,295.59563,3,False,False,SingleThreaded
+Optimized GCC-7.1,643124463,3.03990,328.95819,3,False,False,SingleThreaded
+Graphite GCC-7.1,643450749,3.00510,332.76763,3,False,False,SingleThreaded
+Release Clang-4.0,555474237,3.05430,327.40726,3,False,False,SingleThreaded
+Optimized Clang-4.0,555225484,2.74080,364.85698,3,False,False,SingleThreaded
+Polly Clang-4.0,555460784,3.22850,309.74137,3,False,False,SingleThreaded
+Release Intel,590075178,3.46200,288.85038,3,False,False,SingleThreaded
+Optimized Intel,564821436,3.42880,291.64722,3,False,False,SingleThreaded
+Release,678016713,2.94000,340.13605,4,False,False,SingleThreaded
+Release GCC-7.1,656411363,3.18550,313.92246,4,False,False,SingleThreaded
+Optimized GCC-7.1,656462263,3.12900,319.59092,4,False,False,SingleThreaded
+Graphite GCC-7.1,656790349,3.46870,288.29244,4,False,False,SingleThreaded
+Release Clang-4.0,567375037,3.53040,283.25402,4,False,False,SingleThreaded
+Optimized Clang-4.0,567121784,2.47320,404.33447,4,False,False,SingleThreaded
+Polly Clang-4.0,567286184,2.73980,364.99015,4,False,False,SingleThreaded
+Release Intel,603225378,3.13750,318.72510,4,False,False,SingleThreaded
+Optimized Intel,577675236,3.17090,315.36788,4,False,False,SingleThreaded
+Release,692406913,3.24920,307.76807,5,False,False,SingleThreaded
+Release GCC-7.1,669750563,3.12650,319.84647,5,False,False,SingleThreaded
+Optimized GCC-7.1,669801463,3.26820,305.97883,5,False,False,SingleThreaded
+Graphite GCC-7.1,670131349,3.46950,288.22597,5,False,False,SingleThreaded
+Release Clang-4.0,579275137,3.19270,313.21452,5,False,False,SingleThreaded
+Optimized Clang-4.0,579017384,3.22730,309.85654,5,False,False,SingleThreaded
+Polly Clang-4.0,579110884,2.59200,385.80247,5,False,False,SingleThreaded
+Release Intel,616376978,4.10520,243.59349,5,False,False,SingleThreaded
+Optimized Intel,590530436,3.07270,325.44668,5,False,False,SingleThreaded
+Release,706788760,3.33270,300.05701,6,False,False,SingleThreaded
+Release GCC-7.1,683088363,3.39460,294.58552,6,False,False,SingleThreaded
+Optimized GCC-7.1,683139263,4.03680,247.72097,6,False,False,SingleThreaded
+Graphite GCC-7.1,683470949,2.96520,337.24538,6,False,False,SingleThreaded
+Release Clang-4.0,591175237,2.76900,361.14121,6,False,False,SingleThreaded
+Optimized Clang-4.0,590912984,2.86400,349.16201,6,False,False,SingleThreaded
+Polly Clang-4.0,590935584,3.04760,328.12705,6,False,False,SingleThreaded
+Release Intel,629527178,3.35110,298.40948,6,False,False,SingleThreaded
+Optimized Intel,603384236,3.75410,266.37543,6,False,False,SingleThreaded
+Release,721181760,3.66550,272.81408,7,False,False,SingleThreaded
+Release GCC-7.1,696430363,3.67690,271.96823,7,False,False,SingleThreaded
+Optimized GCC-7.1,696481263,4.09980,243.91434,7,False,False,SingleThreaded
+Graphite GCC-7.1,696814749,2.92220,342.20793,7,False,False,SingleThreaded
+Release Clang-4.0,603080937,3.55810,281.04887,7,False,False,SingleThreaded
+Optimized Clang-4.0,602814184,2.46040,406.43798,7,False,False,SingleThreaded
+Polly Clang-4.0,602765884,3.13270,319.21346,7,False,False,SingleThreaded
+Release Intel,642681578,3.36270,297.38008,7,False,False,SingleThreaded
+Optimized Intel,616242236,3.47600,287.68700,7,False,False,SingleThreaded
+Release,735577560,3.39750,294.33407,8,False,False,SingleThreaded
+Release GCC-7.1,709775163,3.51580,284.43029,8,False,False,SingleThreaded
+Optimized GCC-7.1,709826063,3.50280,285.48590,8,False,False,SingleThreaded
+Graphite GCC-7.1,710161349,3.36110,297.52164,8,False,False,SingleThreaded
+Release Clang-4.0,614987337,2.90990,343.65442,8,False,False,SingleThreaded
+Optimized Clang-4.0,614716084,3.46650,288.47541,8,False,False,SingleThreaded
+Polly Clang-4.0,614596884,3.15720,316.73635,8,False,False,SingleThreaded
+Release Intel,655838778,3.76340,265.71717,8,False,False,SingleThreaded
+Optimized Intel,629103036,3.41660,292.68864,8,False,False,SingleThreaded
+Release,621534593,2.88050,347.16195,0,True,False,SingleThreaded
+Release GCC-7.1,604382987,3.71720,269.01969,0,True,False,SingleThreaded
+Optimized GCC-7.1,604407087,3.19900,312.59769,0,True,False,SingleThreaded
+Graphite GCC-7.1,604338311,3.11450,321.07882,0,True,False,SingleThreaded
+Release Clang-4.0,521992508,2.78110,359.56995,0,True,False,SingleThreaded
+Optimized Clang-4.0,520999334,2.27920,438.75044,0,True,False,SingleThreaded
+Polly Clang-4.0,521441734,3.29620,303.37965,0,True,False,SingleThreaded
+Release Intel,549723037,3.22490,310.08713,0,True,False,SingleThreaded
+Optimized Intel,525215032,2.68440,372.52272,0,True,False,SingleThreaded
+Release,636129391,3.06260,326.51995,1,True,False,SingleThreaded
+Release GCC-7.1,617911589,2.98910,334.54886,1,True,False,SingleThreaded
+Optimized GCC-7.1,617935689,3.19770,312.72477,1,True,False,SingleThreaded
+Graphite GCC-7.1,617813913,3.26620,306.16619,1,True,False,SingleThreaded
+Release Clang-4.0,534037010,2.44720,408.63027,1,True,False,SingleThreaded
+Optimized Clang-4.0,533031436,2.67250,374.18148,1,True,False,SingleThreaded
+Polly Clang-4.0,533402936,2.45080,408.03003,1,True,False,SingleThreaded
+Release Intel,563009839,3.20550,311.96381,1,True,False,SingleThreaded
+Optimized Intel,538205434,3.72150,268.70885,1,True,False,SingleThreaded
+Release,650529925,2.85810,349.88279,2,True,False,SingleThreaded
+Release GCC-7.1,631254133,3.23140,309.46339,2,True,False,SingleThreaded
+Optimized GCC-7.1,631278233,3.42850,291.67274,2,True,False,SingleThreaded
+Graphite GCC-7.1,631158413,3.53420,282.94947,2,True,False,SingleThreaded
+Release Clang-4.0,545941854,2.23650,447.12721,2,True,False,SingleThreaded
+Optimized Clang-4.0,544931780,2.67650,373.62227,2,True,False,SingleThreaded
+Polly Clang-4.0,545232380,2.72290,367.25550,2,True,False,SingleThreaded
+Release Intel,576164783,3.47520,287.75322,2,True,False,SingleThreaded
+Optimized Intel,551064134,3.19380,313.10664,2,True,False,SingleThreaded
+Release,664918725,3.07940,324.73859,3,True,False,SingleThreaded
+Release GCC-7.1,644591933,3.04610,328.28863,3,True,False,SingleThreaded
+Optimized GCC-7.1,644616033,3.10890,321.65718,3,True,False,SingleThreaded
+Graphite GCC-7.1,644497857,3.08890,323.73984,3,True,False,SingleThreaded
+Release Clang-4.0,557842654,3.48230,287.16653,3,True,False,SingleThreaded
+Optimized Clang-4.0,556828080,3.32660,300.60723,3,True,False,SingleThreaded
+Polly Clang-4.0,557057780,2.40110,416.47578,3,True,False,SingleThreaded
+Release Intel,589314983,3.95560,252.80615,3,True,False,SingleThreaded
+Optimized Intel,563917778,3.44240,290.49500,3,True,False,SingleThreaded
+Release,679307488,3.85490,259.41010,4,True,False,SingleThreaded
+Release GCC-7.1,657929733,2.72840,366.51517,4,True,False,SingleThreaded
+Optimized GCC-7.1,657953833,3.51820,284.23626,4,True,False,SingleThreaded
+Graphite GCC-7.1,657837457,2.81960,354.66024,4,True,False,SingleThreaded
+Release Clang-4.0,569743454,2.86820,348.65072,4,True,False,SingleThreaded
+Optimized Clang-4.0,568724380,3.22150,310.41440,4,True,False,SingleThreaded
+Polly Clang-4.0,568883180,3.04480,328.42880,4,True,False,SingleThreaded
+Release Intel,602465183,3.14190,318.27875,4,True,False,SingleThreaded
+Optimized Intel,576771578,3.12760,319.73398,4,True,False,SingleThreaded
+Release,693696988,3.35470,298.08925,5,True,False,SingleThreaded
+Release GCC-7.1,671268233,3.41540,292.79147,5,True,False,SingleThreaded
+Optimized GCC-7.1,671292333,3.30800,302.29746,5,True,False,SingleThreaded
+Graphite GCC-7.1,671177757,3.97010,251.88282,5,True,False,SingleThreaded
+Release Clang-4.0,581642854,2.99240,334.17992,5,True,False,SingleThreaded
+Optimized Clang-4.0,580619280,3.38960,295.02006,5,True,False,SingleThreaded
+Polly Clang-4.0,580707180,2.43000,411.52263,5,True,False,SingleThreaded
+Release Intel,615616083,3.75110,266.58847,5,True,False,SingleThreaded
+Optimized Intel,589626078,3.09630,322.96612,5,True,False,SingleThreaded
+Release,708079535,3.86290,258.87287,6,True,False,SingleThreaded
+Release GCC-7.1,684606733,3.58470,278.96337,6,True,False,SingleThreaded
+Optimized GCC-7.1,684630833,3.94320,253.60114,6,True,False,SingleThreaded
+Graphite GCC-7.1,684518057,3.04750,328.13782,6,True,False,SingleThreaded
+Release Clang-4.0,593543654,2.57380,388.53058,6,True,False,SingleThreaded
+Optimized Clang-4.0,592515580,2.83910,352.22430,6,True,False,SingleThreaded
+Polly Clang-4.0,592532580,2.97730,335.87479,6,True,False,SingleThreaded
+Release Intel,628766983,3.11580,320.94486,6,True,False,SingleThreaded
+Optimized Intel,602480578,3.66740,272.67274,6,True,False,SingleThreaded
+Release,722472535,3.23820,308.81354,7,True,False,SingleThreaded
+Release GCC-7.1,697948733,3.77880,264.63428,7,True,False,SingleThreaded
+Optimized GCC-7.1,697972833,3.05010,327.85810,7,True,False,SingleThreaded
+Graphite GCC-7.1,697861857,3.63070,275.42898,7,True,False,SingleThreaded
+Release Clang-4.0,605449354,3.25960,306.78611,7,True,False,SingleThreaded
+Optimized Clang-4.0,604416780,2.64310,378.34361,7,True,False,SingleThreaded
+Polly Clang-4.0,604362880,2.98330,335.19928,7,True,False,SingleThreaded
+Release Intel,641921383,3.43700,290.95141,7,True,False,SingleThreaded
+Optimized Intel,615338578,3.55220,281.51568,7,True,False,SingleThreaded
+Release,736868335,3.72260,268.62945,8,True,False,SingleThreaded
+Release GCC-7.1,711293533,3.44450,290.31790,8,True,False,SingleThreaded
+Optimized GCC-7.1,711317633,3.29520,303.47172,8,True,False,SingleThreaded
+Graphite GCC-7.1,711208457,3.44290,290.45282,8,True,False,SingleThreaded
+Release Clang-4.0,617355754,3.00320,332.97816,8,True,False,SingleThreaded
+Optimized Clang-4.0,616318680,3.29180,303.78516,8,True,False,SingleThreaded
+Polly Clang-4.0,616193880,2.84950,350.93876,8,True,False,SingleThreaded
+Release Intel,655078583,3.76170,265.83725,8,True,False,SingleThreaded
+Optimized Intel,628199378,3.30910,302.19697,8,True,False,SingleThreaded
+Release,310677893,1.83220,545.79194,0,False,True,SingleThreaded
+Release GCC-7.1,301846687,1.81460,551.08564,0,False,True,SingleThreaded
+Optimized GCC-7.1,301849587,1.29650,771.30737,0,False,True,SingleThreaded
+Graphite GCC-7.1,301892411,1.87790,532.50972,0,False,True,SingleThreaded
+Release Clang-4.0,268303608,1.18130,846.52501,0,False,True,SingleThreaded
+Optimized Clang-4.0,267046634,1.44740,690.89402,0,False,True,SingleThreaded
+Polly Clang-4.0,267270634,1.44740,690.89402,0,False,True,SingleThreaded
+Release Intel,285375352,1.88640,530.11026,0,False,True,SingleThreaded
+Optimized Intel,271940510,1.40610,711.18697,0,False,True,SingleThreaded
+Release,340544691,1.81810,550.02475,1,False,True,SingleThreaded
+Release GCC-7.1,330191789,1.60860,621.65859,1,False,True,SingleThreaded
+Optimized GCC-7.1,330168289,1.72020,581.32775,1,False,True,SingleThreaded
+Graphite GCC-7.1,329759913,1.80710,553.37281,1,False,True,SingleThreaded
+Release Clang-4.0,294314410,1.32170,756.60135,1,False,True,SingleThreaded
+Optimized Clang-4.0,292294136,1.59800,625.78223,1,False,True,SingleThreaded
+Polly Clang-4.0,292450036,1.67920,595.52168,1,False,True,SingleThreaded
+Release Intel,310448354,1.64360,608.42054,1,False,True,SingleThreaded
+Optimized Intel,296142412,1.82690,547.37534,1,False,True,SingleThreaded
+Release,362715625,1.64140,609.23602,2,False,True,SingleThreaded
+Release GCC-7.1,351090633,1.58160,632.27112,2,False,True,SingleThreaded
+Optimized GCC-7.1,351068333,2.19170,456.26682,2,False,True,SingleThreaded
+Graphite GCC-7.1,350669713,1.36850,730.72707,2,False,True,SingleThreaded
+Release Clang-4.0,312532754,1.49100,670.69081,2,False,True,SingleThreaded
+Optimized Clang-4.0,310532780,1.70870,585.24024,2,False,True,SingleThreaded
+Polly Clang-4.0,310623380,1.30670,765.28660,2,False,True,SingleThreaded
+Release Intel,330260498,1.64860,606.57528,2,False,True,SingleThreaded
+Optimized Intel,315385012,2.21640,451.18210,2,False,True,SingleThreaded
+Release,388725225,2.27240,440.06337,3,False,True,SingleThreaded
+Release GCC-7.1,375728833,1.90790,524.13649,3,False,True,SingleThreaded
+Optimized GCC-7.1,375708333,1.54250,648.29822,3,False,True,SingleThreaded
+Graphite GCC-7.1,375323657,1.99820,500.45041,3,False,True,SingleThreaded
+Release Clang-4.0,333872054,1.57670,634.23606,3,False,True,SingleThreaded
+Optimized Clang-4.0,331905380,1.67260,597.87158,3,False,True,SingleThreaded
+Polly Clang-4.0,331933480,1.67120,598.37243,3,False,True,SingleThreaded
+Release Intel,353362398,2.06010,485.41333,3,False,True,SingleThreaded
+Optimized Intel,337780456,1.86700,535.61864,3,False,True,SingleThreaded
+Release,414727788,2.46870,405.07150,4,False,True,SingleThreaded
+Release GCC-7.1,400360033,2.06510,484.23805,4,False,True,SingleThreaded
+Optimized GCC-7.1,400341333,1.88670,530.02597,4,False,True,SingleThreaded
+Graphite GCC-7.1,399970757,1.81270,551.66326,4,False,True,SingleThreaded
+Release Clang-4.0,355204054,1.77500,563.38028,4,False,True,SingleThreaded
+Optimized Clang-4.0,353270680,1.81890,549.78284,4,False,True,SingleThreaded
+Polly Clang-4.0,353236280,1.91160,523.12199,4,False,True,SingleThreaded
+Release Intel,376457198,2.30530,433.78302,4,False,True,SingleThreaded
+Optimized Intel,360169056,2.22430,449.57964,4,False,True,SingleThreaded
+Release,440728388,2.07590,481.71877,5,False,True,SingleThreaded
+Release GCC-7.1,424989233,2.04270,489.54815,5,False,True,SingleThreaded
+Optimized GCC-7.1,424972333,2.25000,444.44444,5,False,True,SingleThreaded
+Graphite GCC-7.1,424615857,2.38410,419.44549,5,False,True,SingleThreaded
+Release Clang-4.0,376532054,1.75310,570.41812,5,False,True,SingleThreaded
+Optimized Clang-4.0,374631980,1.83200,545.85153,5,False,True,SingleThreaded
+Polly Clang-4.0,374535080,2.24980,444.48395,5,False,True,SingleThreaded
+Release Intel,399550098,2.59900,384.76337,5,False,True,SingleThreaded
+Optimized Intel,382555756,1.92170,520.37259,5,False,True,SingleThreaded
+Release,466717035,2.76000,362.31884,6,False,True,SingleThreaded
+Release GCC-7.1,449613433,1.88830,529.57687,6,False,True,SingleThreaded
+Optimized GCC-7.1,449598333,2.12990,469.50561,6,False,True,SingleThreaded
+Graphite GCC-7.1,449255957,2.29140,436.41442,6,False,True,SingleThreaded
+Release Clang-4.0,397856554,1.80890,552.82216,6,False,True,SingleThreaded
+Optimized Clang-4.0,395989780,2.21600,451.26354,6,False,True,SingleThreaded
+Polly Clang-4.0,395830380,2.23560,447.30721,6,False,True,SingleThreaded
+Release Intel,422637898,2.44200,409.50041,6,False,True,SingleThreaded
+Optimized Intel,404937356,2.18660,457.33102,6,False,True,SingleThreaded
+Release,492719635,2.35520,424.59239,7,False,True,SingleThreaded
+Release GCC-7.1,474244633,2.71190,368.74516,7,False,True,SingleThreaded
+Optimized GCC-7.1,474231333,1.95660,511.09067,7,False,True,SingleThreaded
+Graphite GCC-7.1,473903057,2.53650,394.24404,7,False,True,SingleThreaded
+Release Clang-4.0,419189354,2.10220,475.69213,7,False,True,SingleThreaded
+Optimized Clang-4.0,417355880,1.85750,538.35801,7,False,True,SingleThreaded
+Polly Clang-4.0,417133980,2.33470,428.32056,7,False,True,SingleThreaded
+Release Intel,445732698,2.30380,434.06546,7,False,True,SingleThreaded
+Optimized Intel,427325956,2.39580,417.39711,7,False,True,SingleThreaded
+Release,518720935,2.32020,430.99733,8,False,True,SingleThreaded
+Release GCC-7.1,498874533,2.57610,388.18369,8,False,True,SingleThreaded
+Optimized GCC-7.1,498863033,2.46850,405.10431,8,False,True,SingleThreaded
+Graphite GCC-7.1,498548857,2.31040,432.82548,8,False,True,SingleThreaded
+Release Clang-4.0,440518654,2.40320,416.11185,8,False,True,SingleThreaded
+Optimized Clang-4.0,438718480,2.22570,449.29685,8,False,True,SingleThreaded
+Polly Clang-4.0,438434080,2.20640,453.22698,8,False,True,SingleThreaded
+Release Intel,468826298,3.15290,317.16832,8,False,True,SingleThreaded
+Optimized Intel,449713356,2.59750,384.98556,8,False,True,SingleThreaded
+Release,315522293,1.96640,508.54353,0,True,True,SingleThreaded
+Release GCC-7.1,306824487,1.74610,572.70489,0,True,True,SingleThreaded
+Optimized GCC-7.1,306801187,1.32040,757.34626,0,True,True,SingleThreaded
+Graphite GCC-7.1,306544911,1.41310,707.66400,0,True,True,SingleThreaded
+Release Clang-4.0,273540408,1.47530,677.82824,0,True,True,SingleThreaded
+Optimized Clang-4.0,271543034,1.55050,644.95324,0,True,True,SingleThreaded
+Polly Clang-4.0,271764234,1.46830,681.05973,0,True,True,SingleThreaded
+Release Intel,287662037,1.78640,559.78504,0,True,True,SingleThreaded
+Optimized Intel,274057532,1.69910,588.54688,0,True,True,SingleThreaded
+Release,345657891,1.77670,562.84122,1,True,True,SingleThreaded
+Release GCC-7.1,335438589,2.06480,484.30841,1,True,True,SingleThreaded
+Optimized GCC-7.1,335388889,1.99240,501.90725,1,True,True,SingleThreaded
+Graphite GCC-7.1,334682113,1.94090,515.22490,1,True,True,SingleThreaded
+Release Clang-4.0,299859610,1.20060,832.91687,1,True,True,SingleThreaded
+Optimized Clang-4.0,297099036,1.36660,731.74301,1,True,True,SingleThreaded
+Polly Clang-4.0,297252136,1.61440,619.42517,1,True,True,SingleThreaded
+Release Intel,313005039,1.73720,575.63896,1,True,True,SingleThreaded
+Optimized Intel,298529434,1.76710,565.89893,1,True,True,SingleThreaded
+Release,367833725,1.92630,519.12994,2,True,True,SingleThreaded
+Release GCC-7.1,356342333,1.86390,536.50947,2,True,True,SingleThreaded
+Optimized GCC-7.1,356293833,1.89980,526.37120,2,True,True,SingleThreaded
+Graphite GCC-7.1,355596813,1.55660,642.42580,2,True,True,SingleThreaded
+Release Clang-4.0,318083554,1.88510,530.47584,2,True,True,SingleThreaded
+Optimized Clang-4.0,315343280,1.78440,560.41246,2,True,True,SingleThreaded
+Polly Clang-4.0,315431080,1.48800,672.04301,2,True,True,SingleThreaded
+Release Intel,332822083,2.02510,493.80278,2,True,True,SingleThreaded
+Optimized Intel,317776934,2.22880,448.67193,2,True,True,SingleThreaded
+Release,393837725,2.21600,451.26354,3,True,True,SingleThreaded
+Release GCC-7.1,380974933,1.93210,517.57155,3,True,True,SingleThreaded
+Optimized GCC-7.1,380928233,1.57430,635.20295,3,True,True,SingleThreaded
+Graphite GCC-7.1,380245157,1.59100,628.53551,3,True,True,SingleThreaded
+Release Clang-4.0,339416454,2.07700,481.46365,3,True,True,SingleThreaded
+Optimized Clang-4.0,336709480,1.61730,618.31447,3,True,True,SingleThreaded
+Polly Clang-4.0,336734780,2.07830,481.16249,3,True,True,SingleThreaded
+Release Intel,355918383,2.10630,474.76618,3,True,True,SingleThreaded
+Optimized Intel,340166778,1.72810,578.67022,3,True,True,SingleThreaded
+Release,419837488,1.93990,515.49049,4,True,True,SingleThreaded
+Release GCC-7.1,405603333,1.74890,571.78798,4,True,True,SingleThreaded
+Optimized GCC-7.1,405558433,2.05410,486.83122,4,True,True,SingleThreaded
+Graphite GCC-7.1,404889457,1.95060,512.66277,4,True,True,SingleThreaded
+Release Clang-4.0,360745154,1.79550,556.94793,4,True,True,SingleThreaded
+Optimized Clang-4.0,358071480,1.76250,567.37589,4,True,True,SingleThreaded
+Polly Clang-4.0,358034280,2.10340,475.42075,4,True,True,SingleThreaded
+Release Intel,379010383,2.11420,472.99215,4,True,True,SingleThreaded
+Optimized Intel,362552578,2.21950,450.55193,4,True,True,SingleThreaded
+Release,445832488,2.56020,390.59448,5,True,True,SingleThreaded
+Release GCC-7.1,430226933,1.93720,516.20896,5,True,True,SingleThreaded
+Optimized GCC-7.1,430183833,2.23730,446.96733,5,True,True,SingleThreaded
+Graphite GCC-7.1,429528957,1.93610,516.50225,5,True,True,SingleThreaded
+Release Clang-4.0,382066754,2.33270,428.68779,5,True,True,SingleThreaded
+Optimized Clang-4.0,379426380,1.96540,508.80228,5,True,True,SingleThreaded
+Polly Clang-4.0,379326680,1.96400,509.16497,5,True,True,SingleThreaded
+Release Intel,402097683,2.13030,469.41745,5,True,True,SingleThreaded
+Optimized Intel,384933678,2.30790,433.29434,5,True,True,SingleThreaded
+Release,471815535,2.13990,467.31156,6,True,True,SingleThreaded
+Release GCC-7.1,454845533,2.42450,412.45618,6,True,True,SingleThreaded
+Optimized GCC-7.1,454804233,2.25230,443.99059,6,True,True,SingleThreaded
+Graphite GCC-7.1,454163457,2.09300,477.78309,6,True,True,SingleThreaded
+Release Clang-4.0,403384754,2.10500,475.05938,6,True,True,SingleThreaded
+Optimized Clang-4.0,400777680,2.14230,466.78803,6,True,True,SingleThreaded
+Polly Clang-4.0,400615480,2.19800,454.95905,6,True,True,SingleThreaded
+Release Intel,425179883,2.47620,403.84460,6,True,True,SingleThreaded
+Optimized Intel,407309678,2.11560,472.67915,6,True,True,SingleThreaded
+Release,497811135,2.22960,448.51094,7,True,True,SingleThreaded
+Release GCC-7.1,479469733,2.20080,454.38023,7,True,True,SingleThreaded
+Optimized GCC-7.1,479430233,2.21420,451.63039,7,True,True,SingleThreaded
+Graphite GCC-7.1,478803557,2.31410,432.13344,7,True,True,SingleThreaded
+Release Clang-4.0,424709654,2.35530,424.57436,7,True,True,SingleThreaded
+Optimized Clang-4.0,422135880,2.35650,424.35816,7,True,True,SingleThreaded
+Polly Clang-4.0,421911180,2.60100,384.46751,7,True,True,SingleThreaded
+Release Intel,448267683,2.15090,464.92166,7,True,True,SingleThreaded
+Optimized Intel,429691278,2.65680,376.39265,7,True,True,SingleThreaded
+Release,523806835,2.31340,432.26420,8,True,True,SingleThreaded
+Release GCC-7.1,504094033,2.44960,408.22992,8,True,True,SingleThreaded
+Optimized GCC-7.1,504056333,2.63690,379.23319,8,True,True,SingleThreaded
+Graphite GCC-7.1,503443757,2.26830,440.85879,8,True,True,SingleThreaded
+Release Clang-4.0,446032454,2.45490,407.34857,8,True,True,SingleThreaded
+Optimized Clang-4.0,443491980,2.23400,447.62757,8,True,True,SingleThreaded
+Polly Clang-4.0,443204780,2.62140,381.47555,8,True,True,SingleThreaded
+Release Intel,471355683,2.47440,404.13838,8,True,True,SingleThreaded
+Optimized Intel,452073078,2.72510,366.95901,8,True,True,SingleThreaded
