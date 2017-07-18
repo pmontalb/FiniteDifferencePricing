@@ -1,5 +1,5 @@
-# Finite Difference Pricing: A C++ application of the Crank Nicolson scheme for pricing dividend paying American Options
-This repository implements a practical application of the Crank Nicolson scheme for pricing American Options.
+# Finite Difference Pricing: A C++ application of the Crank Nicolson scheme for pricing dividend paying American Options by means of the Green Function
+This repository implements a practical application of the Crank Nicolson scheme for pricing American Options by means of the Green Function.
 
 Whilst binomial and trinomial lattices are very popular in the stock option pricing framework, I believe that a Finite Difference setup has greater flexibility in terms of model choice (e.g. Black-Scholes), without giving up too much throughput.
 
